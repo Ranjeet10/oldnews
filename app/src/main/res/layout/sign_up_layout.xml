@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/screen_padding"
+    android:paddingRight="@dimen/screen_padding">
+
+    <LinearLayout
+        android:id="@+id/form_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <include layout="@layout/login_form_field" />
+
+        <Button
+            android:id="@+id/btn_login"
+            style="@style/button_style"
+            android:layout_marginTop="@dimen/screen_padding"
+            android:background="@drawable/corner_button_primary_selector"
+            android:text="@string/sign_up_text" />
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/powered_by_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/form_layout"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/logo" />
+</RelativeLayout>
