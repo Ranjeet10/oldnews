@@ -9,8 +9,7 @@
     <!-- first name layout-->
     <android.support.design.widget.TextInputLayout
         android:id="@+id/firstNameLayout"
-        style="@style/form_cell_parent_layout"
-       >
+        style="@style/form_cell_parent_layout">
 
         <AutoCompleteTextView
             android:id="@+id/firstName"
@@ -23,8 +22,7 @@
     <!-- last name layout-->
     <android.support.design.widget.TextInputLayout
         android:id="@+id/lastNameLayout"
-        style="@style/form_cell_parent_layout"
-        >
+        style="@style/form_cell_parent_layout">
 
         <AutoCompleteTextView
             android:id="@+id/lastName"

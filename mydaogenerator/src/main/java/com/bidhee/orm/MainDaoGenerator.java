@@ -8,7 +8,7 @@ public class MainDaoGenerator {
     public static void main(String args[]) throws Exception {
         Schema schema = new Schema(1, "nagarikschema");
 
-        Entity newsTitleTable = schema.addEntity("NewsTitle");
+        Entity newsTitleTable = schema.addEntity("News");
         newsTitleTable.addIdProperty();
         newsTitleTable.addStringProperty("title");
 
