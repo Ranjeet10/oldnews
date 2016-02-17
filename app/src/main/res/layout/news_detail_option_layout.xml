@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/news_share_image_view"
+        style="@style/news_detail_buttons_style"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/square_transparent_button_selector"
+        android:src="@mipmap/ic_launcher" />
+
+    <ImageView
+        android:id="@+id/news_favourite_image_view"
+        style="@style/news_detail_buttons_style"
+        android:layout_toLeftOf="@+id/news_share_image_view"
+        android:src="@mipmap/ic_launcher" />
+
+    <ImageView
+        android:id="@+id/news_text_size_image_view"
+        style="@style/news_detail_buttons_style"
+        android:layout_toLeftOf="@+id/news_favourite_image_view"
+        android:src="@mipmap/ic_launcher" />
+</RelativeLayout>

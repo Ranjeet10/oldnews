@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.michaldrabik.tapbarmenulib.TapBarMenu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tapBarMenu"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tab_bar_layout_height"
+    android:layout_gravity="bottom"
+    android:layout_marginBottom="@dimen/tab_bar_menu_margin"
+    app:tbm_backgroundColor="@color/colorPrimary"
+    app:tbm_buttonMarginRight="@dimen/tab_bar_menu_margin"
+    app:tbm_buttonPosition="right"
+    app:tbm_menuAnchor="bottom"
+    app:tbm_showItems="false">
+
+    <ImageView
+        android:id="@+id/news_share_image_view"
+        style="@style/tab_menu_items_style"
+        android:tint="@color/white"
+        android:src="@mipmap/ic_share_black" />
+
+    <ImageView
+        android:id="@+id/news_font_size_change_image_view"
+        style="@style/tab_menu_items_style"
+        android:tint="@color/white"
+        android:src="@mipmap/ic_font_download_black" />
+
+    <ImageView
+        android:id="@+id/news_add_favourite_image_view"
+        style="@style/tab_menu_items_style"
+        android:tint="@color/white"
+        android:src="@mipmap/ic_favorite_black" />
+
+    <View style="@style/tab_menu_items_style" />
+
+</com.michaldrabik.tapbarmenulib.TapBarMenu>

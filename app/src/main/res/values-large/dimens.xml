@@ -2,4 +2,18 @@
 <resources>
     <dimen name="selector_radius">14dp</dimen>
     <dimen name="screen_padding">15dp</dimen>
+
+    <dimen name="news_title_image_h">150dp</dimen>
+    <dimen name="news_title_image_w">120dp</dimen>
+
+    <dimen name="screen_padding_lr">7.5dp</dimen>
+    <dimen name="elevation">3dp</dimen>
+
+    <dimen name="vertical_bar_height">15dp</dimen>
+    <dimen name="tab_bar_menu_margin">30dp</dimen>
+    <dimen name="tab_bar_layout_height">84dp</dimen>
+
+    <dimen name="news_detail_text_size_1">9sp</dimen>
+    <dimen name="news_detail_text_size_2">12sp</dimen>
+    <dimen name="news_detail_text_size_3">27sp</dimen>
 </resources>
