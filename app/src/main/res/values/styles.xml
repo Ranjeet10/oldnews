@@ -1,11 +1,15 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <style name="AppTheme" parent="BaseTheme" />
+
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item> 
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item> 
+        <item name="colorControlHighlight">@color/light_red_grey</item> 
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="selectableItemBackground">@drawable/selectable_item_background</item>-->
+        <!--<item name="android:selectableItemBackground">@drawable/selectable_item_background</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -42,6 +46,28 @@
     <style name="form_cell_parent_layout" parent="match_wrap">
         <item name="android:layout_marginTop">@dimen/screen_padding</item>
         <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="wrap_wrap">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="news_detail_buttons_style" parent="wrap_wrap">
+        <item name="android:padding">@dimen/screen_padding_lr</item>
+    </style>
+
+    <style name="news_publish_time_text_style" parent="wrap_wrap">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+    </style>
+
+    <style name="tab_menu_items_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingBottom">@dimen/screen_padding</item>
+        <item name="android:paddingTop">@dimen/screen_padding</item>
     </style>
 
 </resources>

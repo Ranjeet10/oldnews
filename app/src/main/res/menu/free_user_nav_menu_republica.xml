@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all_news"
+            android:checked="true"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/all_news_r" />
+        <item
+            android:id="@+id/nav_videos"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/videos_r" />
+        <item
+            android:id="@+id/nav_photos"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/photos_r" />
+        <item
+            android:id="@+id/nav_cartoons"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/cartoon_r" />
+        <item
+            android:id="@+id/nav_epaper"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/e_paper_r" />
+        <item
+            android:id="@+id/nav_saved"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/saved_r" />
+        <item
+            android:id="@+id/nav_extras"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/extra_r" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>
