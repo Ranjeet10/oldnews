@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.static_datas.NewsData;
@@ -34,16 +35,22 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
     SessionManager sessionManager;
+    String newsCategory;
 
 
-    public static SwipableFragment getInstance() {
-        return new SwipableFragment();
+    public static SwipableFragment createNewInstance(String news_category) {
+        SwipableFragment swipableFragment = new SwipableFragment();
+        Bundle box = new Bundle();
+        box.putString(StaticStorage.NEWS_CATEGORY, news_category);
+        swipableFragment.setArguments(box);
+        return swipableFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionManager = new SessionManager(getActivity());
+        newsCategory = getArguments().getString(StaticStorage.NEWS_CATEGORY);
     }
 
     @Nullable
@@ -81,7 +88,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } else {
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
             NewsObj newsObj = newsObjs.get(position);
-            newsObj.setNewsCategory(Dashboard.selectedNewsCategory);
+            newsObj.setNewsCategory(newsCategory);
 
             newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             startActivity(newsDetailIntent);

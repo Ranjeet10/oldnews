@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.widget.FragmentPagerAdapter;
@@ -30,28 +31,9 @@ public class FragmentAllNews extends Fragment {
 
     SessionManager sessionManager;
 
-    String[] republicaTab = {
-            "Breaking News",
-            "Politics",
-            "Economics",
-            "Society",
-            "Sports",
-            "Health",
-            "Art",
-            "Technology"};
-
-    String[] nagarikTab = {
-            "मुख्य तथा ताजा समाचार",
-            "राजनीति",
-            "आर्थीक्",
-            "समाजिक्",
-            "खेल्कुद्",
-            "स्वास्थ्य",
-            "कल",
-            "बिज्ञान"};
 
 
-    public static FragmentAllNews getInstance() {
+    public static FragmentAllNews createNewInstance() {
         FragmentAllNews fragmentAllNews = new FragmentAllNews();
         return fragmentAllNews;
     }
@@ -85,9 +67,6 @@ public class FragmentAllNews extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
 
-                Dashboard.selectedNewsCategory = (sessionManager.getSwitchedNewsValue() == 0) ?
-                        republicaTab[tab.getPosition()] :
-                        nagarikTab[tab.getPosition()];
             }
 
             @Override
@@ -108,13 +87,13 @@ public class FragmentAllNews extends Fragment {
 
         //set the tab according the news switched to
         if (sessionManager.getSwitchedNewsValue() == 0) {
-            for (int i = 0; i < republicaTab.length; i++) {
-                adapter.addFragment(SwipableFragment.getInstance(), republicaTab[i]);
+            for (int i = 0; i < StaticStorage.republicaTab.length; i++) {
+                adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
             }
 
         } else {
-            for (int i = 0; i < nagarikTab.length; i++) {
-                adapter.addFragment(SwipableFragment.getInstance(), nagarikTab[i]);
+            for (int i = 0; i < StaticStorage.nagarikTab.length; i++) {
+                adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.nagarikTab[i]), StaticStorage.nagarikTab[i]);
             }
         }
 
