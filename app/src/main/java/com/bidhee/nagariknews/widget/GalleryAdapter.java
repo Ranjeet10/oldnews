@@ -50,6 +50,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         return multimediaList.size();
     }
 
+
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.gallery_thumbnail)
         ImageView galleryThumbnail;
