@@ -10,6 +10,8 @@
     <color name="grey">#3e3e3e</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
+    <color name="transparent1">#8c000000</color>
+    <color name="transparent2">#c0000000</color>
 
     <color name="facebook_login_color">#004bbc</color>
 </resources>
