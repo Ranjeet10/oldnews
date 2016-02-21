@@ -32,7 +32,6 @@ public class FragmentAllNews extends Fragment {
     SessionManager sessionManager;
 
 
-
     public static FragmentAllNews createNewInstance() {
         FragmentAllNews fragmentAllNews = new FragmentAllNews();
         return fragmentAllNews;
@@ -88,7 +87,11 @@ public class FragmentAllNews extends Fragment {
         //set the tab according the news switched to
         if (sessionManager.getSwitchedNewsValue() == 0) {
             for (int i = 0; i < StaticStorage.republicaTab.length; i++) {
-                adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
+                if (i == 0) {
+                    adapter.addFragment(FragmentBreakingAndLatestNews.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
+                } else {
+                    adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
+                }
             }
 
         } else {

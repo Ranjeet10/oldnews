@@ -88,22 +88,27 @@ public class NewsDetailActivity extends AppCompatActivity {
     }
 
     private void loadingDetail() {
-        Picasso.with(this).load(news.getImg()).placeholder(R.drawable.nagariknews).into(image, new Callback() {
-            @Override
-            public void onSuccess() {
-                Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                    public void onGenerated(Palette palette) {
-                        applyPalette(palette);
-                    }
-                });
-            }
 
-            @Override
-            public void onError() {
-                Log.e("picasso", "error");
-            }
-        });
+        try {
+            Picasso.with(this).load(news.getImg()).placeholder(R.drawable.nagariknews).into(image, new Callback() {
+                @Override
+                public void onSuccess() {
+                    Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
+                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                        public void onGenerated(Palette palette) {
+                            applyPalette(palette);
+                        }
+                    });
+                }
+
+                @Override
+                public void onError() {
+                    Log.e("picasso", "error");
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         titleTextView.setText(news.getTitle());
         newsCategoryTextView.setText(news.getNewsCategory());
