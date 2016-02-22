@@ -66,7 +66,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
 
         galleryAdapter = new GalleryAdapter(multimediaList);
         galleryRecyclerView.setAdapter(galleryAdapter);
-        galleryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), this));
+        galleryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(),0, this));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view,int parentPosition, int position) {
         imageSliderDialog.showDialog(getActivity(), multimediaList,position);
     }
 }

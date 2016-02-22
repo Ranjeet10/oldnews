@@ -25,6 +25,7 @@ import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
+import com.bidhee.nagariknews.views.fragments.FragmentExtra;
 import com.bidhee.nagariknews.views.fragments.FragmentGallery;
 import com.squareup.picasso.Picasso;
 
@@ -261,6 +262,11 @@ public class Dashboard extends AppCompatActivity
 
                 break;
 
+            case R.id.nav_extras:
+                replaceableFragment = FragmentExtra.createNewInstance();
+
+                break;
+
             case R.id.nav_share:
                 break;
         }
@@ -280,9 +286,8 @@ public class Dashboard extends AppCompatActivity
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         ButterKnife.unbind(this);
     }
-
 }

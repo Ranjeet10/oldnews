@@ -1,5 +1,7 @@
 package com.bidhee.nagariknews.Utils;
 
+import com.bidhee.nagariknews.R;
+
 /**
  * Created by ronem on 2/17/16.
  */
@@ -30,4 +32,7 @@ public class StaticStorage {
     public static String KEY_CURRENT_TAG = "current_fragment_tag";
     public static String KEY_NEWS_TYPE = "news_type";
     public static String KEY_CURRENT_TITLE = "current_title";
+
+    public static int[] colors = new int[]{R.color.colorAccent, R.color.colorPrimary, R.color.colorPrimaryDark, R.color.grey, R.color.colorPrimary,
+            R.color.colorAccent};
 }

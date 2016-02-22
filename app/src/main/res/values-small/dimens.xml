@@ -16,4 +16,6 @@
     <dimen name="news_detail_text_size_1">4.5sp</dimen>
     <dimen name="news_detail_text_size_2">6sp</dimen>
     <dimen name="news_detail_text_size_3">9sp</dimen>
+
+    <dimen name="news_item_height">127.5dp</dimen>
 </resources>
