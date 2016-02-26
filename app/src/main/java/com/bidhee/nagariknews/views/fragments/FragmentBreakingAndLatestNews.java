@@ -6,13 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.BreakingAndLatestNews;
-import com.bidhee.nagariknews.model.static_datas.NewsData;
+import com.bidhee.nagariknews.Utils.NewsData;
+import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.widget.BreakingAndLatestnewsParentAdapter;
 
 import java.util.ArrayList;
@@ -28,17 +33,40 @@ public class FragmentBreakingAndLatestNews extends Fragment {
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    @Bind(R.id.cat_id)
+    TextView categoryTextView;
+
     ArrayList<BreakingAndLatestNews> breakingAndLatestNewses;
     BreakingAndLatestnewsParentAdapter adapter;
+    SessionManager sessionManager;
 
-    public static FragmentBreakingAndLatestNews createNewInstance(String title) {
-        return new FragmentBreakingAndLatestNews();
+    private static String categoryId;
+    private static String categoryName;
+
+    public static FragmentBreakingAndLatestNews createNewInstance(TabModel tab) {
+
+        FragmentBreakingAndLatestNews fragmentBreakingAndLatestNews = new FragmentBreakingAndLatestNews();
+        Bundle box = new Bundle();
+        box.putString(StaticStorage.NEWS_CATEGORY_ID, tab.cat_id);
+        box.putString(StaticStorage.NEWS_CATEGORY, tab.cat_name);
+        fragmentBreakingAndLatestNews.setArguments(box);
+
+        return fragmentBreakingAndLatestNews;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        breakingAndLatestNewses = NewsData.loadBreakingLatestNews(getActivity());
+        sessionManager = new SessionManager(getActivity());
+
+        categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
+        categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
+
+        Log.i("category", categoryId + " " + categoryName);
+
+        breakingAndLatestNewses = sessionManager.getSwitchedNewsValue() == 0 ?
+                NewsData.loadBreakingLatestNews(getActivity(),categoryName) :
+                NewsData.loadMukhyaTathaTajaSamaarchar(getActivity(),categoryName);
     }
 
     @Nullable
@@ -52,6 +80,11 @@ public class FragmentBreakingAndLatestNews extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Log.i("category", categoryId + " " + categoryName);
+        categoryTextView.setText(categoryId + " " + categoryName);
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

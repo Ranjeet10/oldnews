@@ -1,7 +1,6 @@
 package com.bidhee.nagariknews.views.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -10,12 +9,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.ExtraModel;
-import com.bidhee.nagariknews.model.static_datas.NewsData;
 import com.bidhee.nagariknews.widget.ExtraAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -33,6 +32,8 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     ArrayList<ExtraModel> list;
     ExtraAdapter adapter;
 
+    SessionManager sessionManager;
+
 
     public static FragmentExtra createNewInstance() {
         return new FragmentExtra();
@@ -41,8 +42,13 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list = NewsData.getExtraList();
-        adapter = new ExtraAdapter(list);
+        sessionManager = new SessionManager(getActivity());
+
+        list = sessionManager.getSwitchedNewsValue() == 0 ?
+                StaticStorage.getExtraList() :
+                StaticStorage.getAnyaList();
+
+        adapter = new ExtraAdapter(list, getActivity());
     }
 
     @Nullable

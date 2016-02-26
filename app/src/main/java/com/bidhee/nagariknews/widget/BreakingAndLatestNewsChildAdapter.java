@@ -38,6 +38,8 @@ public class BreakingAndLatestNewsChildAdapter extends RecyclerView.Adapter<Brea
 
     @Override
     public void onBindViewHolder(ChildViewHolder holder, int position) {
+        holder.newsSourceTextView.setText(listModels.get(position).getReportedBy());
+        holder.newsDateTextView.setText(listModels.get(position).getDate());
         holder.titleTextView.setText(listModels.get(position).getTitle());
         String desc = listModels.get(position).getDesc();
         holder.descriptionTextView.setText(desc);
@@ -59,6 +61,10 @@ public class BreakingAndLatestNewsChildAdapter extends RecyclerView.Adapter<Brea
         ImageView thumbnail;
         @Bind(R.id.news_semi_detail_text_view)
         TextView descriptionTextView;
+        @Bind(R.id.news_source_text_view)
+        TextView newsSourceTextView;
+        @Bind(R.id.news_date_text_view)
+        TextView newsDateTextView;
 
 
         public ChildViewHolder(View itemView) {

@@ -72,8 +72,16 @@
     <string name="extra_n">अन्य</string>
     <string name="settings_n">सेटिङ्स</string>
 
+    <!-- Breaking and latest-->
+    <string name="breaking_news">Breaking News</string>
+    <string name="latest_news">Latest News</string>
+
+    <!-- मुख्य समाचार ताजा समाचार -->
+    <string name="mukhya_samachar">मुख्य समाचार</string>
+    <string name="taja_samachar">ताजा समाचार </string>
+
     <!-- switched news-->
     <string name="republica">Republica</string>
-    <string name="nagarik">नगरिक</string>
+    <string name="nagarik">नागरिक</string>
 
 </resources>

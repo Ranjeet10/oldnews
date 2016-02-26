@@ -14,4 +14,11 @@
     <color name="transparent2">#c0000000</color>
 
     <color name="facebook_login_color">#004bbc</color>
+
+    <color name="grid_1">#b71c04</color>
+    <color name="grid_2">#4e9700</color>
+    <color name="grid_3">#a68202</color>
+    <color name="grid_4">#97005b</color>
+    <color name="grid_5">#008597</color>
+    <color name="grid_6">#006486</color>
 </resources>

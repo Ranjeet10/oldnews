@@ -1,5 +1,6 @@
 package com.bidhee.nagariknews.views.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -9,13 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
-import com.bidhee.nagariknews.views.activities.Dashboard;
-import com.bidhee.nagariknews.widget.FragmentPagerAdapter;
+import com.bidhee.nagariknews.model.TabModel;
+import com.bidhee.nagariknews.widget.NewsPagerAdapter;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,6 +32,7 @@ public class FragmentAllNews extends Fragment {
     ViewPager viewPager;
 
     SessionManager sessionManager;
+    ArrayList<TabModel> tabs;
 
 
     public static FragmentAllNews createNewInstance() {
@@ -41,6 +44,11 @@ public class FragmentAllNews extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionManager = new SessionManager(getActivity());
+        tabs = sessionManager.getSwitchedNewsValue() == 0 ?
+                StaticStorage.getTabData(0) :
+                StaticStorage.getTabData(1);
+
+        Log.d("called","onCreate");
     }
 
 
@@ -49,14 +57,24 @@ public class FragmentAllNews extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_all_news, container, false);
         ButterKnife.bind(this, fragmentView);
+
+        Log.d("called", "onCreateView");
         return fragmentView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setViewPager();
+        Log.d("called", "onViewCreated");
+        setViewPager(tabs);
         setTabLayout();
+
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d("called","onattach");
     }
 
     private void setTabLayout() {
@@ -78,29 +96,18 @@ public class FragmentAllNews extends Fragment {
 
             }
         });
+
     }
 
-    private void setViewPager() {
+    private void setViewPager(ArrayList<TabModel> tabs) {
+        // since viewpager is within the fragment  we use getChildFragmentManager instead of getSupportFragmentManger
 
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getChildFragmentManager());
-
-        //set the tab according the news switched to
-        if (sessionManager.getSwitchedNewsValue() == 0) {
-            for (int i = 0; i < StaticStorage.republicaTab.length; i++) {
-                if (i == 0) {
-                    adapter.addFragment(FragmentBreakingAndLatestNews.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
-                } else {
-                    adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.republicaTab[i]), StaticStorage.republicaTab[i]);
-                }
-            }
-
-        } else {
-            for (int i = 0; i < StaticStorage.nagarikTab.length; i++) {
-                adapter.addFragment(SwipableFragment.createNewInstance(StaticStorage.nagarikTab[i]), StaticStorage.nagarikTab[i]);
-            }
-        }
-
+        NewsPagerAdapter adapter = new NewsPagerAdapter(getChildFragmentManager(), tabs);
         viewPager.setAdapter(adapter);
+
+//        viewPager.setClipToPadding(false);
+//        viewPager.setPadding(30, 0, 30, 0);
+//        viewPager.setOffscreenPageLimit(1);
 
     }
 
@@ -108,5 +115,6 @@ public class FragmentAllNews extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        Log.d("called", "onDestroyView");
     }
 }
