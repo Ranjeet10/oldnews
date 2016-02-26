@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/share"
-        android:icon="@drawable/rasifal"
-        android:title="Rasifal" />
-    <item
-        android:id="@+id/upload"
-        android:icon="@drawable/loadshed"
-        android:title="Loadshedding" />
-    <item
-        android:id="@+id/call"
-        android:icon="@drawable/gold"
-        android:title="Boolean" />
-    <item
-        android:id="@+id/stock"
-        android:icon="@drawable/stock"
-        android:title="Stock" />
-    <item
-        android:id="@+id/today"
-        android:icon="@drawable/today"
-        android:title="Today" />
-    <group android:id="@+id/helpgroup">
-        <item
-            android:id="@+id/help"
-            android:icon="@drawable/coins100"
-            android:title="Biniaym Dar" />
-    </group>
+    <!--<item-->
+        <!--android:id="@+id/share"-->
+        <!--android:icon="@drawable/rasifal"-->
+        <!--android:title="Rasifal" />-->
+    <!--<item-->
+        <!--android:id="@+id/upload"-->
+        <!--android:icon="@drawable/loadshed"-->
+        <!--android:title="Loadshedding" />-->
+    <!--<item-->
+        <!--android:id="@+id/call"-->
+        <!--android:icon="@drawable/gold"-->
+        <!--android:title="Boolean" />-->
+    <!--<item-->
+        <!--android:id="@+id/stock"-->
+        <!--android:icon="@drawable/stock"-->
+        <!--android:title="Stock" />-->
+    <!--<item-->
+        <!--android:id="@+id/today"-->
+        <!--android:icon="@drawable/today"-->
+        <!--android:title="Today" />-->
+    <!--<group android:id="@+id/helpgroup">-->
+        <!--<item-->
+            <!--android:id="@+id/help"-->
+            <!--android:icon="@drawable/coins100"-->
+            <!--android:title="Biniaym Dar" />-->
+    <!--</group>-->
 </menu>

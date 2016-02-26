@@ -2,22 +2,27 @@ package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
-import com.bidhee.nagariknews.model.static_datas.NewsData;
-import com.bidhee.nagariknews.views.activities.Dashboard;
+import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
+import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 
 import java.util.ArrayList;
@@ -31,17 +36,23 @@ import butterknife.ButterKnife;
 public class SwipableFragment extends Fragment implements NewsTitlesAdapter.RecyclerPositionListener {
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.progess)
+    ProgressBar progressBar;
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
     SessionManager sessionManager;
-    String newsCategory;
+
+    private String categoryId;
+    private String categoryName;
 
 
-    public static SwipableFragment createNewInstance(String news_category) {
+    public static SwipableFragment createNewInstance(TabModel tab) {
+
         SwipableFragment swipableFragment = new SwipableFragment();
         Bundle box = new Bundle();
-        box.putString(StaticStorage.NEWS_CATEGORY, news_category);
+        box.putString(StaticStorage.NEWS_CATEGORY_ID, tab.cat_id);
+        box.putString(StaticStorage.NEWS_CATEGORY, tab.cat_name);
         swipableFragment.setArguments(box);
         return swipableFragment;
     }
@@ -50,7 +61,15 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionManager = new SessionManager(getActivity());
-        newsCategory = getArguments().getString(StaticStorage.NEWS_CATEGORY);
+
+        categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
+        categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
+
+
+        newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
+                NewsData.getNewsRepublica(getActivity()) :
+                NewsData.getNewsNagarik(getActivity(), categoryName);
+
     }
 
     @Nullable
@@ -64,18 +83,43 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Log.i("category", categoryId + " " + categoryName);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
-                NewsData.getNewsRepublica(getActivity()) :
-                NewsData.getNewsNagarik(getActivity());
-
         newsTitlesAdapter = new NewsTitlesAdapter(newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
+
+        recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                Log.i("categoryId", categoryId + " " + categoryName);
+                progressBar.setVisibility(View.VISIBLE);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 0 ?
+                                NewsData.getNewsRepublica(getContext()) :
+                                NewsData.getNewsNagarik(getContext(), categoryName);
+
+                        int curSize = newsTitlesAdapter.getItemCount();
+                        newsObjs.addAll(moreNews);
+                        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }, 2000);
+            }
+        });
+
+
     }
 
 
@@ -88,7 +132,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } else {
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
             NewsObj newsObj = newsObjs.get(position);
-            newsObj.setNewsCategory(newsCategory);
+            newsObj.setNewsCategory(categoryName);
 
             newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             startActivity(newsDetailIntent);

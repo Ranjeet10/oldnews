@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,22 +24,36 @@ import butterknife.ButterKnife;
 public class ExtraAdapter extends RecyclerView.Adapter<ExtraAdapter.ExtraViewHolder> {
     ArrayList<ExtraModel> list;
     Context context;
+    int[] colors;
 
-    public ExtraAdapter(ArrayList<ExtraModel> list) {
+    public ExtraAdapter(ArrayList<ExtraModel> list, Context context) {
         this.list = list;
+        this.context = context;
+        colors = new int[]{context.getResources().getColor(R.color.grid_1),
+                context.getResources().getColor(R.color.grid_6),
+                context.getResources().getColor(R.color.grid_3),
+                context.getResources().getColor(R.color.grid_4),
+                context.getResources().getColor(R.color.grid_5),
+                context.getResources().getColor(R.color.grid_2)};
     }
 
     @Override
     public ExtraViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
+
         View itemView = LayoutInflater.from(context).inflate(R.layout.single_row_extra_item, parent, false);
         return new ExtraViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ExtraViewHolder holder, int position) {
+        holder.extraImageView.setImageResource(list.get(position).getImage());
         holder.titleTextView.setText(list.get(position).getTitle());
-//        holder.cardLayout.setBackgroundColor(StaticStorage.colors[position]);
+        holder.descriptionTextView.setText(list.get(position).getDescription());
+        try {
+            holder.cardLayout.setBackgroundColor(colors[position]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -47,8 +62,12 @@ public class ExtraAdapter extends RecyclerView.Adapter<ExtraAdapter.ExtraViewHol
     }
 
     public static class ExtraViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.extra_image_view)
+        ImageView extraImageView;
         @Bind(R.id.title)
         TextView titleTextView;
+        @Bind(R.id.description)
+        TextView descriptionTextView;
         @Bind(R.id.card_layout)
         RelativeLayout cardLayout;
 

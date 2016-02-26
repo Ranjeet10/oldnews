@@ -25,8 +25,10 @@ import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
+import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
 import com.bidhee.nagariknews.views.fragments.FragmentExtra;
 import com.bidhee.nagariknews.views.fragments.FragmentGallery;
+import com.bidhee.nagariknews.views.fragments.FragmentSaved;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -261,6 +263,15 @@ public class Dashboard extends AppCompatActivity
                 replaceableFragment = FragmentGallery.createNewInstance();
 
                 break;
+
+            case R.id.nav_epaper:
+                replaceableFragment = FragmentEpaper.createNewInstance();
+                break;
+
+            case R.id.nav_saved:
+                replaceableFragment = FragmentSaved.createNewInstance();
+                break;
+
 
             case R.id.nav_extras:
                 replaceableFragment = FragmentExtra.createNewInstance();
