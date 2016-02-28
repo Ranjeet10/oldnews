@@ -155,8 +155,8 @@ public class Dashboard extends AppCompatActivity
 
         Picasso.with(this)
                 .load(navImageUrl)
-                .error(R.mipmap.ic_launcher)
-                .placeholder(R.mipmap.logo)
+                .error(R.drawable.nagariknews)
+                .placeholder(R.drawable.nagariknews)
                 .into(navImageView);
 
         //check to what it was switched to previously
@@ -250,17 +250,17 @@ public class Dashboard extends AppCompatActivity
                 break;
 
             case R.id.nav_photos:
-                replaceableFragment = FragmentGallery.createNewInstance();
-
-                break;
-
-            case R.id.nav_videos:
-                replaceableFragment = FragmentGallery.createNewInstance();
+                replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.PHOTOS);
 
                 break;
 
             case R.id.nav_cartoons:
-                replaceableFragment = FragmentGallery.createNewInstance();
+                replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.CARTOONS);
+
+                break;
+
+            case R.id.nav_videos:
+                replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.VIDEOS);
 
                 break;
 
