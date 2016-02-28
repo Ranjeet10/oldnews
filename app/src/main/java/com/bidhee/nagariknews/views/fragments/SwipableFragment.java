@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
@@ -36,6 +38,8 @@ import butterknife.ButterKnife;
 public class SwipableFragment extends Fragment implements NewsTitlesAdapter.RecyclerPositionListener {
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.progess)
     ProgressBar progressBar;
 
@@ -66,9 +70,13 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
 
 
-        newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
-                NewsData.getNewsRepublica(getActivity()) :
-                NewsData.getNewsNagarik(getActivity(), categoryName);
+        if (savedInstanceState != null) {
+            newsObjs = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
+        } else {
+            newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
+                    NewsData.getNewsRepublica(getActivity()) :
+                    NewsData.getNewsNagarik(getActivity(), categoryName);
+        }
 
     }
 
@@ -85,6 +93,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         super.onViewCreated(view, savedInstanceState);
 
         Log.i("category", categoryId + " " + categoryName);
+        addingSwipeRefreshListener();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -122,6 +131,25 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     }
 
+    private void addingSwipeRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchData();
+            }
+        });
+    }
+
+    private void fetchData() {
+        ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+            }
+        }, 1000);
+    }
+
 
     @Override
     public void onChildItemPositionListen(int position, View view) {
@@ -137,5 +165,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             startActivity(newsDetailIntent);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE, newsObjs);
     }
 }

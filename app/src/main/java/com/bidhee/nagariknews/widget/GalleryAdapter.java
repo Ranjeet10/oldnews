@@ -2,6 +2,7 @@ package com.bidhee.nagariknews.widget;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.squareup.picasso.Picasso;
 
@@ -23,9 +25,11 @@ import butterknife.ButterKnife;
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
     ArrayList<Multimedias> multimediaList;
     Context context;
+    int TYPE;
 
-    public GalleryAdapter(ArrayList<Multimedias> multimediaList) {
+    public GalleryAdapter(ArrayList<Multimedias> multimediaList, int type) {
         this.multimediaList = multimediaList;
+        this.TYPE = type;
     }
 
     @Override
@@ -38,11 +42,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     @Override
     public void onBindViewHolder(GalleryViewHolder holder, int position) {
         holder.galleryItemTitleTextView.setText(multimediaList.get(position).getTitle());
+
+
         Picasso.with(context)
-                .load(multimediaList.get(position).getMultimediaPath())
+                .load(TYPE == StaticStorage.VIDEOS ?
+                        StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimediaList.get(position).getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX :
+                        multimediaList.get(position).getMultimediaPath())
                 .error(R.drawable.nagariknews)
                 .placeholder(R.drawable.nagariknews)
                 .into(holder.galleryThumbnail);
+        Log.d("url",multimediaList.get(position).getMultimediaPath());
+
     }
 
     @Override

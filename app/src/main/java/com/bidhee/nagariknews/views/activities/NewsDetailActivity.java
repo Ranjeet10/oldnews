@@ -5,6 +5,7 @@ package com.bidhee.nagariknews.views.activities;
  */
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
@@ -153,6 +154,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                 break;
             case R.id.news_add_favourite_image_view:
                 Toast.makeText(getApplicationContext(), "Favourite", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this,YoutubePlayerActivity.class));
                 break;
         }
     }

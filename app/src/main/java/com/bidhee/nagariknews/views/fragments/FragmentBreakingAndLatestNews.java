@@ -33,15 +33,13 @@ public class FragmentBreakingAndLatestNews extends Fragment {
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    @Bind(R.id.cat_id)
-    TextView categoryTextView;
 
     ArrayList<BreakingAndLatestNews> breakingAndLatestNewses;
     BreakingAndLatestnewsParentAdapter adapter;
     SessionManager sessionManager;
 
-    private static String categoryId;
-    private static String categoryName;
+    private  String categoryId;
+    private  String categoryName;
 
     public static FragmentBreakingAndLatestNews createNewInstance(TabModel tab) {
 
@@ -82,7 +80,6 @@ public class FragmentBreakingAndLatestNews extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Log.i("category", categoryId + " " + categoryName);
-        categoryTextView.setText(categoryId + " " + categoryName);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
