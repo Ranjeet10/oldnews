@@ -191,17 +191,10 @@ public class NewsDetailActivity extends AppCompatActivity {
         int primary = getResources().getColor(R.color.colorPrimary);
         collapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
         collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
-//        updateBackground((FloatingActionButton) findViewById(R.id.fab), palette);
         supportStartPostponedEnterTransition();
     }
 
-//    private void updateBackground(FloatingActionButton fab, Palette palette) {
-//        int lightVibrantColor = palette.getLightVibrantColor(getResources().getColor(android.R.color.white));
-//        int vibrantColor = palette.getVibrantColor(getResources().getColor(R.color.colorAccent));
-//
-//        fab.setRippleColor(lightVibrantColor);
-//        fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
-//    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
