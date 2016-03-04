@@ -84,13 +84,14 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
 
     @Override
     public void onItemClick(View view, int parentPosition, int position) {
-        if (TYPE == StaticStorage.PHOTOS || TYPE == StaticStorage.CARTOONS) {
-            imageSliderDialog.showDialog(getActivity(), multimediaList, position);
-        } else {
+        if (TYPE == StaticStorage.VIDEOS) {
+
             Intent playerIntent = new Intent(getActivity(), YoutubePlayerActivity.class);
 
             playerIntent.putExtra(StaticStorage.KEY_VIDEO_BUNDLE, multimediaList.get(position));
             startActivity(playerIntent);
+        } else {
+            imageSliderDialog.showDialog(getActivity(), multimediaList, position);
         }
     }
 }

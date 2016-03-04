@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparent2"
-    android:orientation="vertical">
+    android:background="@color/transparent2">
 
-    <com.bidhee.nagariknews.views.customviews.CustomImageView
+    <com.bidhee.nagariknews.views.customviews.TouchImageView
         android:id="@+id/gallery_item_image_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/andyrubin" />
-</LinearLayout>
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/image_loading_progress"
+        android:layout_width="@dimen/news_title_image_h"
+        android:layout_height="@dimen/news_title_image_h"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+</RelativeLayout>
