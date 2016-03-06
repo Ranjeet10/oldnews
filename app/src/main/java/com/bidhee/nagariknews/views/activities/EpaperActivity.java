@@ -81,7 +81,7 @@ public class EpaperActivity extends AppCompatActivity {
     }
 
     private void setPageTitle(String currentNewsType, int currentPageNumber) {
-        getSupportActionBar().setTitle(currentNewsType + " For Date " + epaper.getDate() + " ( " + currentPageNumber + "/" + epaper.getPages().size() + " )");
+        getSupportActionBar().setTitle(currentNewsType + " ("+ epaper.getDate() + ") " + currentPageNumber + "/" + epaper.getPages().size());
     }
 
 

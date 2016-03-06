@@ -1,6 +1,7 @@
 package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     private EpaperBundle epaperBundle;
     private ArrayList<Epaper> epapers;
     EpapersListAdapter epapersListAdapter;
+    GridLayoutManager gridLayoutManager;
 
 
     // static factory method pattern
@@ -73,8 +75,12 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        gridLayoutManager = (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ?
+                new GridLayoutManager(getActivity(), 2) :
+                new GridLayoutManager(getActivity(), 4);
 
-        epaperRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        epaperRecyclerView.setLayoutManager(gridLayoutManager);
+
         epaperRecyclerView.setHasFixedSize(true);
         epaperRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -96,5 +102,6 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epaperIntent.putExtra(StaticStorage.KEY_EPAPER, epapers.get(position));
 
         startActivity(epaperIntent);
+        Log.i("info","clicked");
     }
 }

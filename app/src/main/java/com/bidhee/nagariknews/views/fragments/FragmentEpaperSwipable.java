@@ -1,8 +1,5 @@
 package com.bidhee.nagariknews.views.fragments;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,10 +13,10 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by ronem on 2/29/16.
@@ -29,6 +26,8 @@ public class FragmentEpaperSwipable extends Fragment {
     ImageView imageView;
     @Bind(R.id.image_loading_progress)
     ProgressBar progressBar;
+    @Bind(R.id.reload_image_view)
+    ImageView reloadImage;
 
     private String pageUrl = "";
 
@@ -61,6 +60,11 @@ public class FragmentEpaperSwipable extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        loadImage(pageUrl);
+    }
+
+    private void loadImage(final String pageUrl) {
+        progressBar.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
                 .load(pageUrl)
                 .error(R.drawable.nagariknews)
@@ -68,14 +72,26 @@ public class FragmentEpaperSwipable extends Fragment {
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
+                        try {
+                            progressBar.setVisibility(View.GONE);
+                            reloadImage.setVisibility(View.GONE);
+                        } catch (NullPointerException ne) {
+                            ne.printStackTrace();
+                        }
                     }
 
                     @Override
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
+                        reloadImage.setVisibility(View.VISIBLE);
+                        loadImage(pageUrl);
                     }
                 });
+    }
+
+    @OnClick(R.id.reload_image_view)
+    public void reloadImageOnClick() {
+        loadImage(pageUrl);
     }
 
     @Override

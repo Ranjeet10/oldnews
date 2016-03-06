@@ -20,17 +20,27 @@
             android:scaleType="fitXY"
             android:src="@drawable/andyrubin" />
 
+        <ImageView
+            android:id="@+id/epaper_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/news_item_height"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/andyrubin"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/gallery_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/transparent1"
+            android:ellipsize="end"
             android:gravity="center"
             android:padding="@dimen/screen_padding"
             android:singleLine="true"
             android:text="title"
-            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="@color/white" />
     </RelativeLayout>

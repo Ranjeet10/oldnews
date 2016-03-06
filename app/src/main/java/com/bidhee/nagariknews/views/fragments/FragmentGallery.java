@@ -91,7 +91,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             playerIntent.putExtra(StaticStorage.KEY_VIDEO_BUNDLE, multimediaList.get(position));
             startActivity(playerIntent);
         } else {
-            imageSliderDialog.showDialog(getActivity(), multimediaList, position);
+            imageSliderDialog.showDialog(getActivity(), multimediaList, position, TYPE);
         }
     }
 }
