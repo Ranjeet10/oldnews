@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.bidhee.nagariknews.R;
 
+import java.io.File;
+
 /**
  * Created by ronem on 2/23/16.
  */
@@ -20,6 +22,19 @@ public class FragmentSaved extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /**
+         * <i>not</i>
+         */
+        File f = new File("");
+        f.mkdirs();
+        f.mkdir();
+
+
+    }
+
+    void mak() {
+
     }
 
     @Nullable

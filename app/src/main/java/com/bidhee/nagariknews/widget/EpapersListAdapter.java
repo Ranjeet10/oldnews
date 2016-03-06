@@ -40,13 +40,14 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
     @Override
     public void onBindViewHolder(EpaperViewHolder holder, int position) {
         holder.galleryItemTitleTextView.setText(epapers.get(position).getDate());
-
-
+        holder.galleryThumbnail.setVisibility(View.GONE);
+        holder.epaperThumbnail.setVisibility(View.VISIBLE);
         Picasso.with(context)
                 .load(epapers.get(position).getMainPageUrl())
                 .error(R.drawable.nagariknews)
                 .placeholder(R.drawable.nagariknews)
-                .into(holder.galleryThumbnail);
+                .resize(200,280)
+                .into(holder.epaperThumbnail);
 
     }
 
@@ -58,6 +59,8 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
     public static class EpaperViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.gallery_thumbnail)
         ImageView galleryThumbnail;
+        @Bind(R.id.epaper_thumbnail)
+        ImageView epaperThumbnail;
         @Bind(R.id.gallery_item_title)
         TextView galleryItemTitleTextView;
         public EpaperViewHolder(View itemView) {

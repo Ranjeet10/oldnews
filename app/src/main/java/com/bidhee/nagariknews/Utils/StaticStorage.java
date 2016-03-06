@@ -16,6 +16,21 @@ import java.util.List;
  */
 public class StaticStorage {
 
+    //upgrading adb from 1.0.31 to 1.0.32
+    //go to the ~Android/sdk/platform-tools
+    //wget -O - https://skia.googlesource.com/skia/+archive/cd048d18e0b81338c1a04b9749a00444597df394/platform_tools/android/bin/linux.tar.gz | tar -zxvf - adb
+    // sudo mv adb /usr/bin/adb
+    //
+
+    //
+    //files and folder
+    //
+    public static String FOLDER_ROOT = "Nagarik";
+    public static String FOLDER_PHOTO = "Photos";
+    public static String FOLDER_CARTOON = "Cartoons";
+    public static String FOLDER_VIDEOS = "Videos";
+
+
     public static String VIDEO_THUMBNAIL_PREFIX = "http://img.youtube.com/vi/";
     public static String VIDEO_THUMBNAIL_POSTFIX = "/default.jpg";
 
@@ -92,7 +107,6 @@ public class StaticStorage {
     public static String KEY_EPAPER_TYPE = "epaper_type";
     public static String KEY_EPAPER = "epaper";
     public static String KEY_EPAPER_PAGE = "epaper_page";
-
 
 
     public static ArrayList<ExtraModel> getExtraList() {
@@ -184,11 +198,25 @@ public class StaticStorage {
         Epaper epaper1 = new Epaper("2016-12-22", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_01.jpg", pages);
         Epaper epaper2 = new Epaper("2016-12-23", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_02.jpg", pages);
         Epaper epaper3 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper4 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper5 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper6 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper7 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper8 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper9 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
+        Epaper epaper10 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
 
         List<Epaper> epapers = new ArrayList<>();
         epapers.add(epaper1);
         epapers.add(epaper2);
         epapers.add(epaper3);
+        epapers.add(epaper4);
+        epapers.add(epaper5);
+        epapers.add(epaper6);
+        epapers.add(epaper7);
+        epapers.add(epaper8);
+        epapers.add(epaper9);
+        epapers.add(epaper10);
 
         EpaperBundle epaperBundle = new EpaperBundle("1", epapers);
 
