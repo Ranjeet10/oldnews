@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.michaldrabik.tapbarmenulib.TapBarMenu;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -45,7 +46,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.app_bar_layout)
-    AppBarLayout appBarLayout;
+    ControllableAppBarLayout appBarLayout;
     @Bind(R.id.image)
     ImageView image;
     @Bind(R.id.tapBarMenu)
@@ -130,6 +131,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setTitle(news.getTitle());
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.background_light));
 
+
     }
 
     private void gettingBundle() {
@@ -147,6 +149,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.news_share_image_view:
                 Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
+                appBarLayout.collapseToolbar(true);
                 break;
             case R.id.news_font_size_change_image_view:
                 updateNewsDetailFontSize();
@@ -154,7 +157,7 @@ public class NewsDetailActivity extends AppCompatActivity {
                 break;
             case R.id.news_add_favourite_image_view:
                 Toast.makeText(getApplicationContext(), "Favourite", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this,YoutubePlayerActivity.class));
+                appBarLayout.expandToolbar(true);
                 break;
         }
     }
@@ -193,7 +196,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
         supportStartPostponedEnterTransition();
     }
-
 
 
     @Override

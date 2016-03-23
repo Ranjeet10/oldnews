@@ -50,4 +50,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile project(':tabmenu')
     compile files('libs/YouTubeAndroidPlayerApi.jar')
+    compile project(':imageslider')
 }

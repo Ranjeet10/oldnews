@@ -33,7 +33,7 @@ public class NewsPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 return FragmentBreakingAndLatestNews.createNewInstance(tabs.get(position));
-
+//
             default:
                 return SwipableFragment.createNewInstance(tabs.get(position));
 

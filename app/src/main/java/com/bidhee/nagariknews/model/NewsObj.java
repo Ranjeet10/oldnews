@@ -7,6 +7,7 @@ import android.os.Parcelable;
  * Created by ronem on 2/9/16.
  */
 public class NewsObj implements Parcelable {
+    private Boolean isTOShow;
     private String id;
     private String newsCategory;
     private String title;
@@ -82,7 +83,17 @@ public class NewsObj implements Parcelable {
         this.newsCategory = newsCategory;
     }
 
+    public Boolean isToShow() {
+        return isTOShow;
+    }
+
+    public void setIsTOShow(Boolean isTOShow) {
+        this.isTOShow = isTOShow;
+    }
+
+
     @Override
+
     public int describeContents() {
         return 0;
     }

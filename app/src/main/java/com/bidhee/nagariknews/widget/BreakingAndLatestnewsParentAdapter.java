@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
     ArrayList<NewsObj> listModels;
     Context context;
     BreakingAndLatestNewsChildAdapter childAdapter;
+    LayoutInflater inflater;
 
 
     public BreakingAndLatestnewsParentAdapter(ArrayList<BreakingAndLatestNews> dataModels) {
@@ -39,7 +41,8 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
     @Override
     public ParentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View itemVIew = LayoutInflater.from(context).inflate(R.layout.single_row_parent_breaking_and_latest_news, parent, false);
+        inflater = LayoutInflater.from(context);
+        View itemVIew = inflater.inflate(R.layout.single_row_parent_breaking_and_latest_news, parent, false);
         return new ParentViewHolder(itemVIew);
     }
 
@@ -54,9 +57,25 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
         holder.childRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         listModels = dataModels.get(position).getBreakingAndLatestNewsListModels();
-        childAdapter = new BreakingAndLatestNewsChildAdapter(listModels);
-        holder.childRecyclerView.setAdapter(childAdapter);
-        holder.childRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(context, position, this));
+//        childAdapter = new BreakingAndLatestNewsChildAdapter(listModels);
+//        holder.childRecyclerView.setAdapter(childAdapter);
+//        holder.childRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(context, position, this));
+
+        View.OnClickListener myListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tag = (String) v.getTag();
+                Toast.makeText(context, listModels.get(Integer.parseInt(tag)).getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        for (int i = 0; i < listModels.size(); i++) {
+            View v = inflater.inflate(R.layout.news_content_layout, holder.containerLayout, false);
+            v.setTag(i + "");
+            holder.containerLayout.addView(v);
+            v.setOnClickListener(myListener);
+        }
+
 
     }
 
@@ -67,6 +86,8 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
 
 
     public static class ParentViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.container_layout)
+        LinearLayout containerLayout;
         @Bind(R.id.parent_topic_text_view)
         TextView title;
         @Bind(R.id.child_recycler_view_breaking_n_latest_news)

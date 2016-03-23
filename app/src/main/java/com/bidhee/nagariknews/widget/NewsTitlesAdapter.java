@@ -22,7 +22,10 @@ import butterknife.ButterKnife;
  */
 public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.ViewHolder> {
     ArrayList<NewsObj> newsObjs;
+    private int categoryId;
     private Context context;
+//    private Boolean isToShowBreakingNewsTitle = true;
+//    private Boolean isToShowsLatestNewsTitle = true;
 
     RecyclerPositionListener recyclerPositionListener;
 
@@ -36,8 +39,9 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     }
 
 
-    public NewsTitlesAdapter(ArrayList<NewsObj> newsObjs) {
+    public NewsTitlesAdapter(int categoryId, ArrayList<NewsObj> newsObjs) {
         this.newsObjs = newsObjs;
+        this.categoryId = categoryId;
     }
 
     @Override
@@ -50,16 +54,31 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
+        NewsObj no = newsObjs.get(position);
+
+        if (categoryId == 0) {
+            if (no.isToShow()) {
+                holder.categoryTextView.setVisibility(View.VISIBLE);
+            } else {
+                holder.categoryTextView.setVisibility(View.GONE);
+            }
+
+        } else {
+            holder.categoryTextView.setVisibility(View.GONE);
+        }
+
+        holder.categoryTextView.setText(no.getNewsCategory());
+
         Picasso.with(context)
-                .load(newsObjs.get(position).getImg())
+                .load(no.getImg())
                 .error(R.drawable.andyrubin)
                 .placeholder(R.drawable.nagariknews)
                 .into(holder.thumbnail);
 
-        holder.newsTitleTv.setText(newsObjs.get(position).getTitle());
-        holder.newsSemiDetailTv.setText(newsObjs.get(position).getDesc());
-        holder.newsSourceTv.setText(newsObjs.get(position).getReportedBy());
-        holder.newsDateTv.setText(newsObjs.get(position).getDate());
+        holder.newsTitleTv.setText(no.getTitle());
+        holder.newsSemiDetailTv.setText(no.getDesc());
+        holder.newsSourceTv.setText(no.getReportedBy());
+        holder.newsDateTv.setText(no.getDate());
 
         View.OnClickListener myClickListener = new View.OnClickListener() {
             @Override
@@ -79,6 +98,8 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.parent_topic_text_view)
+        TextView categoryTextView;
         @Bind(R.id.news_title_thumbnail)
         ImageView thumbnail;
         @Bind(R.id.news_title_text_view)
