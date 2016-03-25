@@ -48,6 +48,7 @@ import butterknife.ButterKnife;
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+    Menu menu;
     @Bind(R.id.slider)
     SliderLayout imageSlider;
     @Bind(R.id.collapsing_toolbar)
@@ -305,6 +306,7 @@ public class Dashboard extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.dashboard, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -338,11 +340,16 @@ public class Dashboard extends AppCompatActivity
         if (id == R.id.nav_all_news) {
             appBarLayout.setEnabled(true);
             appBarLayout.expandToolbar(true);
-
+            for (int i = 0; i < 2; i++) {
+                this.menu.getItem(i).setVisible(true);
+            }
 
         } else {
             appBarLayout.setEnabled(false);
             appBarLayout.collapseToolbar(true);
+            for (int i = 0; i < 2; i++) {
+                this.menu.getItem(i).setVisible(false);
+            }
 
         }
 

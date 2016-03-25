@@ -3,11 +3,13 @@ package com.bidhee.nagariknews.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +19,7 @@ import com.bidhee.nagariknews.model.BreakingAndLatestNews;
 import com.bidhee.nagariknews.model.BreakingAndLatestNewsListModel;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -52,30 +55,56 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
         holder.title.setText(dataModels.get(position).getTopic());
 
 
-        holder.childRecyclerView.setLayoutManager(new CustomLinearLayoutManager(context));
-        holder.childRecyclerView.setHasFixedSize(true);
-        holder.childRecyclerView.setItemAnimator(new DefaultItemAnimator());
+//        holder.childRecyclerView.setLayoutManager(new CustomLinearLayoutManager(context));
+//        holder.childRecyclerView.setHasFixedSize(true);
+//        holder.childRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         listModels = dataModels.get(position).getBreakingAndLatestNewsListModels();
 //        childAdapter = new BreakingAndLatestNewsChildAdapter(listModels);
 //        holder.childRecyclerView.setAdapter(childAdapter);
 //        holder.childRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(context, position, this));
 
-        View.OnClickListener myListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String tag = (String) v.getTag();
-                Toast.makeText(context, listModels.get(Integer.parseInt(tag)).getTitle(), Toast.LENGTH_SHORT).show();
-            }
-        };
+//        View.OnClickListener myListener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String tag = (String) v.getTag();
+//                String parent = tag.substring(0, tag.lastIndexOf("#"));
+//                String child = tag.substring(parent.length() + 1);
+//
+//                Toast.makeText(context, listModels.get(Integer.parseInt(tag)).getTitle(), Toast.LENGTH_SHORT).show();
+//            }
+//        };
 
+        /**
         for (int i = 0; i < listModels.size(); i++) {
+//            NewsObj no = listModels.get(i);
             View v = inflater.inflate(R.layout.news_content_layout, holder.containerLayout, false);
-            v.setTag(i + "");
+//
+            v.setTag(position + "#" + i);
             holder.containerLayout.addView(v);
             v.setOnClickListener(myListener);
-        }
 
+//            TextView titleTextView = (TextView) v.findViewById(R.id.news_title_text_view);
+//            titleTextView.setText("");
+
+//            ImageView thumbnail = (ImageView) v.findViewById(R.id.news_title_thumbnail);
+//            Picasso.with(context)
+//                    .load(listModels.get(position).getImg())
+//                    .placeholder(R.drawable.nagariknews)
+//                    .into(thumbnail);
+//
+//            TextView descriptionTextView = (TextView) v.findViewById(R.id.news_semi_detail_text_view);
+//            descriptionTextView.setText(no.getDesc());
+//
+//            TextView newsSourceTextView = (TextView) v.findViewById(R.id.news_source_text_view);
+//            newsSourceTextView.setText(no.getReportedBy());
+//
+//            TextView newsDateTextView = (TextView) v.findViewById(R.id.news_date_text_view);
+//            newsDateTextView.setText(no.getDate());
+
+
+        }
+**/
 
     }
 

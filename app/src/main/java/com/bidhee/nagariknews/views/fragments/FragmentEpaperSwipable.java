@@ -84,7 +84,6 @@ public class FragmentEpaperSwipable extends Fragment {
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
                         reloadImage.setVisibility(View.VISIBLE);
-                        loadImage(pageUrl);
                     }
                 });
     }

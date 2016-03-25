@@ -24,8 +24,6 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     ArrayList<NewsObj> newsObjs;
     private int categoryId;
     private Context context;
-//    private Boolean isToShowBreakingNewsTitle = true;
-//    private Boolean isToShowsLatestNewsTitle = true;
 
     RecyclerPositionListener recyclerPositionListener;
 

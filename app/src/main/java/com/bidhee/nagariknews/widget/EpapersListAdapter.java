@@ -13,6 +13,7 @@ import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -46,7 +47,7 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
                 .load(epapers.get(position).getMainPageUrl())
                 .error(R.drawable.nagariknews)
                 .placeholder(R.drawable.nagariknews)
-                .resize(200,280)
+                .resize(200, 280)
                 .into(holder.epaperThumbnail);
 
     }
@@ -63,6 +64,7 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
         ImageView epaperThumbnail;
         @Bind(R.id.gallery_item_title)
         TextView galleryItemTitleTextView;
+
         public EpaperViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
