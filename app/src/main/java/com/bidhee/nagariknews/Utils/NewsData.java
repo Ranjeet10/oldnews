@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.model.BreakingAndLatestNews;
-import com.bidhee.nagariknews.model.BreakingAndLatestNewsListModel;
-import com.bidhee.nagariknews.model.ExtraModel;
 import com.bidhee.nagariknews.model.NewsObj;
 
 import java.util.ArrayList;
@@ -16,17 +14,19 @@ import java.util.ArrayList;
 public class NewsData {
     private static String img = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnqivhS7umB9iog3r5wL5k5pNZPF_jOtvEIe6dii7csdFmmPwN";
 
-    public static ArrayList<NewsObj> getNewsRepublica(Context context) {
+    public static ArrayList<NewsObj> getNewsRepublica(Context context, String categoryName) {
 
         ArrayList<NewsObj> newsObjs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            newsObjs.add(new NewsObj("12",
-                    "",
+            NewsObj newsObj = new NewsObj("12",
+                    categoryName,
                     img,
-                    context.getResources().getString(R.string.news_title_republica),
+                    categoryName + " " + context.getResources().getString(R.string.news_title_republica),
                     "Andy Rubin",
                     "Jan 20 2016",
-                    context.getResources().getString(R.string.news_description_republica)));
+                    context.getResources().getString(R.string.news_description_republica));
+            newsObjs.add(newsObj);
+
         }
         return newsObjs;
 
@@ -55,15 +55,15 @@ public class NewsData {
 
         //news list one
         ArrayList<NewsObj> listModels1 = new ArrayList<>();
-        listModels1.add(new NewsObj("", "", img,
+        listModels1.add(new NewsObj("", context.getResources().getString(R.string.breaking_news), img,
                 "p1c1" + categoryName + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels1.add(new NewsObj("", "", img,
+        listModels1.add(new NewsObj("", context.getResources().getString(R.string.breaking_news), img,
                 "p1c2" + categoryName + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels1.add(new NewsObj("", "", img,
+        listModels1.add(new NewsObj("", context.getResources().getString(R.string.breaking_news), img,
                 "p1c3" + categoryName + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
@@ -71,23 +71,23 @@ public class NewsData {
 
         //news list two
         ArrayList<NewsObj> listModels2 = new ArrayList<>();
-        listModels2.add(new NewsObj("", "", img,
+        listModels2.add(new NewsObj("", context.getResources().getString(R.string.latest_news), img,
                 "p2c1" + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels2.add(new NewsObj("", "", img,
+        listModels2.add(new NewsObj("", context.getResources().getString(R.string.latest_news), img,
                 "p2c2" + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels2.add(new NewsObj("", "", img,
+        listModels2.add(new NewsObj("", context.getResources().getString(R.string.latest_news), img,
                 "p2c3" + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels2.add(new NewsObj("", "", img,
+        listModels2.add(new NewsObj("", context.getResources().getString(R.string.latest_news), img,
                 "p2c4" + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
-        listModels2.add(new NewsObj("", "", img,
+        listModels2.add(new NewsObj("", context.getResources().getString(R.string.latest_news), img,
                 "p2c5" + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
                 context.getResources().getString(R.string.news_description_republica)
         ));
@@ -149,6 +149,44 @@ public class NewsData {
         breakingAndLatestNewses.add(new BreakingAndLatestNews(context.getResources().getString(R.string.taja_samachar), listModels2));
 
         return breakingAndLatestNewses;
+    }
+
+
+    //testing
+    public static ArrayList<NewsObj> loadBreakingLatestNewsTesting(Context context, String categoryName) {
+//        public NewsObj(String id, String newsCategory, String img, String title, String reportedBy, String date, String desc)
+
+        ArrayList<NewsObj> listModels1 = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            NewsObj newsObj = new NewsObj("", context.getResources().getString(R.string.breaking_news), img,
+                    "p1c" + (i + 1) + categoryName + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
+                    context.getResources().getString(R.string.news_description_republica)
+            );
+            if (i == 0) {
+                newsObj.setIsTOShow(true);
+            } else {
+                newsObj.setIsTOShow(false);
+            }
+            listModels1.add(newsObj);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            NewsObj newsObj = new NewsObj("", context.getResources().getString(R.string.latest_news), img,
+                    "p2c" + (i + 1) + context.getResources().getString(R.string.news_title_republica), "Andy Rubin", "Thu, 11-11-2015",
+                    context.getResources().getString(R.string.news_description_republica)
+            );
+            listModels1.add(newsObj);
+
+            if (i == 0) {
+                newsObj.setIsTOShow(true);
+            } else {
+                newsObj.setIsTOShow(false);
+            }
+        }
+
+
+        return listModels1;
     }
 
 

@@ -30,14 +30,14 @@ public class NewsPagerAdapter extends FragmentStatePagerAdapter {
         //never make fragment list as arguments of the adapter constructor
         //it helps to prevent the memory leakage
         Log.i("returned", tabs.get(position).cat_name);
-        switch (position) {
-            case 0:
-                return FragmentBreakingAndLatestNews.createNewInstance(tabs.get(position));
-
-            default:
+//        switch (position) {
+//            case 0:
+//                return FragmentBreakingAndLatestNews.createNewInstance(tabs.get(position));
+////
+//            default:
                 return SwipableFragment.createNewInstance(tabs.get(position));
 
-        }
+//        }
 
 
     }

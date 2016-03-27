@@ -2,7 +2,9 @@ package com.bidhee.nagariknews.views.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,14 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.BreakingAndLatestNews;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.model.TabModel;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.widget.BreakingAndLatestnewsParentAdapter;
+import com.bidhee.nagariknews.widget.EndlessScrollListener;
 
 import java.util.ArrayList;
 
@@ -29,7 +35,8 @@ import butterknife.ButterKnife;
  * Created by ronem on 2/19/16.
  */
 public class FragmentBreakingAndLatestNews extends Fragment {
-
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
 
@@ -38,8 +45,8 @@ public class FragmentBreakingAndLatestNews extends Fragment {
     BreakingAndLatestnewsParentAdapter adapter;
     SessionManager sessionManager;
 
-    private  String categoryId;
-    private  String categoryName;
+    private String categoryId;
+    private String categoryName;
 
     public static FragmentBreakingAndLatestNews createNewInstance(TabModel tab) {
 
@@ -63,8 +70,8 @@ public class FragmentBreakingAndLatestNews extends Fragment {
         Log.i("category", categoryId + " " + categoryName);
 
         breakingAndLatestNewses = sessionManager.getSwitchedNewsValue() == 0 ?
-                NewsData.loadBreakingLatestNews(getActivity(),categoryName) :
-                NewsData.loadMukhyaTathaTajaSamaarchar(getActivity(),categoryName);
+                NewsData.loadBreakingLatestNews(getActivity(), categoryName) :
+                NewsData.loadMukhyaTathaTajaSamaarchar(getActivity(), categoryName);
     }
 
     @Nullable
@@ -80,14 +87,46 @@ public class FragmentBreakingAndLatestNews extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Log.i("category", categoryId + " " + categoryName);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
 
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         adapter = new BreakingAndLatestnewsParentAdapter(breakingAndLatestNewses);
         recyclerView.setAdapter(adapter);
+
+        swipeRefreshLayout.setEnabled(false);
+//
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                ToggleRefresh.hideRefreshDialog((SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_refresh_layout));
+//                ((ControllableAppBarLayout) getActivity().findViewById(R.id.app_bar_layout)).expandToolbar(true);
+//            }
+//        });
+
+
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//            }
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                LinearLayoutManager linearLayoutManager1 = (LinearLayoutManager)recyclerView.getLayoutManager();
+//                int po = linearLayoutManager1.findFirstCompletelyVisibleItemPosition();
+//                if(po==0){
+//                    Toast.makeText(getActivity(),"Reached",Toast.LENGTH_SHORT).show();
+//                    ((ControllableAppBarLayout) getActivity().findViewById(R.id.app_bar_layout)).expandToolbar(true);
+//                }
+//
+//
+//            }
+//        });
+
 
     }
 

@@ -4,17 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.NewsData;
@@ -74,8 +78,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             newsObjs = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
         } else {
             newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
-                    NewsData.getNewsRepublica(getActivity()) :
-                    NewsData.getNewsNagarik(getActivity(), categoryName);
+                    Integer.parseInt(categoryId) == 0 ? NewsData.loadBreakingLatestNewsTesting(getActivity(), categoryName) : NewsData.getNewsRepublica(getActivity(), categoryName) :
+                    Integer.parseInt(categoryId) == 0 ? NewsData.loadBreakingLatestNewsTesting(getActivity(), categoryName) : NewsData.getNewsNagarik(getActivity(), categoryName);
         }
 
     }
@@ -101,32 +105,37 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        newsTitlesAdapter = new NewsTitlesAdapter(newsObjs);
+        newsTitlesAdapter = new NewsTitlesAdapter(Integer.parseInt(categoryId), newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
 
-        recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                Log.i("categoryId", categoryId + " " + categoryName);
-                progressBar.setVisibility(View.VISIBLE);
+        if (Integer.parseInt(categoryId) != 0) {
+            recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
+                @Override
+                public void onLoadMore(int current_page) {
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+                    Log.i("categoryId", categoryId + " " + categoryName + "parents title" + ((CollapsingToolbarLayout) getActivity().findViewById(R.id.collapsing_toolbar)).getTitle());
+                    progressBar.setVisibility(View.VISIBLE);
 
-                        ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 0 ?
-                                NewsData.getNewsRepublica(getContext()) :
-                                NewsData.getNewsNagarik(getContext(), categoryName);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        int curSize = newsTitlesAdapter.getItemCount();
-                        newsObjs.addAll(moreNews);
-                        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }, 2000);
-            }
-        });
+                            ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 0 ?
+                                    NewsData.getNewsRepublica(getContext(), categoryName) :
+                                    NewsData.getNewsNagarik(getContext(), categoryName);
+
+                            int curSize = newsTitlesAdapter.getItemCount();
+                            newsObjs.addAll(moreNews);
+                            newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }, 2000);
+
+                    Log.i(TAG, "current page No " + current_page);
+                }
+            });
+        }
 
 
     }
@@ -153,6 +162,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     @Override
     public void onChildItemPositionListen(int position, View view) {
+
         if (view.getId() == R.id.news_share_text_view) {
 
         } else if (view.getId() == R.id.news_show_detail_text_view) {
