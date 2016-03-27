@@ -7,15 +7,7 @@
 
     <TextView
         android:id="@+id/parent_topic_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/badge_color_orange"
-        android:padding="@dimen/screen_padding_lr"
-        android:visibility="gone"
-        android:text="topic"
-        android:layout_marginBottom="@dimen/screen_padding_lr"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/white" />
+        style="@style/badge_style" />
 
 
     <include layout="@layout/news_title_description" />

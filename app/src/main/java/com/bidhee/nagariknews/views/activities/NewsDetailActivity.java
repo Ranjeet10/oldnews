@@ -11,8 +11,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
@@ -24,20 +28,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
+import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 import com.michaldrabik.tapbarmenulib.TapBarMenu;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class NewsDetailActivity extends AppCompatActivity {
+public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener {
 
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -59,11 +67,25 @@ public class NewsDetailActivity extends AppCompatActivity {
     TextView newsTimeTextView;
     @Bind(R.id.description)
     TextView descriptionTextView;
+    @Bind(R.id.related_news_badge)
+    TextView relatedNewsTextView;
+    @Bind(R.id.scroll)
+    NestedScrollView scrollView;
+
+    @Bind(R.id.related_recycler_view)
+    RecyclerView recyclerVIew;
+    NewsTitlesAdapter newsTitlesAdapter;
+
+
+    private String TAG = getClass().getSimpleName();
 
     public static String NEWS_TITLE_EXTRA_STRING = "newsobject";
-    private NewsObj news;
+    private int categoryId = 2; // setting categoryId = 2 so that it will inflate the news title layout in normal way
+    private int SELECTED_NEWS_POSITION = 0;
+    private ArrayList<NewsObj> newsObjs;
     SessionManager sessionManager;
     private HashMap<String, Float> fontMap;
+
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -81,13 +103,40 @@ public class NewsDetailActivity extends AppCompatActivity {
         fontMap.put("3", getResources().getDimension(R.dimen.news_detail_text_size_3));
 
         gettingBundle();
-        settingToolbar();
-        loadingDetail();
+        settingToolbar(newsObjs.get(SELECTED_NEWS_POSITION).getTitle());
+        loadingDetail(newsObjs.get(SELECTED_NEWS_POSITION));
+        loadRelatedContent();
+
+        if (newsObjs.size() > 0) {
+            relatedNewsTextView.setVisibility(View.VISIBLE);
+
+            relatedNewsTextView.setText(
+                    sessionManager.getSwitchedNewsValue() == 0 ?
+                            getResources().getString(R.string.related_news) :
+                            getResources().getString(R.string.sambandhit_news));
+        }
 
 
     }
 
-    private void loadingDetail() {
+
+    private void loadRelatedContent() {
+        CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(this);
+        recyclerVIew.setLayoutManager(linearLayoutManager);
+        recyclerVIew.setHasFixedSize(true);
+        recyclerVIew.setItemAnimator(new DefaultItemAnimator());
+
+
+        newsTitlesAdapter = new NewsTitlesAdapter(true, categoryId, newsObjs);
+        newsTitlesAdapter.setOnRecyclerPositionListener(this);
+        recyclerVIew.setAdapter(newsTitlesAdapter);
+
+        //setting newstedscrollingEnabled to false so that app bar collapse only when recyclerview is scrolled
+        recyclerVIew.setNestedScrollingEnabled(false);
+
+    }
+
+    private void loadingDetail(NewsObj news) {
 
         try {
             Picasso.with(this).load(news.getImg()).placeholder(R.drawable.nagariknews).into(image, new Callback() {
@@ -118,22 +167,27 @@ public class NewsDetailActivity extends AppCompatActivity {
         descriptionTextView.setTextSize(fontMap.get((sessionManager.getCurrentFontSize() + "")));
     }
 
-    private void settingToolbar() {
-        ViewCompat.setTransitionName(appBarLayout, news.getImg());
-        supportPostponeEnterTransition();
+    private void settingToolbar(String title) {
 
         toolbar.setBackgroundColor(getResources().getColor(R.color.transparent));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        collapsingToolbarLayout.setTitle(news.getTitle());
+        collapsingToolbarLayout.setTitle(title);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.background_light));
 
 
     }
 
     private void gettingBundle() {
-        news = getIntent().getExtras().getParcelable(NEWS_TITLE_EXTRA_STRING);
+        SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
+//        categoryId = getIntent().getExtras().getString(StaticStorage.NEWS_CATEGORY_ID);
+        try {
+            newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
+            Log.i(TAG, newsObjs.size() + "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.tapBarMenu)
@@ -212,5 +266,13 @@ public class NewsDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onChildItemPositionListen(int position, View view) {
+        loadingDetail(newsObjs.get(position));
+
+        //make full scroll up so that nestedscrollview's first child is visible
+        scrollView.fullScroll(View.FOCUS_UP);
     }
 }

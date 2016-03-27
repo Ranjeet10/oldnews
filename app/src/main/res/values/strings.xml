@@ -86,4 +86,9 @@
     <string name="republica">Republica</string>
     <string name="nagarik">नागरिक</string>
 
+    <!-- miscellaneous-->
+    <string name="sambandhit_news">सम्बन्धित समाचार </string>
+    <string name="related_news">Related News</string>
+
+
 </resources>
