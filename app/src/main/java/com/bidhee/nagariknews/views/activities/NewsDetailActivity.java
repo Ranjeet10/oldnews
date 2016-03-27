@@ -5,6 +5,7 @@ package com.bidhee.nagariknews.views.activities;
  */
 
 
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
@@ -273,6 +274,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         loadingDetail(newsObjs.get(position));
 
         //make full scroll up so that nestedscrollview's first child is visible
-        scrollView.fullScroll(View.FOCUS_UP);
+//        scrollView.fullScroll(View.FOCUS_UP);
+        ObjectAnimator.ofInt(scrollView, "scrollY", View.FOCUS_UP).setDuration(2500).start();
     }
 }

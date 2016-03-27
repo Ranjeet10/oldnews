@@ -3,8 +3,9 @@ package com.bidhee.nagariknews.controller;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
-import nagarikschema.DaoMaster;
-import nagarikschema.DaoSession;
+import com.bidhee.nagariknews.nagarikdb.DaoMaster;
+import com.bidhee.nagariknews.nagarikdb.DaoSession;
+
 
 /**
  * Created by ronem on 2/4/16.
