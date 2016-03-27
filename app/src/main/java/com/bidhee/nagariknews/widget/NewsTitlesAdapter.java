@@ -24,6 +24,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     ArrayList<NewsObj> newsObjs;
     private int categoryId;
     private Context context;
+    private Boolean isFromDetail;
 
     RecyclerPositionListener recyclerPositionListener;
 
@@ -37,15 +38,26 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     }
 
 
-    public NewsTitlesAdapter(int categoryId, ArrayList<NewsObj> newsObjs) {
+    public NewsTitlesAdapter(Boolean isFromDetail, int categoryId, ArrayList<NewsObj> newsObjs) {
         this.newsObjs = newsObjs;
         this.categoryId = categoryId;
+        this.isFromDetail = isFromDetail;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
+        View view;
+        if (isFromDetail) {
+            view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    (int) context.getResources().getDimension(R.dimen.news_item_height));
+            view.setLayoutParams(params);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
+        }
+
 
         return new ViewHolder(view);
     }

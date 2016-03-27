@@ -100,6 +100,8 @@ public class StaticStorage {
     public static String NEWS_CATEGORY = "newscategory";
     public static String KEY_CURRENT_TAG = "current_fragment_tag";
     public static String KEY_NEWS_TYPE = "news_type";
+    public static String KEY_NEWS_LIST = "news_list";
+    public static String KEY_NEWS_POSITION = "news_position";
     public static String KEY_CURRENT_TITLE = "current_title";
     public static String KEY_NEWS_SAVED_STATE = "news_saved_state";
     public static String KEY_GALLERY_TYPE = "galery_type";

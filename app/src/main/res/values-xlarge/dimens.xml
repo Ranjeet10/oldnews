@@ -18,5 +18,6 @@
     <dimen name="news_detail_text_size_3">24sp</dimen>
 
     <dimen name="news_item_height">340dp</dimen>
+    <dimen name="badge_padding">4dp</dimen>
 
 </resources>

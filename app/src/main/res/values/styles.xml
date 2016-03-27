@@ -9,6 +9,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item> 
         <item name="colorControlHighlight">@color/light_red_grey</item> 
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/light_red_grey</item>
         <!--<item name="selectableItemBackground">@drawable/selectable_item_background</item>-->
         <!--<item name="android:selectableItemBackground">@drawable/selectable_item_background</item>-->
     </style>
@@ -71,4 +72,19 @@
         <item name="android:paddingTop">@dimen/screen_padding</item>
     </style>
 
+    <style name="badge_style">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:background">@color/badge_color_orange</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/screen_padding_lr</item>
+        <item name="android:layout_marginBottom">@dimen/screen_padding_lr</item>
+        <item name="android:paddingBottom">@dimen/badge_padding</item>
+        <item name="android:paddingTop">@dimen/badge_padding</item>
+        <item name="android:paddingRight">@dimen/screen_padding_lr</item>
+        <item name="android:paddingLeft">@dimen/screen_padding_lr</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:visibility">gone</item>
+
+    </style>
 </resources>

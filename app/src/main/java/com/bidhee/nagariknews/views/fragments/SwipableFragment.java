@@ -105,7 +105,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
-        newsTitlesAdapter = new NewsTitlesAdapter(Integer.parseInt(categoryId), newsObjs);
+        newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
 
@@ -173,6 +173,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             newsObj.setNewsCategory(categoryName);
 
             newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
+            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
+            newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
             startActivity(newsDetailIntent);
         }
     }
