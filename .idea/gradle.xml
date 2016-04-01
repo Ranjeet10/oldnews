@@ -10,7 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/greendao-generator" />
             <option value="$PROJECT_DIR$/imageslider" />
             <option value="$PROJECT_DIR$/tabmenu" />
           </set>

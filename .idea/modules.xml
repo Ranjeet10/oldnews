@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/NagarikNews.iml" filepath="$PROJECT_DIR$/NagarikNews.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/greendao-generator/greendao-generator.iml" filepath="$PROJECT_DIR$/greendao-generator/greendao-generator.iml" />
       <module fileurl="file://$PROJECT_DIR$/imageslider/imageslider.iml" filepath="$PROJECT_DIR$/imageslider/imageslider.iml" />
       <module fileurl="file://$PROJECT_DIR$/tabmenu/tabmenu.iml" filepath="$PROJECT_DIR$/tabmenu/tabmenu.iml" />
     </modules>

@@ -1,7 +1,10 @@
 package com.bidhee.nagariknews.views.fragments;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
@@ -44,7 +50,7 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
         super.onCreate(savedInstanceState);
         sessionManager = new SessionManager(getActivity());
 
-        list = sessionManager.getSwitchedNewsValue() == 0 ?
+        list = sessionManager.getSwitchedNewsValue() == 1 ?
                 StaticStorage.getExtraList() :
                 StaticStorage.getAnyaList();
 
@@ -62,6 +68,7 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

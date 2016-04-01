@@ -138,7 +138,7 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
         String newsCategory = dataModels.get(parentPosition).getTopic();
         NewsObj newsObj = dataModels.get(parentPosition).getBreakingAndLatestNewsListModels().get(childPosition);
 
-        newsObj.setNewsCategory(newsCategory);
+        newsObj.setNewsCategoryName(newsCategory);
 
         newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
         context.startActivity(newsDetailIntent);

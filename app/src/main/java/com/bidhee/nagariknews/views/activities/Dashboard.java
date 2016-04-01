@@ -1,5 +1,6 @@
 package com.bidhee.nagariknews.views.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +28,7 @@ import android.widget.ViewFlipper;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.AppbarListener;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
@@ -40,6 +43,8 @@ import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 
 import butterknife.Bind;
@@ -48,6 +53,8 @@ import butterknife.ButterKnife;
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+
+    private String TAG = getClass().getSimpleName();
     Menu menu;
     @Bind(R.id.slider)
     SliderLayout imageSlider;
@@ -55,8 +62,8 @@ public class Dashboard extends AppCompatActivity
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.app_bar_layout)
     ControllableAppBarLayout appBarLayout;
-    //    @Bind(R.id.view_flipper)
-//    ViewFlipper viewFlipper;
+    @Bind(R.id.view_flipper)
+    ViewFlipper viewFlipper;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.drawer_layout)
@@ -67,7 +74,9 @@ public class Dashboard extends AppCompatActivity
     FrameLayout fragmentContainer;
 
     ImageView navImageView;
-    TextView navBtnExpand;
+    TextView switchNagarik, switchRepublica, switchSukrabar;
+    Handler handler;
+    Runnable runnable;
 
     Boolean isUser;
     SessionManager sessionManager;
@@ -87,9 +96,11 @@ public class Dashboard extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
+        handler = new Handler();
 
         settingToolbar();
         setUpImageSlider();
+//        setUpVIewFlipper();
 
         sessionManager = new SessionManager(this);
         userDetail = sessionManager.getLoginDetail();
@@ -103,6 +114,10 @@ public class Dashboard extends AppCompatActivity
             //set the font size 2 for the normal newsDetail to the session
             sessionManager.setTheFontSize(2);
 
+            /**
+             * argument 1 is the value for Republica News type
+             */
+            sessionManager.switchNewsTo(1);
             //starting loginIntent
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -120,25 +135,32 @@ public class Dashboard extends AppCompatActivity
         setUpNavigationMenu();
         settingCollapsingToolBarListener();
 
-
         if (savedInstanceState != null) {
 
             //if savedInstanceState is not null and if there are data present
             //jst fetch those data and save to the local variables
-
             currentFragmentTag = savedInstanceState.getString(StaticStorage.KEY_CURRENT_TAG);
             currentTitle = savedInstanceState.getString(StaticStorage.KEY_CURRENT_TITLE);
             currentNewsType = savedInstanceState.getString(StaticStorage.KEY_NEWS_TYPE);
 
             replaceableFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
             attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
+
         } else {
 
             //if oncreate was called for the first time then initialize the very first variables
 
-            currentTitle = sessionManager.getSwitchedNewsValue() == 0 ?
-                    getResources().getString(R.string.all_news_r) :
-                    getResources().getString(R.string.all_news_n);
+            switch (sessionManager.getSwitchedNewsValue()) {
+                case 1:
+                    currentTitle = getResources().getString(R.string.all_news_r);
+                    break;
+                case 2:
+                    currentTitle = getResources().getString(R.string.all_news_n);
+                    break;
+                case 3:
+                    currentTitle = getResources().getString(R.string.all_news_r);
+                    break;
+            }
 
             replaceableFragment = FragmentAllNews.createNewInstance();
             currentFragmentTag = replaceableFragment.getClass().getName();
@@ -147,11 +169,34 @@ public class Dashboard extends AppCompatActivity
 
     }
 
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        viewFlipper.startFlipping();
+//    }
+
+    private void setUpVIewFlipper() {
+        Animation slideInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in);
+        Animation slideOutAnim = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
+        viewFlipper.setInAnimation(slideInAnim);
+        viewFlipper.setOutAnimation(slideOutAnim);
+
+
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(this, 4000);
+                viewFlipper.showNext();
+            }
+        };
+        handler.post(runnable);
+    }
+
     private void setUpImageSlider() {
         HashMap<String, String> url_maps = new HashMap<String, String>();
         url_maps.put("पुनरागमनमा विश्वस्त अस्ट्रेलिया", "http://nagariknews.com/media/k2/items/cache/x22779b96550ec2f4cb77a363acfed28d_L.jpg.pagespeed.ic.sURn1ZmJlg.jpg");
-        url_maps.put("अझै पाइएन ग्यास", "http://nagariknews.com/media/k2/items/cache/xdf2a5a6447c772e5d774c787f3f38111_L.jpg.pagespeed.ic.BFrcFCn6QJ.jpg");
-        url_maps.put("मन्त्रीज्यू, पैसा उठाइदिनुस्", "http://nagariknews.com/media/k2/items/cache/xb61ba0575ba650b6e2b511023b28b46c_L.jpg.pagespeed.ic.Oa9Qkcelap.jpg");
+//        url_maps.put("अझै पाइएन ग्यास", "http://nagariknews.com/media/k2/items/cache/xdf2a5a6447c772e5d774c787f3f38111_L.jpg.pagespeed.ic.BFrcFCn6QJ.jpg");
+//        url_maps.put("मन्त्रीज्यू, पैसा उठाइदिनुस्", "http://nagariknews.com/media/k2/items/cache/xb61ba0575ba650b6e2b511023b28b46c_L.jpg.pagespeed.ic.Oa9Qkcelap.jpg");
 
 
         for (String name : url_maps.keySet()) {
@@ -173,7 +218,7 @@ public class Dashboard extends AppCompatActivity
         imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
         imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         imageSlider.setCustomAnimation(new DescriptionAnimation());
-        imageSlider.setDuration(2000);
+        imageSlider.setDuration(4000);
         imageSlider.addOnPageChangeListener(this);
     }
 
@@ -222,27 +267,31 @@ public class Dashboard extends AppCompatActivity
                 .commit();
 
         collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
-        Log.d("title", currentTitle);
+        Log.d(TAG, currentFragmentTag);
 
     }
 
 
     private void setUpNavigation() {
-        if (sessionManager.getSwitchedNewsValue() == 0) {
+        if (sessionManager.getSwitchedNewsValue() == 1) {
 
-            //value 0 means saved newstype was for Republica
-
+            //value 1 means saved newstype was for Republica
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
             currentNewsType = getResources().getString(R.string.republica);
 
-        } else if (sessionManager.getSwitchedNewsValue() == 1) {
+        } else if (sessionManager.getSwitchedNewsValue() == 2) {
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_nagarik : R.menu.free_user_nav_menu_nagarik);
             currentNewsType = getResources().getString(R.string.nagarik);
 
+        } else if (sessionManager.getSwitchedNewsValue() == 3) {
+            navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
+            currentNewsType = getResources().getString(R.string.sukrabar);
         }
 
         navImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_image_view);
-        navBtnExpand = (TextView) navigationView.getHeaderView(0).findViewById(R.id.expand_btn);
+        switchRepublica = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_republica);
+        switchNagarik = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
+        switchSukrabar = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_sukrabar);
 
         Picasso.with(this)
                 .load(navImageUrl)
@@ -250,28 +299,48 @@ public class Dashboard extends AppCompatActivity
                 .placeholder(R.drawable.nagariknews)
                 .into(navImageView);
 
-        //check to what it was switched to previously
-        navBtnExpand.setText((sessionManager.getSwitchedNewsValue() == 0 ?
-                getResources().getString(R.string.nagarik) :
-                getResources().getString(R.string.republica)));
+        switch (sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                switchRepublica.setVisibility(View.GONE);
+                switchNagarik.setVisibility(View.VISIBLE);
+                switchSukrabar.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                switchRepublica.setVisibility(View.VISIBLE);
+                switchNagarik.setVisibility(View.GONE);
+                switchSukrabar.setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                switchRepublica.setVisibility(View.VISIBLE);
+                switchNagarik.setVisibility(View.VISIBLE);
+                switchSukrabar.setVisibility(View.GONE);
+                break;
+        }
 
-        navBtnExpand.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener switchListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int switchedTo = sessionManager.getSwitchedNewsValue();
-                switch (switchedTo) {
-                    case 0:
+                // republica 1
+                // nagarik 2
+                // sukrabar 3
+                switch (v.getId()) {
+                    case R.id.switch_republica:
                         sessionManager.switchNewsTo(1);
                         break;
-                    case 1:
-                        sessionManager.switchNewsTo(0);
+                    case R.id.switch_nagarik:
+                        sessionManager.switchNewsTo(2);
+                        break;
+                    case R.id.switch_sukrabar:
+                        sessionManager.switchNewsTo(3);
                         break;
                 }
-                //re-launch the application
                 reLaunch();
-
             }
-        });
+        };
+
+        switchRepublica.setOnClickListener(switchListener);
+        switchNagarik.setOnClickListener(switchListener);
+        switchSukrabar.setOnClickListener(switchListener);
 
     }
 
@@ -307,7 +376,33 @@ public class Dashboard extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.dashboard, menu);
         this.menu = menu;
+
+        //show hide the menu item
+        //show menu item (search) if the fragment is FragmentAllNews
+        //hide menu item (search) if the fragment is other than FragmentAllNews
+        if (!TextUtils.isEmpty(currentFragmentTag)) {
+            if (currentFragmentTag.equals("com.bidhee.nagariknews.views.fragments.FragmentAllNews")) {
+                expandAppbar();
+
+            } else {
+                collapseAppbar();
+            }
+        }
+
         return true;
+    }
+
+    private void collapseAppbar() {
+        appBarLayout.setEnabled(false);
+        appBarLayout.setActivated(false);
+        appBarLayout.collapseToolbar(true);
+        this.menu.getItem(0).setVisible(false);
+    }
+
+    private void expandAppbar() {
+        appBarLayout.setEnabled(true);
+        appBarLayout.expandToolbar(true);
+        this.menu.getItem(0).setVisible(true);
     }
 
     @Override
@@ -317,10 +412,6 @@ public class Dashboard extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -338,24 +429,15 @@ public class Dashboard extends AppCompatActivity
         //// Expand the collapsing toolbar with animation if it is all news fragment else Collapse it ///
 
         if (id == R.id.nav_all_news) {
-            appBarLayout.setEnabled(true);
-            appBarLayout.expandToolbar(true);
-            for (int i = 0; i < 2; i++) {
-                this.menu.getItem(i).setVisible(true);
-            }
-
+            expandAppbar();
         } else {
-            appBarLayout.setEnabled(false);
-            appBarLayout.collapseToolbar(true);
-            for (int i = 0; i < 2; i++) {
-                this.menu.getItem(i).setVisible(false);
-            }
-
+            collapseAppbar();
         }
 
         switch (id) {
             case R.id.nav_all_news:
                 replaceableFragment = FragmentAllNews.createNewInstance();
+
                 break;
 
             case R.id.nav_photos:
@@ -374,10 +456,19 @@ public class Dashboard extends AppCompatActivity
                 break;
 
             case R.id.nav_epaper:
-                replaceableFragment = FragmentEpaper.createNewInstance(
-                        sessionManager.getSwitchedNewsValue() == 0 ?
-                                StaticStorage.E_PAPER_REPUBLICA : StaticStorage.E_PAPER_NAGARIK
-                );
+                int epaperId = 0;
+                switch (sessionManager.getSwitchedNewsValue()) {
+                    case 1:
+                        epaperId = StaticStorage.E_PAPER_REPUBLICA;
+                        break;
+                    case 2:
+                        epaperId = StaticStorage.E_PAPER_NAGARIK;
+                        break;
+                    case 3:
+                        epaperId = StaticStorage.E_PAPER_SUKRABAR;
+                        break;
+                }
+                replaceableFragment = FragmentEpaper.createNewInstance(epaperId);
                 break;
 
             case R.id.nav_saved:
@@ -393,6 +484,7 @@ public class Dashboard extends AppCompatActivity
             case R.id.nav_share:
                 break;
         }
+
 
         currentFragmentTag = replaceableFragment.getClass().getName();
         attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
@@ -418,6 +510,7 @@ public class Dashboard extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+        handler.removeCallbacks(runnable);
         imageSlider.stopAutoCycle();
         Log.i("onstop", "called");
     }
@@ -440,4 +533,5 @@ public class Dashboard extends AppCompatActivity
     @Override
     public void onPageScrollStateChanged(int state) {
     }
+
 }

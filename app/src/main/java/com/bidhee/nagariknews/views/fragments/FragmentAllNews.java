@@ -15,6 +15,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.TabModel;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.widget.NewsPagerAdapter;
 
 import java.util.ArrayList;
@@ -44,11 +45,19 @@ public class FragmentAllNews extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionManager = new SessionManager(getActivity());
-        tabs = sessionManager.getSwitchedNewsValue() == 0 ?
-                StaticStorage.getTabData(0) :
-                StaticStorage.getTabData(1);
+        switch (sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                tabs = StaticStorage.getTabData(0);
+                break;
+            case 2:
+                tabs = StaticStorage.getTabData(1);
+                break;
+            case 3:
+                tabs = StaticStorage.getTabData(2);
+                break;
+        }
 
-        Log.d("called","onCreate");
+        Log.d("called", "onCreate");
     }
 
 
@@ -69,12 +78,14 @@ public class FragmentAllNews extends Fragment {
         setViewPager(tabs);
         setTabLayout();
 
+        (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.VISIBLE);
+
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("called","onattach");
+        Log.d("called", "onattach");
     }
 
     private void setTabLayout() {

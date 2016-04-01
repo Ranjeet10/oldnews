@@ -1,1 +1,1 @@
-include ':app', ':tabmenu', ':imageslider', ':greendao-generator'
+include ':app', ':tabmenu', ':imageslider'

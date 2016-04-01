@@ -4,11 +4,35 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
+    <LinearLayout
+        android:id="@+id/share_fav_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/news_share"
+            style="@style/share_rate_news_style"
+            android:src="@mipmap/ic_share_black" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="@dimen/tab_bar_menu_margin"
+            android:layout_gravity="center"
+            android:background="@color/light_grey" />
+
+        <ImageView
+            android:id="@+id/news_add_to_fav"
+            style="@style/share_rate_news_style"
+            android:src="@mipmap/ic_favorite_black" />
+    </LinearLayout>
+
     <TextView
-        android:id="@+id/publish_text_view"
+        android:id="@+id/news_time_text_view"
         style="@style/news_publish_time_text_style"
-        android:text="Lary page"
-        android:textColor="@color/grey" />
+        android:text="Jan 22 2016"
+        android:textColor="@color/date_color" />
 
     <View
         android:id="@+id/vertical_view"
@@ -17,12 +41,14 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/screen_padding_lr"
         android:layout_marginRight="@dimen/screen_padding_lr"
-        android:layout_toRightOf="@id/publish_text_view"
+        android:layout_toRightOf="@id/news_time_text_view"
         android:background="@color/light_grey" />
 
     <TextView
-        android:id="@+id/news_time_text_view"
+        android:id="@+id/news_from_category_text_view"
         style="@style/news_publish_time_text_style"
         android:layout_toRightOf="@id/vertical_view"
-        android:text="Jan 22 2016" />
+        android:text="Technology" />
+
+
 </RelativeLayout>

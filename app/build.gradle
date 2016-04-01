@@ -43,7 +43,6 @@ dependencies {
     compile 'com.squareup:otto:1.3.8'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     //    compile 'com.squareup.retrofit:converter-jackson:2.0.0-beta2'
-    compile 'de.greenrobot:greendao:1.3.7'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:palette-v7:23.1.1'
     //    compile 'com.github.michaldrabik:tapbarmenu:1.0.4'
@@ -51,5 +50,7 @@ dependencies {
     compile project(':tabmenu')
     compile files('libs/YouTubeAndroidPlayerApi.jar')
     compile project(':imageslider')
-    compile 'de.greenrobot:greendao:1.3.7'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.github.wangjiegulu:AndroidBucket:1.0.4'
+    compile 'com.github.wangjiegulu:RapidFloatingActionButton:1.0.3'
 }

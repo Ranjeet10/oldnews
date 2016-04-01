@@ -69,9 +69,9 @@ public class FragmentBreakingAndLatestNews extends Fragment {
 
         Log.i("category", categoryId + " " + categoryName);
 
-        breakingAndLatestNewses = sessionManager.getSwitchedNewsValue() == 0 ?
-                NewsData.loadBreakingLatestNews(getActivity(), categoryName) :
-                NewsData.loadMukhyaTathaTajaSamaarchar(getActivity(), categoryName);
+//        breakingAndLatestNewses = sessionManager.getSwitchedNewsValue() == 0 ?
+//                NewsData.loadBreakingLatestNews(getActivity(), categoryName) :
+//                NewsData.loadMukhyaTathaTajaSamaarchar(getActivity(), categoryName);
     }
 
     @Nullable
