@@ -61,6 +61,7 @@
 
     <style name="news_publish_time_text_style" parent="wrap_wrap">
         <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/grey</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
     </style>
 
@@ -84,7 +85,58 @@
         <item name="android:paddingRight">@dimen/screen_padding_lr</item>
         <item name="android:paddingLeft">@dimen/screen_padding_lr</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:visibility">gone</item>
+        <item name="android:visibility">visible</item>
+        <item name="android:text">BREAKING NEWS</item>
 
     </style>
+
+    <!-- animation-->
+    <!--For location popupmenu-->
+    <style name="PopupAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_right</item>
+        <item name="android:windowExitAnimation">@anim/slide_left</item>
+    </style>
+    <!-- Animation for dialog box -->
+    <style name="SlideAnimation" parent="@android:style/Theme.Dialog">
+        <item name="android:windowAnimationStyle">@style/PopupAnimation</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="button_padding_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_weight">25</item>
+        <item name="android:paddingLeft">11dip</item>
+        <item name="android:paddingRight">11dip</item>
+    </style>
+
+    <style name="switch_menu_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/screen_padding_lr</item>
+        <item name="android:layout_marginLeft">@dimen/screen_padding_lr</item>
+        <item name="android:layout_marginRight">@dimen/screen_padding_lr</item>
+        <item name="android:background">@drawable/corner_border_transparent_primary_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">@dimen/screen_padding</item>
+        <item name="android:paddingBottom">@dimen/screen_padding</item>
+        <item name="android:paddingLeft">@dimen/tab_bar_menu_margin</item>
+        <item name="android:paddingRight">@dimen/tab_bar_menu_margin</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="share_rate_news_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawable">@drawable/transparent_btn_background</item>
+        <item name="android:paddingLeft">@dimen/screen_padding</item>
+        <item name="android:paddingRight">@dimen/screen_padding</item>
+        <item name="android:paddingTop">@dimen/screen_padding_lr</item>
+        <item name="android:paddingBottom">@dimen/screen_padding_lr</item>
+        <item name="android:tint">@color/light_grey</item>
+    </style>
+
 </resources>
+
+

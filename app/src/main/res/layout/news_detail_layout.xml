@@ -16,7 +16,7 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/slider_image_height"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleGravity="bottom|center"
@@ -66,5 +66,28 @@
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
-    <include layout="@layout/tab_bar_menus" />
+    <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout xmlns:rfal="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/activity_main_rfal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        rfal:rfal_frame_alpha="0.9"
+        rfal:rfal_frame_color="@color/light_red_grey">
+
+        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton xmlns:rfab="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/activity_main_rfab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="@dimen/screen_padding_lr"
+            android:padding="@dimen/screen_padding"
+            rfab:rfab_color_normal="@color/colorPrimary"
+            rfab:rfab_color_pressed="@color/colorPrimaryDark"
+            rfab:rfab_shadow_color="@color/grey"
+            rfab:rfab_shadow_dx="0dp"
+            rfab:rfab_shadow_dy="5dp"
+            rfab:rfab_shadow_radius="7dp"
+            rfab:rfab_size="normal" />
+    </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
 </android.support.design.widget.CoordinatorLayout>

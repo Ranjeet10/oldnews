@@ -2,20 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/elevation"
+    android:layout_marginTop="@dimen/screen_padding_lr"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/parent_topic_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/screen_padding_lr"
-        android:background="@color/badge_color_orange"
-        android:padding="@dimen/screen_padding_lr"
-        android:text="topic"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/white"
-        android:visibility="gone" />
+        style="@style/badge_style" />
 
 
     <include layout="@layout/news_title_description" />

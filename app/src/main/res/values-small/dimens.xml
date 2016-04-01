@@ -13,10 +13,17 @@
     <dimen name="tab_bar_menu_margin">15dp</dimen>
     <dimen name="tab_bar_layout_height">42dp</dimen>
 
-    <dimen name="news_detail_text_size_1">4.5sp</dimen>
-    <dimen name="news_detail_text_size_2">6sp</dimen>
-    <dimen name="news_detail_text_size_3">9sp</dimen>
+    <!--<dimen name="news_detail_text_size_1">4.5px</dimen>-->
+    <!--<dimen name="news_detail_text_size_2">6px</dimen>-->
+    <!--<dimen name="news_detail_text_size_3">9px</dimen>-->
 
-    <dimen name="news_item_height">127.5dp</dimen>
+    <item name="news_detail_text_size_1" format="float" type="dimen">4.5</item>
+    <item name="news_detail_text_size_2" format="float" type="dimen">6</item>
+    <item name="news_detail_text_size_3" format="float" type="dimen">9</item>
+
+    <dimen name="news_item_height">82.5dp</dimen>
     <dimen name="badge_padding">1.5dp</dimen>
+
+    <dimen name="tab_indicator_padding">0.75dp</dimen>
+    <dimen name="slider_image_height">200dp</dimen>
 </resources>

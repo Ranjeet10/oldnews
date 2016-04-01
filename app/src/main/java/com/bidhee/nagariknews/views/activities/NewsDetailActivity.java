@@ -5,17 +5,14 @@ package com.bidhee.nagariknews.views.activities;
  */
 
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
@@ -23,6 +20,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,22 +29,29 @@ import android.widget.Toast;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.interfaces.FontSizeListener;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.bidhee.nagariknews.views.customviews.FontDialog;
 import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
-import com.michaldrabik.tapbarmenulib.TapBarMenu;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.wangjie.androidbucket.utils.ABTextUtil;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener {
+public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener, FontSizeListener, RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -55,26 +61,34 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     ControllableAppBarLayout appBarLayout;
     @Bind(R.id.image)
     ImageView image;
-    @Bind(R.id.tapBarMenu)
-    TapBarMenu tapBarMenu;
+    @Bind(R.id.activity_main_rfal)
+    RapidFloatingActionLayout rfaLayout;
+    @Bind(R.id.activity_main_rfab)
+    RapidFloatingActionButton rfaBtn;
+    private RapidFloatingActionHelper rfabHelper;
+
     @Bind(R.id.title)
     TextView titleTextView;
     @Bind(R.id.news_from_category_text_view)
     TextView newsCategoryTextView;
-    @Bind(R.id.publish_text_view)
-    TextView publishTextView;
     @Bind(R.id.news_time_text_view)
     TextView newsTimeTextView;
     @Bind(R.id.description)
-    TextView descriptionTextView;
+    WebView descriptionTextView;
     @Bind(R.id.related_news_badge)
     TextView relatedNewsTextView;
     @Bind(R.id.scroll)
     NestedScrollView scrollView;
-
     @Bind(R.id.related_recycler_view)
     RecyclerView recyclerVIew;
+    @Bind(R.id.news_share)
+    ImageView newsShare;
+    @Bind(R.id.news_add_to_fav)
+    ImageView newsAddToFav;
+
     NewsTitlesAdapter newsTitlesAdapter;
+    WebSettings webSettings;
+    FontDialog fontDialog;
 
 
     private String TAG = getClass().getSimpleName();
@@ -83,40 +97,140 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     private int categoryId = 2; // setting categoryId = 2 so that it will inflate the news title layout in normal way
     private int SELECTED_NEWS_POSITION = 0;
     private ArrayList<NewsObj> newsObjs;
+    private NewsObj selectedNews;
     SessionManager sessionManager;
-    private HashMap<String, Float> fontMap;
+    String selectedNewsType = "";
 
+    SqliteDatabase db;
+    private Boolean isNewsInFavouite = false;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        /**
+         * make font selector dialog
+         *
+         */
         super.onCreate(savedInstanceState);
         initActivityTransitions();
         setContentView(R.layout.news_detail_layout);
-        ButterKnife.bind(this);
-        sessionManager = new SessionManager(this);
 
-        //storing different font size for different keys
-        fontMap = new HashMap<>();
-        fontMap.put("1", getResources().getDimension(R.dimen.news_detail_text_size_1));
-        fontMap.put("2", getResources().getDimension(R.dimen.news_detail_text_size_2));
-        fontMap.put("3", getResources().getDimension(R.dimen.news_detail_text_size_3));
+        ButterKnife.bind(this);
+        db = new SqliteDatabase(NewsDetailActivity.this);
+        db.open();
+
+        sessionManager = new SessionManager(this);
+        fontDialog = new FontDialog();
+        fontDialog.setOnFontSizeListener(NewsDetailActivity.this);
 
         gettingBundle();
-        settingToolbar(newsObjs.get(SELECTED_NEWS_POSITION).getTitle());
-        loadingDetail(newsObjs.get(SELECTED_NEWS_POSITION));
-        loadRelatedContent();
+        webSettings = descriptionTextView.getSettings();
 
         if (newsObjs.size() > 0) {
+            selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
+            loadingDetail(selectedNews);
+            loadRelatedContent();
+
             relatedNewsTextView.setVisibility(View.VISIBLE);
+            String related = "";
+            switch (sessionManager.getSwitchedNewsValue()) {
+                case 1:
+                    related = getResources().getString(R.string.related_news);
+                    selectedNewsType = getResources().getString(R.string.republica);
+                    break;
+                case 2:
+                    selectedNewsType = getResources().getString(R.string.nagarik);
+                    related = getResources().getString(R.string.sambandhit_news);
+                    break;
+                case 3:
+                    selectedNewsType = getResources().getString(R.string.sukrabar);
+                    related = getResources().getString(R.string.related_news);
+                    break;
+            }
 
-            relatedNewsTextView.setText(
-                    sessionManager.getSwitchedNewsValue() == 0 ?
-                            getResources().getString(R.string.related_news) :
-                            getResources().getString(R.string.sambandhit_news));
+            relatedNewsTextView.setText(related);
+            setCallbackListenerToFabDial();
         }
+        settingToolbar(selectedNewsType + " : " + selectedNews.getNewsCategoryName());
 
 
+    }
+
+    @OnClick(R.id.news_share)
+    void onShareClick() {
+        Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.news_add_to_fav)
+    void onAddToFavCilck() {
+        if (isNewsInFavouite) {
+            //if news is in persist state remove it and toggle the favourite state
+            db.deleteRowFromNews(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+            isNewsInFavouite = false;
+            toggleFavouriteState();
+            Log.i(TAG, "news was present");
+
+        } else {
+            //if news is not present add the current newsObject to the sqlite database
+            db.saveNews(selectedNews);
+            isNewsInFavouite = true;
+            toggleFavouriteState();
+            Log.i(TAG, "news was not present");
+        }
+    }
+
+
+    private void setCallbackListenerToFabDial() {
+        RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(NewsDetailActivity.this);
+        rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
+        List<RFACLabelItem> items = new ArrayList<>();
+        items.add(new RFACLabelItem<Integer>()
+                        .setLabel("Large Font")
+                        .setResId(R.mipmap.ic_format_size_black_24dp)
+                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
+                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setLabelColor(getResources().getColor(R.color.light_black))
+                        .setWrapper(0)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                        .setLabel("Normal Font")
+                        .setResId(R.mipmap.ic_format_size_black_24dp)
+                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
+                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setLabelColor(getResources().getColor(R.color.light_black))
+//                        .setLabelSizeSp(14)
+//                        .setLabelBackgroundDrawable(ABShape.generateCornerShapeDrawable(getResources().getColor(R.color.light_grey), ABTextUtil.dip2px(this, 4)))
+                        .setWrapper(1)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                        .setLabel("Small Font")
+                        .setResId(R.mipmap.ic_format_size_black_24dp)
+                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
+                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setLabelColor(getResources().getColor(R.color.light_black))
+                        .setWrapper(2)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                        .setLabel("Share this news")
+                        .setResId(R.mipmap.ic_share_black)
+                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
+                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setLabelColor(getResources().getColor(R.color.light_black))
+                        .setWrapper(3)
+        );
+        rfaContent
+                .setItems(items)
+                .setIconShadowRadius(ABTextUtil.dip2px(this, 5))
+                .setIconShadowColor(getResources().getColor(R.color.grey))
+                .setIconShadowDy(ABTextUtil.dip2px(this, 5))
+        ;
+        rfabHelper = new RapidFloatingActionHelper(
+                this,
+                rfaLayout,
+                rfaBtn,
+                rfaContent
+        ).build();
     }
 
 
@@ -139,88 +253,91 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     private void loadingDetail(NewsObj news) {
 
         try {
-            Picasso.with(this).load(news.getImg()).placeholder(R.drawable.nagariknews).into(image, new Callback() {
-                @Override
-                public void onSuccess() {
-                    Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                        public void onGenerated(Palette palette) {
-                            applyPalette(palette);
-                        }
-                    });
-                }
-
-                @Override
-                public void onError() {
-                    Log.e("picasso", "error");
-                }
-            });
+            Picasso.with(this).
+                    load(news.getImg()).
+                    placeholder(R.drawable.nagariknews).
+                    into(image);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         titleTextView.setText(news.getTitle());
-        newsCategoryTextView.setText(news.getNewsCategory());
-        publishTextView.setText(news.getReportedBy());
+        newsCategoryTextView.setText(news.getNewsCategoryName());
         newsTimeTextView.setText(news.getDate());
-        descriptionTextView.setText(news.getDesc());
-        descriptionTextView.setTextSize(fontMap.get((sessionManager.getCurrentFontSize() + "")));
+
+        String desc = news.getDesc();
+        desc = "<html><body><p align=\"justify\">" + news.getTitle() + "<br><br>" + desc + "</p></body></html>";
+        descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
+
+        /**
+         * check if news is present in SQLite
+         */
+        isNewsInFavouite = checkIfNewsWasAddedToFavourite(news.getNewsType(), news.getNewsCategoryId(), news.getNewsId());
+
+        /**
+         * toggle the favourite icon color for saved/empty respectively
+         */
+        toggleFavouriteState();
+
+
     }
 
-    private void settingToolbar(String title) {
+    private void toggleFavouriteState() {
+        //if news already exist in favourite, change the color of fav icon to color that should be shown.
+        //and versa
+        if (isNewsInFavouite) {
+            newsAddToFav.setColorFilter(getResources().getColor(R.color.grid_3));
+        } else {
+            newsAddToFav.setColorFilter(getResources().getColor(R.color.light_grey));
+        }
+    }
+
+    private Boolean checkIfNewsWasAddedToFavourite(String newsType, String newsCategoryId, String newsId) {
+        isNewsInFavouite = db.isNewsPresent(newsType, newsCategoryId, newsId);
+        return isNewsInFavouite;
+    }
+
+
+    private void settingToolbar(final String title) {
 
         toolbar.setBackgroundColor(getResources().getColor(R.color.transparent));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //initially set the title to empty
+        getSupportActionBar().setTitle("");
 
-        collapsingToolbarLayout.setTitle(title);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.background_light));
 
+        appBarLayout.setOnStateChangeListener(new ControllableAppBarLayout.OnStateChangeListener() {
+            @Override
+            public void onStateChange(ControllableAppBarLayout.State toolbarChange) {
+                switch (toolbarChange) {
+
+                    case COLLAPSED:
+                        collapsingToolbarLayout.setTitle(title);
+                        break;
+
+                    case EXPANDED:
+                        collapsingToolbarLayout.setTitle("");
+                        break;
+
+                    case IDLE:
+                        collapsingToolbarLayout.setTitle("");
+                        break;
+                }
+            }
+        });
 
     }
 
+
     private void gettingBundle() {
         SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
-//        categoryId = getIntent().getExtras().getString(StaticStorage.NEWS_CATEGORY_ID);
         try {
             newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
             Log.i(TAG, newsObjs.size() + "");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @OnClick(R.id.tapBarMenu)
-    void onTabBarClick() {
-        tapBarMenu.toggle();
-    }
-
-    @OnClick({R.id.news_share_image_view, R.id.news_font_size_change_image_view, R.id.news_add_favourite_image_view})
-    public void onMenuItemClick(View view) {
-        tapBarMenu.close();
-        switch (view.getId()) {
-            case R.id.news_share_image_view:
-                Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
-                appBarLayout.collapseToolbar(true);
-                break;
-            case R.id.news_font_size_change_image_view:
-                updateNewsDetailFontSize();
-                descriptionTextView.setTextSize(fontMap.get((sessionManager.getCurrentFontSize() + "")));
-                break;
-            case R.id.news_add_favourite_image_view:
-                Toast.makeText(getApplicationContext(), "Favourite", Toast.LENGTH_SHORT).show();
-                appBarLayout.expandToolbar(true);
-                break;
-        }
-    }
-
-    private void updateNewsDetailFontSize() {
-        int currentFontSize = sessionManager.getCurrentFontSize();
-        currentFontSize = currentFontSize + 1;
-        if (currentFontSize > 3) {
-            currentFontSize = 1;
-        }
-        sessionManager.setTheFontSize(currentFontSize);
     }
 
     @Override
@@ -266,13 +383,52 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+        db.close();
     }
 
     @Override
-    public void onChildItemPositionListen(int position, View view) {
-        loadingDetail(newsObjs.get(position));
+    public void onChildItemPositionListen(int position, View view, Boolean isShown) {
+        SELECTED_NEWS_POSITION = position;
+        selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
+        loadingDetail(selectedNews);
 
         //make full scroll up so that nestedscrollview's first child is visible
-        scrollView.fullScroll(View.FOCUS_UP);
+//        scrollView.fullScroll(View.FOCUS_UP);
+        ObjectAnimator.ofInt(scrollView, "scrollY", View.FOCUS_UP).setDuration(2500).start();
     }
+
+    @Override
+    public void onFontChanged(int fontSize) {
+        webSettings.setDefaultFontSize(fontSize);
+    }
+
+    @Override
+    public void onRFACItemLabelClick(int i, RFACLabelItem rfacLabelItem) {
+        rfabHelper.toggleContent();
+        setFont(i);
+    }
+
+    private void setFont(int i) {
+        switch (i) {
+            case 0:
+                webSettings.setDefaultFontSize(20);
+                break;
+            case 1:
+                webSettings.setDefaultFontSize(15);
+                break;
+            case 2:
+                webSettings.setDefaultFontSize(10);
+                break;
+            case 3:
+                Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onRFACItemIconClick(int i, RFACLabelItem rfacLabelItem) {
+        rfabHelper.toggleContent();
+        setFont(i);
+    }
+
 }

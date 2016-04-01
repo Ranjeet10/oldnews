@@ -51,6 +51,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     NewsTitlesAdapter newsTitlesAdapter;
     SessionManager sessionManager;
 
+    private int newsType;
     private String categoryId;
     private String categoryName;
 
@@ -77,9 +78,34 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         if (savedInstanceState != null) {
             newsObjs = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
         } else {
-            newsObjs = (sessionManager.getSwitchedNewsValue() == 0) ?
-                    Integer.parseInt(categoryId) == 0 ? NewsData.loadBreakingLatestNewsTesting(getActivity(), categoryName) : NewsData.getNewsRepublica(getActivity(), categoryName) :
-                    Integer.parseInt(categoryId) == 0 ? NewsData.loadBreakingLatestNewsTesting(getActivity(), categoryName) : NewsData.getNewsNagarik(getActivity(), categoryName);
+
+            switch (sessionManager.getSwitchedNewsValue()) {
+                // case
+                // 1 is for republica
+                // 2 for nagarik
+                // 3 for sukrabar
+                case 1:
+                    //categoryId
+                    // 1 means its for breaking and latest news
+                    // >1 means its for normal news
+                    newsType = 1;
+                    newsObjs = Integer.parseInt(categoryId) == 1 ?
+                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
+                            NewsData.getNewsRepublica(getActivity(), newsType, categoryId, categoryName);
+                    break;
+                case 2:
+                    newsType = 2;
+                    newsObjs = Integer.parseInt(categoryId) == 1 ?
+                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
+                            NewsData.getNewsNagarik(getActivity(), newsType, categoryId, categoryName);
+                    break;
+                case 3:
+                    newsType = 3;
+                    newsObjs = Integer.parseInt(categoryId) == 1 ?
+                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
+                            NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
+                    break;
+            }
         }
 
     }
@@ -109,7 +135,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
 
-        if (Integer.parseInt(categoryId) != 0) {
+        if (Integer.parseInt(categoryId) != 1) {
             recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
@@ -121,9 +147,9 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                         @Override
                         public void run() {
 
-                            ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 0 ?
-                                    NewsData.getNewsRepublica(getContext(), categoryName) :
-                                    NewsData.getNewsNagarik(getContext(), categoryName);
+                            ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 1 ?
+                                    NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
+                                    NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
 
                             int curSize = newsTitlesAdapter.getItemCount();
                             newsObjs.addAll(moreNews);
@@ -161,7 +187,20 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
     @Override
-    public void onChildItemPositionListen(int position, View view) {
+    public void onChildItemPositionListen(int position, View view, Boolean isShown) {
+
+        View v = ((ViewGroup) view).getChildAt(0);
+
+        //calulate the exact height of the row which is used to
+        //set params in newsdetails related news recyclerview
+        if (isShown) {                      //if badge is shown calculate the height of badge too
+            StaticStorage.ROW_HEIGHT = (view.getHeight() - v.getHeight() - 2 * (int) getActivity().getResources().getDimension(R.dimen.screen_padding_lr));
+
+        } else {                            //else get only height of the cardview
+
+            StaticStorage.ROW_HEIGHT = view.getHeight();
+        }
+
 
         if (view.getId() == R.id.news_share_text_view) {
 
@@ -170,7 +209,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } else {
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
             NewsObj newsObj = newsObjs.get(position);
-            newsObj.setNewsCategory(categoryName);
+            newsObj.setNewsCategoryName(categoryName);
 
             newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);

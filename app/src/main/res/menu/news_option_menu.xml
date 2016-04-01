@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_large_font"
+        android:icon="@mipmap/ic_format_size_black_24dp"
+        android:title="large text" />
+    <item
+        android:id="@+id/menu_normal_font"
+        android:icon="@mipmap/ic_format_size_black_24dp"
+        android:title="normal text" />
+
+    <item
+        android:id="@+id/menu_small_font"
+        android:icon="@mipmap/ic_format_size_black_24dp"
+        android:title="small text" />
+
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@mipmap/ic_share_black"
+        android:title="share this news" />
+</menu>

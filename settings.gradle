@@ -1,1 +1,1 @@
-include ':app', ':mydaogenerator', ':tabmenu', ':imageslider'
+include ':app', ':tabmenu', ':imageslider'

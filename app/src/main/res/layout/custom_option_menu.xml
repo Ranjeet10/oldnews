@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="50dip"
+    android:layout_height="350dip"
+    android:layout_gravity="right"
+    android:background="@drawable/white_corner"
+    android:orientation="vertical"
+    android:weightSum="100">
+
+    <ImageView
+        android:id="@+id/menu_larger_font"
+        style="@style/button_padding_style"
+        android:background="@drawable/btn_clicked_upper"
+        android:src="@drawable/ic_menu_share" />
+
+    <ImageView
+        android:id="@+id/menu_large_font"
+        style="@style/button_padding_style"
+        android:background="@drawable/btn_clicked"
+        android:src="@drawable/ic_menu_share" />
+
+    <ImageView
+        android:id="@+id/menu_normal_font"
+        style="@style/button_padding_style"
+        android:background="@drawable/btn_clicked"
+        android:src="@drawable/ic_menu_share" />
+
+    <ImageView
+        android:id="@+id/menu_small_font"
+        style="@style/button_padding_style"
+        android:background="@drawable/btn_clicked_lower"
+        android:src="@drawable/ic_menu_share" />
+</LinearLayout>

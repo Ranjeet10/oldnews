@@ -22,6 +22,9 @@ public class StaticStorage {
     // sudo mv adb /usr/bin/adb
     //
 
+    //getting height of each row of the news item in recyclerview
+    public static int ROW_HEIGHT = 0;
+
     //
     //files and folder
     //
@@ -40,6 +43,7 @@ public class StaticStorage {
 
     public static int E_PAPER_REPUBLICA = 4;
     public static int E_PAPER_NAGARIK = 5;
+    public static int E_PAPER_SUKRABAR = 6;
 
 
     /////////////////  tabs in array  /////////////////////////
@@ -70,24 +74,38 @@ public class StaticStorage {
 
         switch (which) {
             case 0:
-                tabs.add(new TabModel("0", "Breaking And Latest News"));
-                tabs.add(new TabModel("1", "Politics"));
-                tabs.add(new TabModel("2", "Economics"));
-                tabs.add(new TabModel("3", "Society"));
-                tabs.add(new TabModel("4", "Sports"));
-                tabs.add(new TabModel("5", "Health"));
-                tabs.add(new TabModel("6", "Art"));
-                tabs.add(new TabModel("7", "Technology"));
+                tabs.add(new TabModel("1", "Latest News"));
+                tabs.add(new TabModel("2", "Trending"));
+                tabs.add(new TabModel("3", "Politics"));
+                tabs.add(new TabModel("4", "Economics"));
+                tabs.add(new TabModel("5", "Society"));
+                tabs.add(new TabModel("6", "Sports"));
+                tabs.add(new TabModel("7", "Health"));
+                tabs.add(new TabModel("8", "Art"));
+                tabs.add(new TabModel("9", "Technology"));
                 break;
             case 1:
-                tabs.add(new TabModel("0", "मुख्य तथा ताजा समाचार"));
-                tabs.add(new TabModel("1", "राजनीति"));
-                tabs.add(new TabModel("2", "आर्थीक्"));
-                tabs.add(new TabModel("3", "समाजिक्"));
-                tabs.add(new TabModel("4", "खेल्कुद्"));
-                tabs.add(new TabModel("5", "स्वास्थ्य"));
-                tabs.add(new TabModel("6", "कला"));
-                tabs.add(new TabModel("7", "बिज्ञान"));
+                tabs.add(new TabModel("1", "ताजा समाचार"));
+                tabs.add(new TabModel("2", "विचारधारा "));
+                tabs.add(new TabModel("3", "राजनीति"));
+                tabs.add(new TabModel("4", "आर्थीक्"));
+                tabs.add(new TabModel("5", "समाजिक्"));
+                tabs.add(new TabModel("6", "खेल्कुद्"));
+                tabs.add(new TabModel("7", "स्वास्थ्य"));
+                tabs.add(new TabModel("8", "कला"));
+                tabs.add(new TabModel("9", "बिज्ञान"));
+                break;
+
+            case 2:
+                tabs.add(new TabModel("1", "Latest News"));
+                tabs.add(new TabModel("2", "Trending"));
+                tabs.add(new TabModel("3", "Politics"));
+                tabs.add(new TabModel("4", "Economics"));
+                tabs.add(new TabModel("5", "Society"));
+                tabs.add(new TabModel("6", "Sports"));
+                tabs.add(new TabModel("7", "Health"));
+                tabs.add(new TabModel("8", "Art"));
+                tabs.add(new TabModel("9", "Technology"));
                 break;
         }
 
@@ -109,6 +127,7 @@ public class StaticStorage {
     public static String KEY_EPAPER_TYPE = "epaper_type";
     public static String KEY_EPAPER = "epaper";
     public static String KEY_EPAPER_PAGE = "epaper_page";
+    public static String KEY_IS_FROM_FAV = "favourite";
 
 
     public static ArrayList<ExtraModel> getExtraList() {

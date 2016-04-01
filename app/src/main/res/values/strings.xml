@@ -21,7 +21,7 @@
     <string name="prompt_password">Password</string>
 
     <!-- news-->
-    <string name="news_title_republica">Andy Rubin, the co-founder of Android before it became a central part of Google</string>
+    <string name="news_title_republica">TIA closed due to bomb threat</string>
     <string name="news_description_republica">Andy Rubin, the co-founder of Android before it became a central part of Google,
         is eyeing a return to the smartphone market. Instead of making smartphone software, however, Rubin is reportedly
         interested in developing an Android handset, according to a report today from The Information. The man responsible
@@ -35,7 +35,7 @@
     <string name="news_title_nagarik">प्रणय दिवस: तन्नेरीको आकर्षण र पाकाको चिन्ता</string>
     <string name="news_description_nagarik"> नेपाल कमर्स क्याम्पस, मीनभवनमा स्नातक प्रथम वर्षकी समीक्षा गौतम प्रणय दिवसले नेपालका युवामा प्रेमलाई नकारात्मक रुपमा दिने बानीको
         विकास गरेको ठान्छिन्। उनले भनिन्,"प्रणय दिवस आफैंमा नराम्रो नभए पनि सहरी युवाले प्रेमलाई फेसनका रुपमा लिई कतिको भविष्य समेत खतरामा पारेका छन् ।
-        त्यसैले यसलाई सभ्य रुपमा मनाउन सकेमा मात्र राम्रो हुन्छ ।"विज्ञापन कम्पनीमा कार्यरत दिवस ढकाल भने यो दिवसलाई मायाप्रेम साट्ने दिनको रुपमा लिन्छन्।
+         त्यसैले यसलाई सभ्य रुपमा मनाउन सकेमा मात्र राम्रो हुन्छ ।"विज्ञापन कम्पनीमा कार्यरत दिवस ढकाल भने यो दिवसलाई मायाप्रेम साट्ने दिनको रुपमा लिन्छन्।
         उनले भने, "अहिले समय फेरिएको छ । युवा धेरै सचेत छन् । आफ्नो जीवनको निर्णय आफैं गर्ने भएकाले आफ्नो जीवन साथी रोजी उनैसँग प्रेम दिवस मनाउनु नकारात्मक कुरा होइन।
         प्रणय दिवसको औपचारिक सुरुआत सन् २६९मा रोमबाट सुरु भएको मानिन्छ । रोमका तत्कालीन सम्राट् क्लोडियस द्वितीयले आफ्ना सैनिकलाई प्रेम तथा विवाह गर्न रोक लगाएका थिए।
         सम्राट्को आदेशको उल्लङ्घन गर्दै त्यहाँका पादरी सेन्ट भ्यालेन्टाइनले प्रेमका पक्षमा बोलेपछि धेरै सैनिकको उनले सार्वजनिक रुपमा विवाह गराएका थिए।
@@ -75,8 +75,8 @@
     <string name="settings_n">सेटिङ्स</string>
 
     <!-- Breaking and latest-->
-    <string name="breaking_news">Breaking News</string>
-    <string name="latest_news">Latest News</string>
+    <string name="breaking_news">BREAKING NEWS</string>
+    <string name="latest_news">LATEST NEWS</string>
 
     <!-- मुख्य समाचार ताजा समाचार -->
     <string name="mukhya_samachar">मुख्य समाचार</string>
@@ -85,10 +85,13 @@
     <!-- switched news-->
     <string name="republica">Republica</string>
     <string name="nagarik">नागरिक</string>
+    <string name="sukrabar">Sukrabar</string>
 
     <!-- miscellaneous-->
     <string name="sambandhit_news">सम्बन्धित समाचार </string>
     <string name="related_news">Related News</string>
 
-
+    <string name="bla">
+        I really want to see how its like inside black hole
+    </string>
 </resources>

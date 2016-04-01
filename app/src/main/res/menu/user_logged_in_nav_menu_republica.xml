@@ -5,31 +5,31 @@
         <item
             android:id="@+id/nav_all_news"
             android:checked="true"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@mipmap/ic_list_black_24dp"
             android:title="@string/all_news_r" />
         <item
             android:id="@+id/nav_videos"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@mipmap/ic_video_library_black_24dp"
             android:title="@string/videos_r" />
         <item
             android:id="@+id/nav_photos"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@mipmap/ic_collections_black_24dp"
             android:title="@string/photos_r" />
         <item
             android:id="@+id/nav_cartoons"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@mipmap/ic_photo_album_black_24dp"
             android:title="@string/cartoon_r" />
         <item
             android:id="@+id/nav_epaper"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@mipmap/ic_apps_black_24dp"
             android:title="@string/e_paper_r" />
         <item
             android:id="@+id/nav_saved"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@mipmap/ic_save_black_24dp"
             android:title="@string/saved_r" />
         <item
             android:id="@+id/nav_extras"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@mipmap/ic_library_add_black_24dp"
             android:title="@string/extra_r" />
     </group>
 
@@ -41,7 +41,7 @@
                 android:title="Share" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@mipmap/ic_settings_black_24dp"
                 android:title="Send" />
         </menu>
     </item>

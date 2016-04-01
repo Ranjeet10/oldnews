@@ -41,6 +41,8 @@ import butterknife.ButterKnife;
  */
 public class FragmentEpaper extends Fragment implements RecyclerItemClickListener.OnItemClickListener, SearchView.OnQueryTextListener {
 
+    private String TAG = getClass().getSimpleName();
+
     @Bind(R.id.gallery_recycler_view)
     RecyclerView epaperRecyclerView;
     @Bind(R.id.search_card_view)
@@ -80,6 +82,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epapersSearched = epapers;
 
         Log.d("size", epapers.size() + "");
+        Log.i(TAG,"onCreate called");
     }
 
     @Nullable
@@ -87,12 +90,19 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         ButterKnife.bind(this, view);
+
+        Log.i(TAG, "onCreateView called");
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Log.i(TAG, "onViewCreated called");
+
+        (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.GONE);
         searchCardView.setVisibility(View.VISIBLE);
 
         //setting the color of text of searchview

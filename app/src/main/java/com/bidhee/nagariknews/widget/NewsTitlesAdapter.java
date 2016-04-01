@@ -1,15 +1,21 @@
 package com.bidhee.nagariknews.widget;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -30,7 +36,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
     public interface RecyclerPositionListener {
 
-        void onChildItemPositionListen(int position, View view);
+        void onChildItemPositionListen(int position, View view, Boolean isShown);
     }
 
     public void setOnRecyclerPositionListener(RecyclerPositionListener recyclerPositionListener) {
@@ -52,21 +58,21 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
             view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    (int) context.getResources().getDimension(R.dimen.news_item_height));
+                    StaticStorage.ROW_HEIGHT);
             view.setLayoutParams(params);
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
         }
 
-
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        NewsObj no = newsObjs.get(position);
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        final NewsObj no = newsObjs.get(position);
 
-        if (categoryId == 0) {
+        //categoryId == 1 means it is from breaking and latest news
+        if (categoryId == 1) {
             if (no.isToShow()) {
                 holder.categoryTextView.setVisibility(View.VISIBLE);
             } else {
@@ -77,28 +83,50 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
             holder.categoryTextView.setVisibility(View.GONE);
         }
 
-        holder.categoryTextView.setText(no.getNewsCategory());
+        //setting margin to the cardview since cardview doesnot show shadow above 21
+        //so we set margin to get shadow
+        if (Build.VERSION.SDK_INT > 21) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 0, 0, (int) context.getResources().getDimension(R.dimen.screen_padding_lr));
+            holder.cardView.setLayoutParams(params);
+        }
+
+
+        holder.categoryTextView.setText(no.getNewsCategoryName());
+
 
         Picasso.with(context)
                 .load(no.getImg())
-                .error(R.drawable.andyrubin)
                 .placeholder(R.drawable.nagariknews)
-                .into(holder.thumbnail);
+                .into(holder.thumbnail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        holder.thumbnail.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        if (isFromDetail)
+                            holder.thumbnail.setVisibility(View.VISIBLE);
+                        else
+                            holder.thumbnail.setVisibility(View.GONE);
+                    }
+                });
 
         holder.newsTitleTv.setText(no.getTitle());
-        holder.newsSemiDetailTv.setText(no.getDesc());
-        holder.newsSourceTv.setText(no.getReportedBy());
-        holder.newsDateTv.setText(no.getDate());
+//        holder.newsSemiDetailTv.setText(no.getDesc());
+//        holder.newsSourceTv.setText(no.getReportedBy());
+//        holder.newsDateTv.setText(no.getDate());
 
         View.OnClickListener myClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerPositionListener.onChildItemPositionListen(position, v);
+                recyclerPositionListener.onChildItemPositionListen(position, v, (no.isToShow() != null) ? no.isToShow() : false);
             }
         };
 
-        holder.newsShareTv.setOnClickListener(myClickListener);
-        holder.showDetailTv.setOnClickListener(myClickListener);
+//        holder.newsShareTv.setOnClickListener(myClickListener);
+//        holder.showDetailTv.setOnClickListener(myClickListener);
         holder.newsShareTv.getRootView().setOnClickListener(myClickListener);
     }
 
@@ -108,6 +136,8 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.news_card_view)
+        CardView cardView;
         @Bind(R.id.parent_topic_text_view)
         TextView categoryTextView;
         @Bind(R.id.news_title_thumbnail)
@@ -124,6 +154,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         TextView newsShareTv;
         @Bind(R.id.news_show_detail_text_view)
         TextView showDetailTv;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
