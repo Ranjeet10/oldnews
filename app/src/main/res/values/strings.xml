@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">NagarikNews</string>
-    <string name="apikey">AIzaSyAZmcphZ1v-pLd60oz_wJv1b-4QbwpaK2Y</string>
+
+    <!-- youtube and gcm api key-->
+    <string name="apikey">AIzaSyAX2C4ZX2yHWM8_I9nKgudhWrMoNPHfOj8</string>
+    <string name="sender_id">424391978066</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -8,17 +8,18 @@
     android:orientation="vertical"
     tools:context=".views.activities.Dashboard">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="@android:dimen/app_icon_size"
-            android:layout_gravity="bottom"
-            android:background="@color/colorPrimaryDark"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:elevation="@dimen/screen_padding_lr"
-            android:visibility="visible"
-            app:layout_scrollFlags="enterAlways"
-            app:tabMode="scrollable" />
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@android:dimen/app_icon_size"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimaryDark"
+        android:elevation="@dimen/screen_padding_lr"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:visibility="visible"
+        app:layout_scrollFlags="enterAlways"
+        app:tabMode="scrollable"
+        app:tabTextAppearance="@style/TabTextAppearance" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/all_news_viewpager"
