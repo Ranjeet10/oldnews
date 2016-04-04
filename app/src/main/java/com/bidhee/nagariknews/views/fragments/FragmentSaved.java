@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
@@ -34,6 +35,8 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
 
     @Bind(R.id.recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
@@ -82,7 +85,12 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
 
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+            }
+        });
     }
 
     @Override
