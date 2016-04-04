@@ -32,7 +32,6 @@ public class FragmentAllNews extends Fragment {
     @Bind(R.id.all_news_viewpager)
     ViewPager viewPager;
 
-    SessionManager sessionManager;
     ArrayList<TabModel> tabs;
 
 
@@ -44,8 +43,7 @@ public class FragmentAllNews extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getActivity());
-        switch (sessionManager.getSwitchedNewsValue()) {
+        switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
             case 1:
                 tabs = StaticStorage.getTabData(0);
                 break;
@@ -89,6 +87,17 @@ public class FragmentAllNews extends Fragment {
     }
 
     private void setTabLayout() {
+        switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                tabLayout.setBackgroundColor(getResources().getColor(R.color.republicaColorPrimaryDark));
+                break;
+            case 2:
+                tabLayout.setBackgroundColor(getResources().getColor(R.color.nagarikColorPrimaryDark));
+                break;
+            case 3:
+                tabLayout.setBackgroundColor(getResources().getColor(R.color.sukrabarColorPrimaryDark));
+                break;
+        }
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

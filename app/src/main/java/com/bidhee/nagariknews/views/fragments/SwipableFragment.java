@@ -27,6 +27,7 @@ import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
@@ -49,7 +50,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
-    SessionManager sessionManager;
 
     private int newsType;
     private String categoryId;
@@ -69,7 +69,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getActivity());
 
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
@@ -79,7 +78,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             newsObjs = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
         } else {
 
-            switch (sessionManager.getSwitchedNewsValue()) {
+            switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
                 // case
                 // 1 is for republica
                 // 2 for nagarik
@@ -147,7 +146,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                         @Override
                         public void run() {
 
-                            ArrayList<NewsObj> moreNews = sessionManager.getSwitchedNewsValue() == 1 ?
+                            ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
                                     NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
                                     NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
 

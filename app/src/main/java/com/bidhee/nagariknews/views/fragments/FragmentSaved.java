@@ -19,6 +19,7 @@ import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 
@@ -40,7 +41,6 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
-    SessionManager sessionManager;
     SqliteDatabase db;
 
 
@@ -51,7 +51,6 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getActivity());
         db = new SqliteDatabase(getActivity());
         db.open();
         newsObjs = new ArrayList<>();
@@ -59,7 +58,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
         /**
          * get all news related to the newstype from the SQLite
          */
-        newsObjs = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(sessionManager.getSwitchedNewsValue()));
+        newsObjs = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(Dashboard.sessionManager.getSwitchedNewsValue()));
 
     }
 

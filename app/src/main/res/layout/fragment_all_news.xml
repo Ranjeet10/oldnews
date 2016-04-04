@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="@android:dimen/app_icon_size"
         android:layout_gravity="bottom"
-        android:background="@color/colorPrimaryDark"
         android:elevation="@dimen/screen_padding_lr"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:visibility="visible"

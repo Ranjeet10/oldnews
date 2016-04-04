@@ -24,19 +24,13 @@
         android:background="@color/colorPrimaryDark"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/switch_head"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/screen_padding"
-            android:text="switch to"
-            android:textColor="@color/white" />
 
         <LinearLayout
+            android:id="@+id/switch_menus_background_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/switch_head"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="@dimen/screen_padding_lr">
 
             <TextView
                 android:id="@+id/switch_republica"

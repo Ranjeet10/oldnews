@@ -2,8 +2,11 @@ package com.bidhee.nagariknews.Utils;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -24,7 +27,7 @@ public class MyAnimation {
                 int value = (Integer) valueAnimator.getAnimatedValue();
                 ViewGroup.LayoutParams layoutParams = view
                         .getLayoutParams();
-                layoutParams.height = value;
+                layoutParams.width = value;
                 view.setLayoutParams(layoutParams);
             }
         });
@@ -40,15 +43,15 @@ public class MyAnimation {
                 View.MeasureSpec.UNSPECIFIED);
         v.measure(widthSpec, heightSpec);
 
-        ValueAnimator mAnimator = slideAnimator(0, v.getMeasuredHeight(), v);
+        ValueAnimator mAnimator = slideAnimator(0, v.getMeasuredWidth(), v);
         mAnimator.start();
     }
 
 
     public void collapse(final View v) {
-        int finalHeight = v.getHeight();
+        int finalWwidth = v.getWidth();
 
-        ValueAnimator mAnimator = slideAnimator(finalHeight, 0, v);
+        ValueAnimator mAnimator = slideAnimator(finalWwidth, 0, v);
 
         mAnimator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -80,29 +83,8 @@ public class MyAnimation {
     }
 
 
-
-
-//    private ValueAnimator slideRightToLeftAnimator(int start, int end, final View view) {
-//
-//        ValueAnimator animator = ValueAnimator.ofInt(start, end);
-//
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//                // Update Height
-//                int value = (Integer) valueAnimator.getAnimatedValue();
-//                ViewGroup.LayoutParams layoutParams = view
-//                        .getLayoutParams();
-//                layoutParams.width = value;
-//                view.setLayoutParams(layoutParams);
-//            }
-//        });
-//        return animator;
-//    }
-
-
     //animation with grow of list items in list view
-    public  void expandAuto(View v) {
+    public void expandAuto(View v) {
 
         v.setVisibility(View.VISIBLE);
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(0,
@@ -112,7 +94,7 @@ public class MyAnimation {
         v.measure(widthSpec, heightSpec);
 
         int finalHeight = v.getMeasuredHeight();
-        if(v instanceof ListView){
+        if (v instanceof ListView) {
             ListView listView = (ListView) v;
             ListAdapter adapter = listView.getAdapter();
 
@@ -120,7 +102,7 @@ public class MyAnimation {
 
             int previousHeight = 0;
 
-            if(listView.getTag() != null){
+            if (listView.getTag() != null) {
                 previousHeight = (int) listView.getTag();
             }
 
@@ -129,8 +111,6 @@ public class MyAnimation {
             listviewHeight = listView.getMeasuredHeight() * adapter.getCount() + (adapter.getCount() * listView.getDividerHeight());
 
             finalHeight = listviewHeight;
-
-//            finalHeight = Math.min(finalHeight, UtilityFunctions.getDeviceHeight(listView.getContext())/2);
 
             ValueAnimator mAnimator = slideAnimator(previousHeight, finalHeight, v);
 //        mAnimator.setDuration(400);
@@ -143,12 +123,12 @@ public class MyAnimation {
         mAnimator.start();
     }
 
-    public  void collapseAuto(final View v) {
+    public void collapseAuto(final View v) {
         int finalHeight = v.getMeasuredHeight();
 
         ValueAnimator mAnimator = slideAnimator(finalHeight, 0, v);
 
-        if(v instanceof ListView){
+        if (v instanceof ListView) {
             v.setTag(null);
         }
 
@@ -179,5 +159,17 @@ public class MyAnimation {
 
         });
         mAnimator.start();
+    }
+
+    public void fadeIn(Context context, View view) {
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+        view.setVisibility(View.VISIBLE);
+        view.startAnimation(fadeInAnimation);
+    }
+
+    public void fadeOut(Context context, View view) {
+        Animation fadeOutAnimation = AnimationUtils.loadAnimation(context, android.R.anim.fade_out);
+        view.setVisibility(View.GONE);
+        view.startAnimation(fadeOutAnimation);
     }
 }

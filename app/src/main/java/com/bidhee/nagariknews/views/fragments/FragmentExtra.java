@@ -21,6 +21,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.ExtraModel;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.widget.ExtraAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -38,7 +39,6 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     ArrayList<ExtraModel> list;
     ExtraAdapter adapter;
 
-    SessionManager sessionManager;
 
 
     public static FragmentExtra createNewInstance() {
@@ -48,9 +48,8 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getActivity());
 
-        list = sessionManager.getSwitchedNewsValue() == 1 ?
+        list = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
                 StaticStorage.getExtraList() :
                 StaticStorage.getAnyaList();
 
