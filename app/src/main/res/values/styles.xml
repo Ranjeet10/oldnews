@@ -14,6 +14,36 @@
         <!--<item name="android:selectableItemBackground">@drawable/selectable_item_background</item>-->
     </style>
 
+    <!-- theme republica-->
+    <style name="RepublicaTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<style name="BaseTheme" parent="android:Theme.Material.NoActionBar">-->
+        <item name="colorPrimary">@color/republicaColorPrimary</item> 
+        <item name="colorPrimaryDark">@color/republicaColorPrimaryDark</item> 
+        <item name="colorControlHighlight">@color/light_red_grey</item> 
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/light_red_grey</item>
+    </style>
+
+    <!-- theme nagarik-->
+    <style name="NagarikTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<style name="BaseTheme" parent="android:Theme.Material.NoActionBar">-->
+        <item name="colorPrimary">@color/nagarikColorPrimary</item> 
+        <item name="colorPrimaryDark">@color/nagarikColorPrimaryDark</item> 
+        <item name="colorControlHighlight">@color/light_red_grey</item> 
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/light_red_grey</item>
+    </style>
+
+    <!-- theme sukrabar-->
+    <style name="SukrabarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<style name="BaseTheme" parent="android:Theme.Material.NoActionBar">-->
+        <item name="colorPrimary">@color/sukrabarColorPrimary</item> 
+        <item name="colorPrimaryDark">@color/sukrabarColorPrimaryDark</item> 
+        <item name="colorControlHighlight">@color/light_red_grey</item> 
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/light_red_grey</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -119,13 +149,12 @@
     <style name="switch_menu_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">@dimen/screen_padding_lr</item>
         <item name="android:layout_marginLeft">@dimen/screen_padding_lr</item>
         <item name="android:layout_marginRight">@dimen/screen_padding_lr</item>
         <item name="android:background">@drawable/corner_border_transparent_primary_selector</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingTop">@dimen/screen_padding</item>
-        <item name="android:paddingBottom">@dimen/screen_padding</item>
+        <item name="android:paddingTop">@dimen/screen_padding_lr</item>
+        <item name="android:paddingBottom">@dimen/screen_padding_lr</item>
         <item name="android:paddingLeft">@dimen/tab_bar_menu_margin</item>
         <item name="android:paddingRight">@dimen/tab_bar_menu_margin</item>
         <item name="android:textColor">@color/white</item>

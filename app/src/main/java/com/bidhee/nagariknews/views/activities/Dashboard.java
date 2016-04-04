@@ -22,11 +22,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.AppbarListener;
 import com.bidhee.nagariknews.controller.SessionManager;
@@ -56,6 +59,8 @@ public class Dashboard extends AppCompatActivity
 
     private String TAG = getClass().getSimpleName();
     Menu menu;
+    @Bind(R.id.news_type_image_logo)
+    ImageView newsTypeImageLogo;
     @Bind(R.id.slider)
     SliderLayout imageSlider;
     @Bind(R.id.collapsing_toolbar)
@@ -73,15 +78,17 @@ public class Dashboard extends AppCompatActivity
     @Bind(R.id.fragment_container_layout)
     FrameLayout fragmentContainer;
 
+    LinearLayout switchMenusLayout;
     ImageView navImageView;
     TextView switchNagarik, switchRepublica, switchSukrabar;
     Handler handler;
     Runnable runnable;
 
     Boolean isUser;
-    SessionManager sessionManager;
+    public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
 
+    private MyAnimation myAnimation;
     private String currentFragmentTag;
     private String currentTitle;
     private String currentNewsType;
@@ -94,15 +101,29 @@ public class Dashboard extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sessionManager = new SessionManager(this);
+        switch (sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                setTheme(R.style.RepublicaTheme);
+                break;
+            case 2:
+                setTheme(R.style.NagarikTheme);
+                break;
+            case 3:
+                setTheme(R.style.SukrabarTheme);
+                break;
+        }
+
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
         handler = new Handler();
+        myAnimation = new MyAnimation();
 
         settingToolbar();
         setUpImageSlider();
 //        setUpVIewFlipper();
 
-        sessionManager = new SessionManager(this);
         userDetail = sessionManager.getLoginDetail();
 
         if (sessionManager.isFirstRun(this)) {
@@ -234,14 +255,18 @@ public class Dashboard extends AppCompatActivity
 
                     case COLLAPSED:
                         collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+                        myAnimation.expand(newsTypeImageLogo);
                         break;
 
                     case EXPANDED:
                         collapsingToolbarLayout.setTitle("");
+                        myAnimation.collapse(newsTypeImageLogo);
                         break;
 
                     case IDLE:
                         collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+                        myAnimation.collapse(newsTypeImageLogo);
+
                         break;
                 }
             }
@@ -250,7 +275,6 @@ public class Dashboard extends AppCompatActivity
 
 
     private void settingToolbar() {
-
         toolbar.setBackgroundColor(getResources().getColor(R.color.transparent));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -278,16 +302,20 @@ public class Dashboard extends AppCompatActivity
             //value 1 means saved newstype was for Republica
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
             currentNewsType = getResources().getString(R.string.republica);
+            newsTypeImageLogo.setImageResource(R.mipmap.ic_share_black);
 
         } else if (sessionManager.getSwitchedNewsValue() == 2) {
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_nagarik : R.menu.free_user_nav_menu_nagarik);
             currentNewsType = getResources().getString(R.string.nagarik);
+            newsTypeImageLogo.setImageResource(R.mipmap.ic_alarm_black_24dp);
 
         } else if (sessionManager.getSwitchedNewsValue() == 3) {
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
             currentNewsType = getResources().getString(R.string.sukrabar);
+            newsTypeImageLogo.setImageResource(R.mipmap.ic_favorite_black);
         }
 
+        switchMenusLayout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.switch_menus_background_layout);
         navImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_image_view);
         switchRepublica = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_republica);
         switchNagarik = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
@@ -301,16 +329,19 @@ public class Dashboard extends AppCompatActivity
 
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
+                switchMenusLayout.setBackgroundColor(getResources().getColor(R.color.republicaColorPrimaryDark));
                 switchRepublica.setVisibility(View.GONE);
                 switchNagarik.setVisibility(View.VISIBLE);
                 switchSukrabar.setVisibility(View.VISIBLE);
                 break;
             case 2:
+                switchMenusLayout.setBackgroundColor(getResources().getColor(R.color.nagarikColorPrimaryDark));
                 switchRepublica.setVisibility(View.VISIBLE);
                 switchNagarik.setVisibility(View.GONE);
                 switchSukrabar.setVisibility(View.VISIBLE);
                 break;
             case 3:
+                switchMenusLayout.setBackgroundColor(getResources().getColor(R.color.sukrabarColorPrimaryDark));
                 switchRepublica.setVisibility(View.VISIBLE);
                 switchNagarik.setVisibility(View.VISIBLE);
                 switchSukrabar.setVisibility(View.GONE);
@@ -533,5 +564,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     public void onPageScrollStateChanged(int state) {
     }
+
 
 }

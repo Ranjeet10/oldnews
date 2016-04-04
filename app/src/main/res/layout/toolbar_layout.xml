@@ -8,4 +8,12 @@
     android:elevation="0dp"
     android:theme="@style/AppTheme.AppBarOverlay"
     app:layout_collapseMode="pin"
-    app:popupTheme="@style/AppTheme.PopupOverlay" />
+    app:popupTheme="@style/AppTheme.PopupOverlay">
+
+    <ImageView
+        android:id="@+id/news_type_image_logo"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:src="@mipmap/ic_share_black"
+        android:visibility="gone" />
+</android.support.v7.widget.Toolbar>

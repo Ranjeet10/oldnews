@@ -113,14 +113,27 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
          *
          */
         super.onCreate(savedInstanceState);
+        sessionManager = new SessionManager(this);
+
         initActivityTransitions();
+        switch (sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                setTheme(R.style.RepublicaTheme);
+                break;
+            case 2:
+                setTheme(R.style.NagarikTheme);
+                break;
+            case 3:
+                setTheme(R.style.SukrabarTheme);
+                break;
+        }
+
         setContentView(R.layout.news_detail_layout);
 
         ButterKnife.bind(this);
         db = new SqliteDatabase(NewsDetailActivity.this);
         db.open();
 
-        sessionManager = new SessionManager(this);
         fontDialog = new FontDialog();
         fontDialog.setOnFontSizeListener(NewsDetailActivity.this);
 
@@ -150,6 +163,17 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
             }
 
             relatedNewsTextView.setText(related);
+            switch (sessionManager.getSwitchedNewsValue()) {
+                case 1:
+                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.republicaColorPrimary));
+                    break;
+                case 2:
+                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.nagarikColorPrimary));
+                    break;
+                case 3:
+                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.sukrabarColorPrimary));
+                    break;
+            }
             setCallbackListenerToFabDial();
         }
         settingToolbar(selectedNewsType + " : " + selectedNews.getNewsCategoryName());

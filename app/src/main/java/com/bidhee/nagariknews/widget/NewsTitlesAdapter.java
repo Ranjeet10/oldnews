@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -75,6 +76,17 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         if (categoryId == 1) {
             if (no.isToShow()) {
                 holder.categoryTextView.setVisibility(View.VISIBLE);
+                switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
+                    case 1:
+                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.republicaColorPrimary));
+                        break;
+                    case 2:
+                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.nagarikColorPrimary));
+                        break;
+                    case 3:
+                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.sukrabarColorPrimary));
+                        break;
+                }
             } else {
                 holder.categoryTextView.setVisibility(View.GONE);
             }

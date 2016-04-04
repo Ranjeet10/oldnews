@@ -43,7 +43,6 @@ public class FragmentBreakingAndLatestNews extends Fragment {
 
     ArrayList<BreakingAndLatestNews> breakingAndLatestNewses;
     BreakingAndLatestnewsParentAdapter adapter;
-    SessionManager sessionManager;
 
     private String categoryId;
     private String categoryName;
@@ -62,7 +61,6 @@ public class FragmentBreakingAndLatestNews extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getActivity());
 
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
