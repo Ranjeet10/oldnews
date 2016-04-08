@@ -10,10 +10,19 @@
     app:layout_collapseMode="pin"
     app:popupTheme="@style/AppTheme.PopupOverlay">
 
-    <ImageView
-        android:id="@+id/news_type_image_logo"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="?attr/actionBarSize"
-        android:src="@mipmap/ic_share_black"
-        android:visibility="gone" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:padding="@dimen/screen_padding_lr">
+
+        <ImageView
+            android:id="@+id/news_type_image_logo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/nagarik"
+            android:visibility="visible" />
+    </RelativeLayout>
+
 </android.support.v7.widget.Toolbar>

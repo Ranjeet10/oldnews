@@ -14,6 +14,7 @@ public class NewsObj implements Parcelable {
     private String newsCategoryName;
     private String title;
     private String desc;
+    private String newsUrl;
     private String date;
     private String img;
     private String reportedBy;
@@ -22,13 +23,14 @@ public class NewsObj implements Parcelable {
     }
 
 
-    public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title, String reportedBy, String date, String desc) {
+    public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title, String reportedBy, String date, String desc, String newsUrl) {
         this.newsType = newsType;
         this.newsCategoryId = newsCategoryId;
         this.newsId = newsId;
         this.newsCategoryName = newsCategoryName;
         this.title = title;
         this.desc = desc;
+        this.newsUrl = newsUrl;
         this.date = date;
         this.img = img;
         this.reportedBy = reportedBy;
@@ -41,6 +43,7 @@ public class NewsObj implements Parcelable {
         newsCategoryName = source.readString();
         title = source.readString();
         desc = source.readString();
+        newsUrl = source.readString();
         date = source.readString();
         img = source.readString();
         reportedBy = source.readString();
@@ -110,6 +113,14 @@ public class NewsObj implements Parcelable {
         this.desc = desc;
     }
 
+    public String getNewsUrl() {
+        return newsUrl;
+    }
+
+    public void setNewsUrl(String newsUrl) {
+        this.newsUrl = newsUrl;
+    }
+
     public void setDate(String date) {
         this.date = date;
     }
@@ -153,6 +164,7 @@ public class NewsObj implements Parcelable {
         dest.writeString(newsCategoryName);
         dest.writeString(title);
         dest.writeString(desc);
+        dest.writeString(newsUrl);
         dest.writeString(date);
         dest.writeString(img);
         dest.writeString(reportedBy);
@@ -177,6 +189,9 @@ public class NewsObj implements Parcelable {
 
         if (desc == null)
             desc = "";
+
+        if (newsUrl == null)
+            newsUrl = "";
 
         if (date == null)
             date = "";

@@ -24,6 +24,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
+import com.bidhee.nagariknews.bus.EventBus;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
 
 /**
  * Created by ronem on 2/9/16.
@@ -69,6 +71,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.register(this);
 
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
@@ -127,12 +130,17 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        ScaleInAnimator animator = new ScaleInAnimator();
+        animator.setAddDuration(500);
+        recyclerView.setItemAnimator(animator);
 
 
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
+
 
         if (Integer.parseInt(categoryId) != 1) {
             recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
@@ -161,7 +169,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 }
             });
         }
-
 
     }
 
@@ -210,10 +217,50 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             NewsObj newsObj = newsObjs.get(position);
             newsObj.setNewsCategoryName(categoryName);
 
-            newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
             startActivity(newsDetailIntent);
+
+
+//            /**
+//             * send only five relatedNews to the {@link NewsDetailActivity}
+//             */
+//            ArrayList<NewsObj> relatedNewsList = new ArrayList<>();
+//
+//            /**
+//             * First add five {@value newsObj} to the {@value relatedNewsList} and after that
+//             *
+//             */
+//            for (int i = 0; i < 5; i++) {
+//                relatedNewsList.add(newsObjs.get(i));
+//            }
+//
+//            /**
+//             * check if the selected {@value newsObj} lies in relatedNewsList,
+//             * if selected {@value newsObj} not present in {@value relatedNewsList} remove the last index of {@value relatedNewsList} and
+//             * add the selected {@value newsObj} to {@value relatedNewsList},
+//             * if present leave as it is
+//             */
+//            Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
+//            NewsObj newsObj = newsObjs.get(position);
+//            newsObj.setNewsCategoryName(categoryName);
+//
+//
+//            if (!relatedNewsList.contains(newsObj)) {
+//                relatedNewsList.remove(4);
+//                relatedNewsList.add(newsObj);
+//
+//                /**
+//                 *change the position to 4, as we added the selected {@value newsObj} at index 4
+//                 *if not done this we will get {@link ArrayIndexOutOfBoundsException}
+//                 **/
+//                position = 4;
+//            }
+//            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, relatedNewsList);
+//            newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
+//            startActivity(newsDetailIntent);
+
+
         }
     }
 

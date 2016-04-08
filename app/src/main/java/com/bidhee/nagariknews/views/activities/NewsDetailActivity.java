@@ -6,9 +6,13 @@ package com.bidhee.nagariknews.views.activities;
 
 
 import android.animation.ObjectAnimator;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -17,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,9 +29,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
+import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.FontSizeListener;
@@ -52,7 +58,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener, FontSizeListener, RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
-
+    @Bind(R.id.news_type_image_logo)
+    ImageView newsTypeImageLogo;
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.toolbar)
@@ -93,16 +100,19 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
     private String TAG = getClass().getSimpleName();
 
-    public static String NEWS_TITLE_EXTRA_STRING = "newsobject";
+    //    public static String NEWS_TITLE_EXTRA_STRING = "newsobject";
     private int categoryId = 2; // setting categoryId = 2 so that it will inflate the news title layout in normal way
     private int SELECTED_NEWS_POSITION = 0;
     private ArrayList<NewsObj> newsObjs;
     private NewsObj selectedNews;
     SessionManager sessionManager;
     String selectedNewsType = "";
+    private int fabDrawable;
+    private int MENU_COLOR;
 
     SqliteDatabase db;
     private Boolean isNewsInFavouite = false;
+    private int NEWS_TYPE = 1;//default set to 1
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -113,10 +123,16 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
          *
          */
         super.onCreate(savedInstanceState);
+//        EventBus.register(this);
         sessionManager = new SessionManager(this);
 
         initActivityTransitions();
-        switch (sessionManager.getSwitchedNewsValue()) {
+        NEWS_TYPE = sessionManager.getSwitchedNewsValue();
+
+        /**
+         * set theme according to the selected {@value NEWS_TYPE}
+         */
+        switch (NEWS_TYPE) {
             case 1:
                 setTheme(R.style.RepublicaTheme);
                 break;
@@ -138,6 +154,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         fontDialog.setOnFontSizeListener(NewsDetailActivity.this);
 
         gettingBundle();
+
         webSettings = descriptionTextView.getSettings();
 
         if (newsObjs.size() > 0) {
@@ -149,15 +166,24 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
             String related = "";
             switch (sessionManager.getSwitchedNewsValue()) {
                 case 1:
-                    related = getResources().getString(R.string.related_news);
-                    selectedNewsType = getResources().getString(R.string.republica);
+                    fabDrawable = R.drawable.menu_republica_corner_fab;
+                    MENU_COLOR = getResources().getColor(R.color.republicaColorPrimary);    //setting menu color to current themes colorPrimary
+                    related = getResources().getString(R.string.related_news);              //getting related value to show for the bottom news list
+                    selectedNewsType = getResources().getString(R.string.republica);        //setting the title for the toolbar (not showing but jst geting for future use)
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
                     break;
                 case 2:
+                    fabDrawable = R.drawable.menu_nagarik_corner_fab;
+                    MENU_COLOR = getResources().getColor(R.color.nagarikColorPrimary);
                     selectedNewsType = getResources().getString(R.string.nagarik);
                     related = getResources().getString(R.string.sambandhit_news);
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
                     break;
                 case 3:
+                    fabDrawable = R.drawable.menu_sukrabar_corner_fab;
+                    MENU_COLOR = getResources().getColor(R.color.sukrabarColorPrimary);
                     selectedNewsType = getResources().getString(R.string.sukrabar);
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
                     related = getResources().getString(R.string.related_news);
                     break;
             }
@@ -176,14 +202,26 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
             }
             setCallbackListenerToFabDial();
         }
+
+        /**
+         * setting {@value selectedNewsType} to the {@value toolbar}
+         * but it is useless for now since we are displaying only logo to the toolbar
+         * this function is overlapped
+         */
         settingToolbar(selectedNewsType + " : " + selectedNews.getNewsCategoryName());
 
 
     }
 
+//    @Subscribe
+//    public void getTrendingNews(ArrayList<NewsObj> newsObjs) {
+//        this.newsObjs.addAll(newsObjs);
+//        newsTitlesAdapter.notifyItemRangeInserted(5, newsObjs.size() - 1);
+//    }
+
     @OnClick(R.id.news_share)
     void onShareClick() {
-        Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
+        BasicUtilMethods.shareLink(this, selectedNews.getNewsUrl());
     }
 
     @OnClick(R.id.news_add_to_fav)
@@ -212,43 +250,36 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         items.add(new RFACLabelItem<Integer>()
                         .setLabel("Large Font")
                         .setResId(R.mipmap.ic_format_size_black_24dp)
-                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
-                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setIconNormalColor(MENU_COLOR)
+                        .setIconPressedColor(getResources().getColor(R.color.white))
                         .setLabelColor(getResources().getColor(R.color.light_black))
                         .setWrapper(0)
         );
         items.add(new RFACLabelItem<Integer>()
                         .setLabel("Normal Font")
                         .setResId(R.mipmap.ic_format_size_black_24dp)
-                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
-                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setIconNormalColor(MENU_COLOR)
+                        .setIconPressedColor(getResources().getColor(R.color.white))
                         .setLabelColor(getResources().getColor(R.color.light_black))
 //                        .setLabelSizeSp(14)
 //                        .setLabelBackgroundDrawable(ABShape.generateCornerShapeDrawable(getResources().getColor(R.color.light_grey), ABTextUtil.dip2px(this, 4)))
                         .setWrapper(1)
         );
         items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Small Font")
-                        .setResId(R.mipmap.ic_format_size_black_24dp)
-                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
-                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
+                        .setLabel("Share this news")
+                        .setResId(R.mipmap.ic_share_black)
+                        .setIconNormalColor(MENU_COLOR)
+                        .setIconPressedColor(getResources().getColor(R.color.white))
                         .setLabelColor(getResources().getColor(R.color.light_black))
                         .setWrapper(2)
         );
-        items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Share this news")
-                        .setResId(R.mipmap.ic_share_black)
-                        .setIconNormalColor(getResources().getColor(R.color.grid_3))
-                        .setIconPressedColor(getResources().getColor(R.color.colorPrimaryDark))
-                        .setLabelColor(getResources().getColor(R.color.light_black))
-                        .setWrapper(3)
-        );
         rfaContent
                 .setItems(items)
-                .setIconShadowRadius(ABTextUtil.dip2px(this, 5))
+                .setIconShadowRadius(ABTextUtil.dip2px(this, 1))
                 .setIconShadowColor(getResources().getColor(R.color.grey))
-                .setIconShadowDy(ABTextUtil.dip2px(this, 5))
+                .setIconShadowDy(ABTextUtil.dip2px(this, 1))
         ;
+        rfaBtn.setBackgroundResource(fabDrawable);
         rfabHelper = new RapidFloatingActionHelper(
                 this,
                 rfaLayout,
@@ -272,18 +303,14 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         //setting newstedscrollingEnabled to false so that app bar collapse only when recyclerview is scrolled
         recyclerVIew.setNestedScrollingEnabled(false);
 
+        NewsObj no = newsObjs.get(0);
+        NewsData.getTrendingNews(this, NEWS_TYPE, no.getNewsCategoryId(), no.getNewsCategoryName());
+
     }
 
     private void loadingDetail(NewsObj news) {
+        BasicUtilMethods.loadImage(this, news.getImg(), image);
 
-        try {
-            Picasso.with(this).
-                    load(news.getImg()).
-                    placeholder(R.drawable.nagariknews).
-                    into(image);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         titleTextView.setText(news.getTitle());
         newsCategoryTextView.setText(news.getNewsCategoryName());
         newsTimeTextView.setText(news.getDate());
@@ -390,11 +417,41 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         supportStartPostponedEnterTransition();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.dashboard, menu);
+        menu.getItem(0).setVisible(false);
+
+        /**
+         * applying the tint color to all the font icon
+         * with color white
+         */
+        for (int i = 1; i <= 2; i++) {
+            final Drawable drawable = menu.getItem(i).getIcon();
+            if (drawable != null) {
+                final Drawable wrapped = DrawableCompat.wrap(drawable);
+                drawable.mutate();
+                DrawableCompat.setTint(wrapped, Color.WHITE);
+                menu.getItem(i).setIcon(drawable);
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.news_font_control_small:
+                scrollUp();
+                webSettings.setDefaultFontSize(15);
+                break;
+
+            case R.id.news_font_control_large:
+                scrollUp();
+                webSettings.setDefaultFontSize(20);
+                break;
+
             case android.R.id.home:
                 finish();
                 break;
@@ -416,6 +473,10 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
         loadingDetail(selectedNews);
 
+        scrollUp();
+    }
+
+    private void scrollUp() {
         //make full scroll up so that nestedscrollview's first child is visible
 //        scrollView.fullScroll(View.FOCUS_UP);
         ObjectAnimator.ofInt(scrollView, "scrollY", View.FOCUS_UP).setDuration(2500).start();
@@ -441,10 +502,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                 webSettings.setDefaultFontSize(15);
                 break;
             case 2:
-                webSettings.setDefaultFontSize(10);
-                break;
-            case 3:
-                Toast.makeText(getApplicationContext(), "share", Toast.LENGTH_SHORT).show();
+                BasicUtilMethods.shareLink(this, selectedNews.getNewsUrl());
                 break;
         }
     }

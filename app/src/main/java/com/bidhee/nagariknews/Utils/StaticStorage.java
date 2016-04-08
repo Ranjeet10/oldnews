@@ -112,6 +112,8 @@ public class StaticStorage {
         return tabs;
     }
 
+    public static int[] NEWS_LOGOS = new int[]{R.mipmap.republica, R.mipmap.nagarik, R.mipmap.sukrabar};
+
     // /////////////////  argument keys  //////////////////
 
     public static String NEWS_CATEGORY_ID = "news_category_id";

@@ -29,7 +29,6 @@
         <!--<style name="BaseTheme" parent="android:Theme.Material.NoActionBar">-->
         <item name="colorPrimary">@color/nagarikColorPrimary</item> 
         <item name="colorPrimaryDark">@color/nagarikColorPrimaryDark</item> 
-        <item name="colorControlHighlight">@color/light_red_grey</item> 
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/light_red_grey</item>
     </style>

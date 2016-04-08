@@ -114,9 +114,9 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
 
         } else {
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-            NewsObj newsObj = newsObjs.get(position);
+//            NewsObj newsObj = newsObjs.get(position);
 
-            newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
+//            newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
             startActivity(newsDetailIntent);

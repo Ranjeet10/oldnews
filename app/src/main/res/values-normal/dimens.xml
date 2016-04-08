@@ -22,4 +22,8 @@
     <dimen name="badge_padding">2dp</dimen>
     <dimen name="tab_indicator_padding">1dp</dimen>
     <dimen name="slider_image_height">200dp</dimen>
+
+    <!-- fab menu attributes-->
+    <dimen name="fab_menu_shadow_diameter">54dp</dimen>
+    <dimen name="fab_menu_diameter">50dp</dimen>
 </resources>
