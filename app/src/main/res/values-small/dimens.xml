@@ -26,4 +26,8 @@
 
     <dimen name="tab_indicator_padding">0.75dp</dimen>
     <dimen name="slider_image_height">200dp</dimen>
+
+    <!-- fab menu attributes-->
+    <dimen name="fab_menu_shadow_diameter">40.5dp</dimen>
+    <dimen name="fab_menu_diameter">37.5dp</dimen>
 </resources>

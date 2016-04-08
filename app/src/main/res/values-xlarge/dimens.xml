@@ -28,4 +28,8 @@
 
     <dimen name="slider_image_height">200dp</dimen>
 
+    <!-- fab menu attributes-->
+    <dimen name="fab_menu_shadow_diameter">108dp</dimen>
+    <dimen name="fab_menu_diameter">100dp</dimen>
+
 </resources>

@@ -10,8 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.Multimedias;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -40,20 +43,27 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     }
 
     @Override
-    public void onBindViewHolder(GalleryViewHolder holder, int position) {
+    public void onBindViewHolder(final GalleryViewHolder holder, int position) {
         holder.galleryItemTitleTextView.setText(multimediaList.get(position).getTitle());
 
+        /**
+         * getting thumbnail path from the server accordingly
+         * if the {@value TYPE} is of VIDEO, concatenate the url with the
+         * {@link StaticStorage.VIDEO_THUMBNAIL_PREFIX} and
+         * {@link StaticStorage.VIDEO_THUMBNAIL_POSTFIX}
+         * else leave the url as it is
+         */
+        final String url = TYPE == StaticStorage.VIDEOS ?
+                StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimediaList.get(position).getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX :
+                multimediaList.get(position).getMultimediaPath();
 
-        Picasso.with(context)
-                .load(TYPE == StaticStorage.VIDEOS ?
-                        StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimediaList.get(position).getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX :
-                        multimediaList.get(position).getMultimediaPath())
-                .error(R.drawable.nagariknews)
-                .placeholder(R.drawable.nagariknews)
-                .into(holder.galleryThumbnail);
-        Log.d("url",multimediaList.get(position).getMultimediaPath());
-
+        /**
+         * calling the function to load the image in {@link holder.galleryThumbnail}
+         * along with the disk cache enabled
+         */
+        BasicUtilMethods.loadImage(context, url, holder.galleryThumbnail);
     }
+
 
     @Override
     public int getItemCount() {

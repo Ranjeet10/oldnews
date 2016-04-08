@@ -1,11 +1,18 @@
 package com.bidhee.nagariknews.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bidhee.nagariknews.R;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,6 +58,46 @@ public class BasicUtilMethods {
         } else {
             Toast.makeText(context, "file already exists", Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    public static void shareLink(Context context, String link) {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, link);
+        context.startActivity(Intent
+                .createChooser(sharingIntent, "Share using"));
+    }
+
+    public static void loadImage(final Context context,final String url, final ImageView galleryThumbnail) {
+        Picasso.with(context)
+                .load(url)
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(galleryThumbnail, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        //Try again online if cache failed
+                        Picasso.with(context)
+                                .load(url)
+                                .error(R.drawable.nagariknews)
+                                .into(galleryThumbnail, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onError() {
+                                        Log.v("Picasso", "Could not fetch image");
+                                    }
+                                });
+                    }
+                });
 
     }
 }

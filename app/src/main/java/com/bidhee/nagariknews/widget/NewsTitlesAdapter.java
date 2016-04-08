@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.bidhee.nagariknews.R.anim.row_item_animation;
 
 /**
  * Created by ronem on 2/9/16.
@@ -64,6 +68,8 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
         }
+//        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+//        view.startAnimation(animation);
 
         return new ViewHolder(view);
     }
@@ -118,10 +124,10 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
                     @Override
                     public void onError() {
-                        if (isFromDetail)
-                            holder.thumbnail.setVisibility(View.VISIBLE);
-                        else
-                            holder.thumbnail.setVisibility(View.GONE);
+//                        if (isFromDetail)
+//                            holder.thumbnail.setVisibility(View.VISIBLE);
+//                        else
+//                            holder.thumbnail.setVisibility(View.GONE);
                     }
                 });
 
@@ -140,6 +146,9 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 //        holder.newsShareTv.setOnClickListener(myClickListener);
 //        holder.showDetailTv.setOnClickListener(myClickListener);
         holder.newsShareTv.getRootView().setOnClickListener(myClickListener);
+
+//        Animation animation = AnimationUtils.loadAnimation(context, R.anim.row_item_animation);
+//        holder.newsDateTv.getRootView().startAnimation(animation);
     }
 
     @Override

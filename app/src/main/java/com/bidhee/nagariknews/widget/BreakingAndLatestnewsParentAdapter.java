@@ -140,7 +140,7 @@ public class BreakingAndLatestnewsParentAdapter extends RecyclerView.Adapter<Bre
 
         newsObj.setNewsCategoryName(newsCategory);
 
-        newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
+//        newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
         context.startActivity(newsDetailIntent);
 
         Toast.makeText(context, dataModels.get(parentPosition).getBreakingAndLatestNewsListModels().get(childPosition).getTitle(), Toast.LENGTH_SHORT).show();

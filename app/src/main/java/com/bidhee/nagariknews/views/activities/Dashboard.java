@@ -101,7 +101,9 @@ public class Dashboard extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /**
+         * setting the app theme according to the specific news type selected
+         */
         sessionManager = new SessionManager(this);
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
@@ -116,6 +118,7 @@ public class Dashboard extends AppCompatActivity
         }
 
         setContentView(R.layout.activity_dashboard);
+
         ButterKnife.bind(this);
         handler = new Handler();
         myAnimation = new MyAnimation();
@@ -173,13 +176,16 @@ public class Dashboard extends AppCompatActivity
 
             switch (sessionManager.getSwitchedNewsValue()) {
                 case 1:
-                    currentTitle = getResources().getString(R.string.all_news_r);
+//                    currentTitle = getResources().getString(R.string.all_news_r);
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);
                     break;
                 case 2:
-                    currentTitle = getResources().getString(R.string.all_news_n);
+//                    currentTitle = getResources().getString(R.string.all_news_n);
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);
                     break;
                 case 3:
-                    currentTitle = getResources().getString(R.string.all_news_r);
+//                    currentTitle = getResources().getString(R.string.all_news_r);
+                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);
                     break;
             }
 
@@ -248,29 +254,30 @@ public class Dashboard extends AppCompatActivity
         //initially set the title to empty
         getSupportActionBar().setTitle("");
 
-        appBarLayout.setOnStateChangeListener(new ControllableAppBarLayout.OnStateChangeListener() {
-            @Override
-            public void onStateChange(ControllableAppBarLayout.State toolbarChange) {
-                switch (toolbarChange) {
 
-                    case COLLAPSED:
-                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
-                        myAnimation.expand(newsTypeImageLogo);
-                        break;
-
-                    case EXPANDED:
-                        collapsingToolbarLayout.setTitle("");
-                        myAnimation.collapse(newsTypeImageLogo);
-                        break;
-
-                    case IDLE:
-                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
-                        myAnimation.collapse(newsTypeImageLogo);
-
-                        break;
-                }
-            }
-        });
+//        appBarLayout.setOnStateChangeListener(new ControllableAppBarLayout.OnStateChangeListener() {
+//            @Override
+//            public void onStateChange(ControllableAppBarLayout.State toolbarChange) {
+//                switch (toolbarChange) {
+//
+//                    case COLLAPSED:
+////                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+//                        myAnimation.expand(newsTypeImageLogo);
+//                        break;
+//
+//                    case EXPANDED:
+////                        collapsingToolbarLayout.setTitle("");
+//                        myAnimation.collapse(newsTypeImageLogo);
+//                        break;
+//
+//                    case IDLE:
+////                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+//                        myAnimation.collapse(newsTypeImageLogo);
+//
+//                        break;
+//                }
+//            }
+//        });
     }
 
 
@@ -290,7 +297,7 @@ public class Dashboard extends AppCompatActivity
                 .replace(R.id.fragment_container_layout, fragment, currentFragmentTag)
                 .commit();
 
-        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+//        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
         Log.d(TAG, currentFragmentTag);
 
     }
@@ -407,6 +414,8 @@ public class Dashboard extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.dashboard, menu);
         this.menu = menu;
+        this.menu.getItem(1).setVisible(false);
+        this.menu.getItem(2).setVisible(false);
 
         //show hide the menu item
         //show menu item (search) if the fragment is FragmentAllNews

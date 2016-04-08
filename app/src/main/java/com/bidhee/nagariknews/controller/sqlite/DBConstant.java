@@ -28,6 +28,7 @@ public class DBConstant {
     public static final String NEWS_CATEGORY_NAME = "news_category_name";
     public static final String NEWS_TITLE = "news_title";
     public static final String NEWS_DESCRIPTION = "news_description";
+    public static final String NEWS_URL = "news_url";
     public static final String NEWS_DATE = "news_date";
     public static final String NEWS_IMAGE = "news_image";
     public static final String NEWS_REPORTED_BY = "news_reported_by";
