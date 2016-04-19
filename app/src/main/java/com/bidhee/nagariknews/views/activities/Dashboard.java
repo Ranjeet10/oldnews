@@ -155,7 +155,8 @@ public class Dashboard extends AppCompatActivity
              */
             sessionManager.switchNewsTo(1);
             //starting loginIntent
-            Intent loginIntent = new Intent(this, LoginActivity.class);
+            Intent loginIntent = new Intent(this, SelectCategoryActivity.class);
+//            Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
