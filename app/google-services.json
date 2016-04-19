@@ -15,7 +15,12 @@
           "certificate_hash": []
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "424391978066-rs9ulalqrn106uo7jotr83gaihcbuq8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [],
       "services": {
         "analytics_service": {
@@ -47,7 +52,20 @@
           "certificate_hash": []
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "424391978066-j3t73ei0mlevtd9h6js2ndfcr1f18ph6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bidhee.nagariknews",
+            "certificate_hash": "ECC28E1F6B60FF8A60282463A5CA2733A80A4DE3"
+          }
+        },
+        {
+          "client_id": "424391978066-rs9ulalqrn106uo7jotr83gaihcbuq8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [],
       "services": {
         "analytics_service": {
@@ -62,7 +80,7 @@
           "other_platform_oauth_client": []
         },
         "google_signin_service": {
-          "status": 1
+          "status": 2
         },
         "ads_service": {
           "status": 1

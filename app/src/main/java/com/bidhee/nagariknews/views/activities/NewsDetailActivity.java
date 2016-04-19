@@ -34,7 +34,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.SessionManager;
+//import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 import com.bidhee.nagariknews.controller.interfaces.FontSizeListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
@@ -105,7 +105,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     private int SELECTED_NEWS_POSITION = 0;
     private ArrayList<NewsObj> newsObjs;
     private NewsObj selectedNews;
-    SessionManager sessionManager;
     String selectedNewsType = "";
     private int fabDrawable;
     private int MENU_COLOR;
@@ -124,25 +123,14 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
          */
         super.onCreate(savedInstanceState);
 //        EventBus.register(this);
-        sessionManager = new SessionManager(this);
 
         initActivityTransitions();
-        NEWS_TYPE = sessionManager.getSwitchedNewsValue();
+        NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
 
         /**
          * set theme according to the selected {@value NEWS_TYPE}
          */
-        switch (NEWS_TYPE) {
-            case 1:
-                setTheme(R.style.RepublicaTheme);
-                break;
-            case 2:
-                setTheme(R.style.NagarikTheme);
-                break;
-            case 3:
-                setTheme(R.style.SukrabarTheme);
-                break;
-        }
+        setTheme(Dashboard.currentTheme);
 
         setContentView(R.layout.news_detail_layout);
 
@@ -164,13 +152,14 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
             relatedNewsTextView.setVisibility(View.VISIBLE);
             String related = "";
-            switch (sessionManager.getSwitchedNewsValue()) {
+            switch (NEWS_TYPE) {
                 case 1:
                     fabDrawable = R.drawable.menu_republica_corner_fab;
                     MENU_COLOR = getResources().getColor(R.color.republicaColorPrimary);    //setting menu color to current themes colorPrimary
                     related = getResources().getString(R.string.related_news);              //getting related value to show for the bottom news list
                     selectedNewsType = getResources().getString(R.string.republica);        //setting the title for the toolbar (not showing but jst geting for future use)
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
+                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_republica_background);
                     break;
                 case 2:
                     fabDrawable = R.drawable.menu_nagarik_corner_fab;
@@ -178,6 +167,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     selectedNewsType = getResources().getString(R.string.nagarik);
                     related = getResources().getString(R.string.sambandhit_news);
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
+                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
                     break;
                 case 3:
                     fabDrawable = R.drawable.menu_sukrabar_corner_fab;
@@ -185,21 +175,12 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     selectedNewsType = getResources().getString(R.string.sukrabar);
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
                     related = getResources().getString(R.string.related_news);
+                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
                     break;
             }
 
             relatedNewsTextView.setText(related);
-            switch (sessionManager.getSwitchedNewsValue()) {
-                case 1:
-                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.republicaColorPrimary));
-                    break;
-                case 2:
-                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.nagarikColorPrimary));
-                    break;
-                case 3:
-                    relatedNewsTextView.setBackgroundColor(getResources().getColor(R.color.sukrabarColorPrimary));
-                    break;
-            }
+
             setCallbackListenerToFabDial();
         }
 

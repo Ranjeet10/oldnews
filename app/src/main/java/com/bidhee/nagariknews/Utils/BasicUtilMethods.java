@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -61,6 +63,22 @@ public class BasicUtilMethods {
 
     }
 
+    public static void collapseAppbar(ControllableAppBarLayout appBarLayout, Menu menu) {
+        appBarLayout.setEnabled(false);
+        appBarLayout.setActivated(false);
+        appBarLayout.collapseToolbar(true);
+        if (menu != null)
+            menu.getItem(0).setVisible(false);
+    }
+
+    public static void expandAppbar(ControllableAppBarLayout appBarLayout, Menu menu) {
+        appBarLayout.setEnabled(true);
+        appBarLayout.expandToolbar(true);
+        if (menu != null)
+            menu.getItem(0).setVisible(true);
+    }
+
+
     public static void shareLink(Context context, String link) {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
@@ -69,7 +87,7 @@ public class BasicUtilMethods {
                 .createChooser(sharingIntent, "Share using"));
     }
 
-    public static void loadImage(final Context context,final String url, final ImageView galleryThumbnail) {
+    public static void loadImage(final Context context, final String url, final ImageView galleryThumbnail) {
         Picasso.with(context)
                 .load(url)
                 .networkPolicy(NetworkPolicy.OFFLINE)

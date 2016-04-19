@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/light_red_grey"
+    android:background="@drawable/form_background_corner"
     android:orientation="vertical"
     android:padding="@dimen/screen_padding">
 
     <!-- first name layout-->
     <android.support.design.widget.TextInputLayout
         android:id="@+id/firstNameLayout"
-        style="@style/form_cell_parent_layout">
+        style="@style/form_cell_parent_layout"
+        android:visibility="gone">
 
         <AutoCompleteTextView
             android:id="@+id/firstName"
@@ -22,7 +23,8 @@
     <!-- last name layout-->
     <android.support.design.widget.TextInputLayout
         android:id="@+id/lastNameLayout"
-        style="@style/form_cell_parent_layout">
+        style="@style/form_cell_parent_layout"
+        android:visibility="gone">
 
         <AutoCompleteTextView
             android:id="@+id/lastName"
@@ -54,6 +56,20 @@
             android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:nextFocusDown="@+id/btn_signin" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        style="@style/form_cell_parent_layout"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/confirm_password"
+            style="@style/auto_edit_text_style"
+            android:hint="@string/prompt_confirm_password"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:nextFocusDown="@+id/password" />
 
     </android.support.design.widget.TextInputLayout>
 </LinearLayout>

@@ -30,22 +30,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/screen_padding_lr">
+            android:paddingBottom="@dimen/screen_padding"
+            android:paddingLeft="@dimen/screen_padding_lr"
+            android:paddingRight="@dimen/screen_padding_lr"
+            android:paddingTop="@dimen/screen_padding">
 
-            <TextView
+            <!--<TextView-->
+            <!--android:id="@+id/switch_republica"-->
+            <!--style="@style/switch_menu_style"-->
+            <!--android:text="Republica" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/switch_nagarik"-->
+            <!--style="@style/switch_menu_style"-->
+            <!--android:text="@string/nagarik" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/switch_sukrabar"-->
+            <!--style="@style/switch_menu_style"-->
+            <!--android:text="Sukrabar" />-->
+
+            <ImageView
                 android:id="@+id/switch_republica"
-                style="@style/switch_menu_style"
-                android:text="Republica" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/republica" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/switch_nagarik"
-                style="@style/switch_menu_style"
-                android:text="@string/nagarik" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/nagarik" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/switch_sukrabar"
-                style="@style/switch_menu_style"
-                android:text="Sukrabar" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/sukrabar" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

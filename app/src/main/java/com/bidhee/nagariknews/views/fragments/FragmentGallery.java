@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,9 +17,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.AppbarListener;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.activities.Dashboard;
@@ -38,8 +42,14 @@ import butterknife.ButterKnife;
  */
 public class FragmentGallery extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
 
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.gallery_recycler_view)
     RecyclerView galleryRecyclerView;
+    @Bind(R.id.content_not_found_parent_layout)
+    LinearLayout contentNotFoundLayout;
+
+    ControllableAppBarLayout appBarLayout;
 
     ArrayList<Multimedias> multimediaList;
     GalleryAdapter galleryAdapter;
@@ -88,8 +98,12 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        /**
+         * accessing the views of the parent activity {@link Dashboard}
+         */
+        appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
         (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.GONE);
+
         GridLayoutManager gridLayoutManager = (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ?
                 new GridLayoutManager(getActivity(), 2) :
                 new GridLayoutManager(getActivity(), 4);
@@ -98,9 +112,30 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         galleryRecyclerView.setHasFixedSize(true);
         galleryRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        /**
+         * toggle the {@value contentNotFoundLayout}
+         * if the {@value multimediaList} is empty make it visible else,
+         * make it invisible
+         */
+//        multimediaList = new ArrayList<>();
+        if (multimediaList.size() > 0) {
+            contentNotFoundLayout.setVisibility(View.INVISIBLE);
+        } else {
+            contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
+
+
         galleryAdapter = new GalleryAdapter(multimediaList, TYPE);
         galleryRecyclerView.setAdapter(galleryAdapter);
         galleryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), 0, this));
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                BasicUtilMethods.collapseAppbar(appBarLayout, null);
+            }
+        });
     }
 
     @Override
@@ -108,6 +143,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
 
     @Override
     public void onItemClick(View view, int parentPosition, int position) {

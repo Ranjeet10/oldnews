@@ -4,6 +4,7 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
+    android:minHeight="?attr/actionBarSize"
     android:background="?attr/colorPrimary"
     android:elevation="0dp"
     android:theme="@style/AppTheme.AppBarOverlay"
@@ -11,17 +12,19 @@
     app:popupTheme="@style/AppTheme.PopupOverlay">
 
     <RelativeLayout
+        android:id="@+id/toolbar_header_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:padding="@dimen/screen_padding_lr">
+        android:background="@color/transparent"
+        android:padding="@dimen/screen_padding_lr"
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/news_type_image_logo"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:src="@mipmap/nagarik"
+            android:layout_centerVertical="true"
             android:visibility="visible" />
     </RelativeLayout>
 

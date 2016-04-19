@@ -22,6 +22,7 @@
 
 
     <dimen name="news_item_height">165dp</dimen>
+    <dimen name="republica_btn_height">225dp</dimen>
     <dimen name="badge_padding">3dp</dimen>
 
     <dimen name="tab_indicator_padding">1.5dp</dimen>

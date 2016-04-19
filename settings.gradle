@@ -1,1 +1,1 @@
-include ':app', ':tabmenu', ':imageslider'
+include ':app', ':imageslider'

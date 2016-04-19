@@ -1,9 +1,22 @@
 <resources>
     <string name="app_name">NagarikNews</string>
 
-    <!-- youtube and gcm api key-->
+    <!-- API KEYS FOR THE SOCIAL NETWORK-->
+    <!-- ===============================================================================================-->
+    <!-- google api key-->
     <string name="apikey">AIzaSyAX2C4ZX2yHWM8_I9nKgudhWrMoNPHfOj8</string>
     <string name="sender_id">424391978066</string>
+
+    <!-- facebook api key-->
+    <string name="facebook_app_id">1007272449348327</string>
+    <string name="hash_key">7MKOH2tg/4pgKCRjpconM6gKTeM=</string>
+
+    <!-- twitter consumer key and consumer secrete key-->
+    <string name="twitter_consumer_api_key">C6WHEGzaCeOWYryxelmJ7hYH0</string>
+    <string name="twitter_consumer_secrete_key">0nHYouAd0NypXEE036wQ50ZCoMNYsOhIgR5XCPJs51risc7Orw</string>
+
+    <!-- =================================================================================================-->
+
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -22,6 +35,7 @@
     <string name="prompt_last_name">Last name</string>
     <string name="prompt_email">E-mail</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm Password</string>
 
     <!-- news-->
     <string name="news_title_republica">TIA closed due to bomb threat</string>

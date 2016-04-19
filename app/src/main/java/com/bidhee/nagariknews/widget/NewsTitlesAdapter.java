@@ -84,13 +84,14 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
                 holder.categoryTextView.setVisibility(View.VISIBLE);
                 switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
                     case 1:
-                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.republicaColorPrimary));
+//                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.republicaColorPrimary));
+                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_republica_background);
                         break;
                     case 2:
-                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.nagarikColorPrimary));
+                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
                         break;
                     case 3:
-                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.sukrabarColorPrimary));
+                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
                         break;
                 }
             } else {
