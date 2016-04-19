@@ -123,6 +123,7 @@ public class StaticStorage {
     public static String KEY_NEWS_LIST = "news_list";
     public static String KEY_NEWS_POSITION = "news_position";
     public static String KEY_CURRENT_TITLE = "current_title";
+    public static String KEY_CURRENT_LOGO = "current_logo";
     public static String KEY_NEWS_SAVED_STATE = "news_saved_state";
     public static String KEY_GALLERY_TYPE = "galery_type";
     public static String KEY_VIDEO_BUNDLE = "video_bundle";
@@ -188,18 +189,16 @@ public class StaticStorage {
         } else if (type == VIDEOS) {
             multimediaList.add(new Multimedias("id", "Video shows terrified tourists as the temple collapses - BBC News", "Yyhh98NDLNs"));
             multimediaList.add(new Multimedias("id", "New Nepali Movie PARDESHI Song Kura Khatti Ho || Official Full Video HD", "77LB0TP57JA"));
-            multimediaList.add(new Multimedias("id", "U & Me - Samrakshan Devkota Ft. Girish | New Nepali R&B Pop Song 2015", "yPKGByxyq-g"));
-            multimediaList.add(new Multimedias("id", "Sustari - Rozan Adhikari Ft. Nawaz Ansari | New Nepali Pop Song 2015", "AKeaQfdwduY"));
-            multimediaList.add(new Multimedias("id", "Jet Udauchu- Nepali new song 2016 ~ Nicky Karki", "Wbj34qhlJFI"));
-            multimediaList.add(new Multimedias("id", "Eruption Warning, GMO Update | S0 News April 28, 2015", "fEnB3ePsOow"));
-            multimediaList.add(new Multimedias("id", "Magnetic Pole Quake, Alerts, App Q&A | S0 News Feb.24.2016", "B4TgP0QPzSg"));
-            multimediaList.add(new Multimedias("id", "Negative Fox News Article Removal Causes Mickey Kaus To Quit", "e-UpPLv98ro"));
-            multimediaList.add(new Multimedias("id", "Why India and Pakistan Hate Each Other", "yReaR1p-PV0"));
-            multimediaList.add(new Multimedias("id", "Over 350 cadres of UML, NC and RPP join Maoists", "HGweIuYDpO4&list=PL1C1A7F4C69853BB8&index=2"));
-            multimediaList.add(new Multimedias("id", "Maoist Artists, JUne 28", "DDVgVopOACc&index=3&list=PL1C1A7F4C69853BB8"));
-            multimediaList.add(new Multimedias("id", "mahila sanchar samuha", "9SEwskS1gm4&list=PL1C1A7F4C69853BB8&index=5"));
-            multimediaList.add(new Multimedias("id", "Deuba angry over hooting in joint mass meeting", "EDfCpDQBkgU&list=PL1C1A7F4C69853BB8&index=4"));
-            multimediaList.add(new Multimedias("id", "Likhe Jo Khat Tujhe Song - Mohammed Rafi - Kanyadan Hindi", "3dwzth2CJOQ&index=6&list=RDfBI1VKnAZdc"));
+            multimediaList.add(new Multimedias("id", "Nagariknews Video: World's shortest man Chandra Bahadur Dangi", "RnfiL5JZ5io"));
+            multimediaList.add(new Multimedias("id", "Interview With Miss Nepal 2016", "K9UejuHHgto"));
+            multimediaList.add(new Multimedias("id", "IBelly dance by Miss Nepal contestant Namrata Shrestha", "8jyMJDiIaNk"));
+            multimediaList.add(new Multimedias("id", "Group fight on Holi", "oahhDybedIc"));
+            multimediaList.add(new Multimedias("id", "Naya Shakti - Clean Kathmandu-Green Kathmandu", "Ojpwxx_4Aqk"));
+            multimediaList.add(new Multimedias("id", "Holi Special Program 2072 with Rampyari and K Ma Timro Hoina Ra Film Unit - RED STUDIO HD", "f1cgzpgW_Zs"));
+            multimediaList.add(new Multimedias("id", "Football Team's Grand Welcome in Jhapa-2", "BG5rW6eoJZ8"));
+            multimediaList.add(new Multimedias("id", "PM Narendramodi and PM KP Oli inaugurate Dhalkebar Muzaffarpur transmission line", "tEcc9RO6Ehg"));
+            multimediaList.add(new Multimedias("id", "PM Kp Sharma Oli", "MNp1e0kqt4w"));
+            multimediaList.add(new Multimedias("id", "Nepali Cricket supporter In Bangladesh", "vjIYurEgkvU"));
 
         }
 

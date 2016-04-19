@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,10 +19,13 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.ExtraModel;
 import com.bidhee.nagariknews.views.activities.Dashboard;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.widget.ExtraAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -34,11 +38,14 @@ import butterknife.ButterKnife;
  * Created by ronem on 2/21/16.
  */
 public class FragmentExtra extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.gallery_recycler_view)
     RecyclerView recyclerView;
     ArrayList<ExtraModel> list;
     ExtraAdapter adapter;
 
+    ControllableAppBarLayout appBarLayout;
 
 
     public static FragmentExtra createNewInstance() {
@@ -68,12 +75,26 @@ public class FragmentExtra extends Fragment implements RecyclerItemClickListener
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        /**
+         * accessing the views of the parent activity {@link Dashboard}
+         */
+        appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
+
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recyclerView.setAdapter(adapter);
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), 0, this));
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                BasicUtilMethods.collapseAppbar(appBarLayout, null);
+
+            }
+        });
     }
 
     @Override

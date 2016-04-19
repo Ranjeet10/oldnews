@@ -21,12 +21,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.EpaperBundle;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.EpaperActivity;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.EpapersListAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
@@ -43,6 +47,8 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     private String TAG = getClass().getSimpleName();
 
+    @Bind(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.gallery_recycler_view)
     RecyclerView epaperRecyclerView;
     @Bind(R.id.search_card_view)
@@ -55,6 +61,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     private EpaperBundle epaperBundle;
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
+    ControllableAppBarLayout appBarLayout;
     EpapersListAdapter epapersListAdapter;
     GridLayoutManager gridLayoutManager;
 
@@ -82,7 +89,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epapersSearched = epapers;
 
         Log.d("size", epapers.size() + "");
-        Log.i(TAG,"onCreate called");
+        Log.i(TAG, "onCreate called");
     }
 
     @Nullable
@@ -101,8 +108,12 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         super.onViewCreated(view, savedInstanceState);
 
         Log.i(TAG, "onViewCreated called");
-
+        /**
+         * accessing the views of the parent activity {@link Dashboard}
+         */
+        appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
         (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.GONE);
+
         searchCardView.setVisibility(View.VISIBLE);
 
         //setting the color of text of searchview
@@ -123,7 +134,15 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epaperRecyclerView.setAdapter(epapersListAdapter);
         epaperRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), 0, this));
 
+
         searchView.setOnQueryTextListener(this);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                BasicUtilMethods.collapseAppbar(appBarLayout, null);
+            }
+        });
     }
 
 

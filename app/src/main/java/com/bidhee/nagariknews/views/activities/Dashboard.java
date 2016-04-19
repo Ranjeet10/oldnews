@@ -1,19 +1,25 @@
 package com.bidhee.nagariknews.views.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,15 +29,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.AppbarListener;
+import com.bidhee.nagariknews.controller.AppController;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
@@ -46,8 +51,8 @@ import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import butterknife.Bind;
@@ -78,9 +83,10 @@ public class Dashboard extends AppCompatActivity
     @Bind(R.id.fragment_container_layout)
     FrameLayout fragmentContainer;
 
+    private ControllableAppBarLayout.LayoutParams params;
     LinearLayout switchMenusLayout;
     ImageView navImageView;
-    TextView switchNagarik, switchRepublica, switchSukrabar;
+    ImageView switchNagarik, switchRepublica, switchSukrabar;
     Handler handler;
     Runnable runnable;
 
@@ -90,8 +96,10 @@ public class Dashboard extends AppCompatActivity
 
     private MyAnimation myAnimation;
     private String currentFragmentTag;
-    private String currentTitle;
-    private String currentNewsType;
+    public static int currentTheme;
+    public static String currentTitle;
+    public static String currentNewsType;
+    public static int logoImage;
 
 
     String navImageUrl = "http://nagariknews.com/media/k2/items/cache/x78fd7c7087409bceafbd973478ab7045_L.jpg.pagespeed.ic.YKq77EitMY.webp";
@@ -107,22 +115,26 @@ public class Dashboard extends AppCompatActivity
         sessionManager = new SessionManager(this);
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
-                setTheme(R.style.RepublicaTheme);
+                currentTheme = R.style.RepublicaTheme;
                 break;
             case 2:
-                setTheme(R.style.NagarikTheme);
+                currentTheme = R.style.NagarikTheme;
                 break;
             case 3:
-                setTheme(R.style.SukrabarTheme);
+                currentTheme = R.style.SukrabarTheme;
                 break;
         }
 
-        setContentView(R.layout.activity_dashboard);
+        setTheme(currentTheme);
 
+        /**
+         * main content view
+         */
+        setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
         handler = new Handler();
         myAnimation = new MyAnimation();
-
+        printHashKey();
         settingToolbar();
         setUpImageSlider();
 //        setUpVIewFlipper();
@@ -157,6 +169,12 @@ public class Dashboard extends AppCompatActivity
 
         setUpNavigation();
         setUpNavigationMenu();
+        /**
+         * accessing the params of {@value collapsingToolbarLayout}
+         * to modify its attributes during navigation item selection
+         */
+        params = (ControllableAppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+
         settingCollapsingToolBarListener();
 
         if (savedInstanceState != null) {
@@ -166,7 +184,9 @@ public class Dashboard extends AppCompatActivity
             currentFragmentTag = savedInstanceState.getString(StaticStorage.KEY_CURRENT_TAG);
             currentTitle = savedInstanceState.getString(StaticStorage.KEY_CURRENT_TITLE);
             currentNewsType = savedInstanceState.getString(StaticStorage.KEY_NEWS_TYPE);
+            logoImage = savedInstanceState.getInt(StaticStorage.KEY_CURRENT_LOGO);
 
+            newsTypeImageLogo.setImageResource(logoImage);
             replaceableFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
             attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
 
@@ -177,22 +197,26 @@ public class Dashboard extends AppCompatActivity
             switch (sessionManager.getSwitchedNewsValue()) {
                 case 1:
 //                    currentTitle = getResources().getString(R.string.all_news_r);
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);
+                    logoImage = StaticStorage.NEWS_LOGOS[0];
+
                     break;
                 case 2:
 //                    currentTitle = getResources().getString(R.string.all_news_n);
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);
+                    logoImage = StaticStorage.NEWS_LOGOS[1];
                     break;
                 case 3:
 //                    currentTitle = getResources().getString(R.string.all_news_r);
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);
+                    logoImage = StaticStorage.NEWS_LOGOS[2];
                     break;
             }
 
+            newsTypeImageLogo.setImageResource(logoImage);
             replaceableFragment = FragmentAllNews.createNewInstance();
             currentFragmentTag = replaceableFragment.getClass().getName();
             attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
         }
+
+
 
     }
 
@@ -202,6 +226,24 @@ public class Dashboard extends AppCompatActivity
 //        viewFlipper.startFlipping();
 //    }
 
+
+    private void printHashKey() {
+        // Add code to print out the key hash
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.bidhee.nagariknews",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+    }
     private void setUpVIewFlipper() {
         Animation slideInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in);
         Animation slideOutAnim = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
@@ -280,6 +322,11 @@ public class Dashboard extends AppCompatActivity
 //        });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        invalidateOptionsMenu();
+    }
 
     private void settingToolbar() {
         toolbar.setBackgroundColor(getResources().getColor(R.color.transparent));
@@ -309,24 +356,21 @@ public class Dashboard extends AppCompatActivity
             //value 1 means saved newstype was for Republica
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
             currentNewsType = getResources().getString(R.string.republica);
-            newsTypeImageLogo.setImageResource(R.mipmap.ic_share_black);
 
         } else if (sessionManager.getSwitchedNewsValue() == 2) {
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_nagarik : R.menu.free_user_nav_menu_nagarik);
             currentNewsType = getResources().getString(R.string.nagarik);
-            newsTypeImageLogo.setImageResource(R.mipmap.ic_alarm_black_24dp);
 
         } else if (sessionManager.getSwitchedNewsValue() == 3) {
             navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
             currentNewsType = getResources().getString(R.string.sukrabar);
-            newsTypeImageLogo.setImageResource(R.mipmap.ic_favorite_black);
         }
 
         switchMenusLayout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.switch_menus_background_layout);
         navImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_image_view);
-        switchRepublica = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_republica);
-        switchNagarik = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
-        switchSukrabar = (TextView) navigationView.getHeaderView(0).findViewById(R.id.switch_sukrabar);
+        switchRepublica = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_republica);
+        switchNagarik = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
+        switchSukrabar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_sukrabar);
 
         Picasso.with(this)
                 .load(navImageUrl)
@@ -417,33 +461,29 @@ public class Dashboard extends AppCompatActivity
         this.menu.getItem(1).setVisible(false);
         this.menu.getItem(2).setVisible(false);
 
+//        final Drawable drawable = menu.getItem(0).getIcon();
+//        if (drawable != null) {
+//            final Drawable wrapped = DrawableCompat.wrap(drawable);
+//            drawable.mutate();
+//            DrawableCompat.setTint(wrapped, Color.WHITE);
+//            menu.getItem(0).setIcon(drawable);
+//        }
+
+
         //show hide the menu item
         //show menu item (search) if the fragment is FragmentAllNews
         //hide menu item (search) if the fragment is other than FragmentAllNews
         if (!TextUtils.isEmpty(currentFragmentTag)) {
             if (currentFragmentTag.equals("com.bidhee.nagariknews.views.fragments.FragmentAllNews")) {
-                expandAppbar();
-
+                BasicUtilMethods.expandAppbar(appBarLayout, this.menu);
             } else {
-                collapseAppbar();
+                BasicUtilMethods.collapseAppbar(appBarLayout, this.menu);
             }
         }
 
         return true;
     }
 
-    private void collapseAppbar() {
-        appBarLayout.setEnabled(false);
-        appBarLayout.setActivated(false);
-        appBarLayout.collapseToolbar(true);
-        this.menu.getItem(0).setVisible(false);
-    }
-
-    private void expandAppbar() {
-        appBarLayout.setEnabled(true);
-        appBarLayout.expandToolbar(true);
-        this.menu.getItem(0).setVisible(true);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -465,13 +505,33 @@ public class Dashboard extends AppCompatActivity
         currentTitle = item.toString();
 
         int id = item.getItemId();
+//        scroll|exitUntilCollapsed
+
 
         //// Expand the collapsing toolbar with animation if it is all news fragment else Collapse it ///
-
         if (id == R.id.nav_all_news) {
-            expandAppbar();
+            BasicUtilMethods.expandAppbar(appBarLayout, this.menu);
+
+            /**
+             * if the selected item is all news, set the following attributes to the {@link collapsingToolbarLayout}
+             * set scroll flag {@link collapsingToolbarLayout} as
+             * SCROLL_FLAG_SCROLL,
+             * SCROLL_FLAG_ENTER_ALWAYS &
+             * SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+             * so that image and toolbar collapses on scroll up
+             */
+            params.setScrollFlags(ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
+
         } else {
-            collapseAppbar();
+            BasicUtilMethods.collapseAppbar(appBarLayout, this.menu);
+            /**
+             * if the selected item is all news, set the following attributes to the {@link collapsingToolbarLayout}
+             * set scroll flag {@link collapsingToolbarLayout} as
+             * SCROLL_FLAG_SCROLL &
+             * SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+             * so that image collapses but toolbar remains sticked on scroll up
+             */
+            params.setScrollFlags(ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
         }
 
         switch (id) {
@@ -538,6 +598,7 @@ public class Dashboard extends AppCompatActivity
         outState.putString(StaticStorage.KEY_CURRENT_TAG, currentFragmentTag);
         outState.putString(StaticStorage.KEY_NEWS_TYPE, currentNewsType);
         outState.putString(StaticStorage.KEY_CURRENT_TITLE, currentTitle);
+        outState.putInt(StaticStorage.KEY_CURRENT_LOGO, logoImage);
     }
 
     @Override

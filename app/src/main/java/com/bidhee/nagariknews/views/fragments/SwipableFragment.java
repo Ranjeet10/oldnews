@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +39,12 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 /**
  * Created by ronem on 2/9/16.
@@ -49,6 +56,9 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.progess)
     ProgressBar progressBar;
+
+    @Bind(R.id.content_not_found_parent_layout)
+    LinearLayout contentNotFoundLayout;
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
@@ -132,14 +142,27 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         recyclerView.setHasFixedSize(true);
 
 //        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        ScaleInAnimator animator = new ScaleInAnimator();
-        animator.setAddDuration(500);
-        recyclerView.setItemAnimator(animator);
 
+//        recyclerView.setItemAnimator(scaleInAnimator);
+
+        /**
+         * toggle the {@value contentNotFoundLayout}
+         * if the {@value newsObjs} is empty make it visible else,
+         * make it invisible
+         */
+//        newsObjs = new ArrayList<>();
+        if (newsObjs.size() > 0) {
+            contentNotFoundLayout.setVisibility(View.INVISIBLE);
+        } else {
+            contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
 
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsObjs);
+        ScaleInAnimationAdapter bottomAnimationAdapter = new ScaleInAnimationAdapter(newsTitlesAdapter);
+        bottomAnimationAdapter.setDuration(200);
+        recyclerView.setAdapter(bottomAnimationAdapter);
+
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
-        recyclerView.setAdapter(newsTitlesAdapter);
 
 
         if (Integer.parseInt(categoryId) != 1) {
@@ -148,19 +171,24 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 public void onLoadMore(int current_page) {
 
                     Log.i("categoryId", categoryId + " " + categoryName + "parents title" + ((CollapsingToolbarLayout) getActivity().findViewById(R.id.collapsing_toolbar)).getTitle());
+
                     progressBar.setVisibility(View.VISIBLE);
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            try {
+                                ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
+                                        NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
+                                        NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
 
-                            ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
-                                    NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
-                                    NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
+                                int curSize = newsTitlesAdapter.getItemCount();
+                                newsObjs.addAll(moreNews);
+                                newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
 
-                            int curSize = newsTitlesAdapter.getItemCount();
-                            newsObjs.addAll(moreNews);
-                            newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
+                            }
                             progressBar.setVisibility(View.GONE);
                         }
                     }, 2000);

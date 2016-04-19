@@ -5,6 +5,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
@@ -25,35 +27,38 @@ public class EpaperActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.toolbar_header_layout)
+    RelativeLayout toolbarHeaderLayout;
     @Bind(R.id.epaper_viewpager)
     ViewPager epaperViewpager;
 
     Epaper epaper;
     EpaperPagerAdapter epaperPagerAdapter;
-    SessionManager sessionManager;
-    String currentNewsType;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /**
+         * Setting the current theme from the {@link Dashboard}
+         */
+        setTheme(Dashboard.currentTheme);
+
+        /**
+         * main content view for the {@link EpaperActivity}
+         */
         setContentView(R.layout.epaper_activity_layout);
         ButterKnife.bind(this);
-        sessionManager = new SessionManager(this);
-
-        currentNewsType = sessionManager.getSwitchedNewsValue() == 0 ?
-                getResources().getString(R.string.republica) :
-                getResources().getString(R.string.nagarik);
 
         epaper = getIntent().getExtras().getParcelable(StaticStorage.KEY_EPAPER);
 
         if (epaper == null) {
-            setPageTitle(currentNewsType, 0);
+            setPageTitle(Dashboard.currentNewsType, 0);
         }
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        toolbarHeaderLayout.setVisibility(View.GONE);
         setViewPagerData();
 
     }
@@ -65,7 +70,7 @@ public class EpaperActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                setPageTitle(currentNewsType, position + 1);
+                setPageTitle(Dashboard.currentNewsType, position + 1);
             }
 
             @Override
@@ -81,7 +86,7 @@ public class EpaperActivity extends AppCompatActivity {
     }
 
     private void setPageTitle(String currentNewsType, int currentPageNumber) {
-        getSupportActionBar().setTitle(currentNewsType + " ("+ epaper.getDate() + ") " + currentPageNumber + "/" + epaper.getPages().size());
+        getSupportActionBar().setTitle(currentNewsType + " (" + epaper.getDate() + ") " + currentPageNumber + "/" + epaper.getPages().size());
     }
 
 

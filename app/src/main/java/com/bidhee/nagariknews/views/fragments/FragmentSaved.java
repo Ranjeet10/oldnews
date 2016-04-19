@@ -11,9 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
@@ -21,6 +23,7 @@ import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
+import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 
 import java.io.File;
@@ -38,6 +41,10 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     RecyclerView recyclerView;
     @Bind(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.content_not_found_parent_layout)
+    LinearLayout contentNotFoundLayout;
+
+    private ControllableAppBarLayout appBarLayout;
 
     ArrayList<NewsObj> newsObjs;
     NewsTitlesAdapter newsTitlesAdapter;
@@ -74,12 +81,19 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        appBarLayout = (ControllableAppBarLayout) getActivity().findViewById(R.id.app_bar_layout);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
+        if (newsObjs.size() > 0) {
+            contentNotFoundLayout.setVisibility(View.INVISIBLE);
+        } else {
+            contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
         newsTitlesAdapter = new NewsTitlesAdapter(false, 2, newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerView.setAdapter(newsTitlesAdapter);
@@ -88,6 +102,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
             @Override
             public void onRefresh() {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                BasicUtilMethods.collapseAppbar(appBarLayout, null);
             }
         });
     }
