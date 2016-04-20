@@ -290,7 +290,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     }
 
     private void loadingDetail(NewsObj news) {
-        BasicUtilMethods.loadImage(this, news.getImg(), image);
+        if (news.getImg().length() > 0)
+            BasicUtilMethods.loadImage(this, news.getImg(), image);
 
         titleTextView.setText(news.getTitle());
         newsCategoryTextView.setText(news.getNewsCategoryName());

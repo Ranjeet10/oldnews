@@ -2,6 +2,11 @@ package com.bidhee.nagariknews.controller;
 
 import android.app.Application;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
+import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.squareup.picasso.OkHttpDownloader;
@@ -17,14 +22,24 @@ import io.fabric.sdk.android.Fabric;
  */
 public class AppController extends Application {
 
+    private String TAG = getClass().getSimpleName();
+
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "C6WHEGzaCeOWYryxelmJ7hYH0";
     private static final String TWITTER_SECRET = "0nHYouAd0NypXEE036wQ50ZCoMNYsOhIgR5XCPJs51risc7Orw ";
 
+    private RequestQueue requestQueue;
+    private static AppController instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        /**
+         * Volley initialization
+         */
+
+        instance = this;
 
 
         /**
@@ -50,6 +65,42 @@ public class AppController extends Application {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
 
+    }
+
+    /**
+     *
+     * @return instance of the {@link AppController}
+     */
+    public static synchronized AppController getInstance() {
+        return instance;
+    }
+
+    /**
+     *
+     * @return requestQueue
+     * initialize only once throughout the whole application
+     *
+     */
+    public RequestQueue getRequestQueue() {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+        return requestQueue;
+    }
+
+
+    /**
+     * Method to add the {@link Volley requests} to the #requestQueue
+     * @param req
+     * @param <T>
+     *
+     */
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        int socketTimeOut = 30000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        req.setRetryPolicy(policy);
+        getRequestQueue().add(req);
     }
 
 

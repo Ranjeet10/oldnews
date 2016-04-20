@@ -19,8 +19,8 @@ public class NewsObj implements Parcelable {
     private String img;
     private String reportedBy;
 
-    public NewsObj() {
-    }
+//    public NewsObj() {
+//    }
 
 
     public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title, String reportedBy, String date, String desc, String newsUrl) {

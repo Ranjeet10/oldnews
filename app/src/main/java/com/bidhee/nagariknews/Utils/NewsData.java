@@ -3,8 +3,6 @@ package com.bidhee.nagariknews.Utils;
 import android.content.Context;
 
 import com.bidhee.nagariknews.R;
-import com.bidhee.nagariknews.bus.EventBus;
-import com.bidhee.nagariknews.model.BreakingAndLatestNews;
 import com.bidhee.nagariknews.model.NewsObj;
 
 import java.util.ArrayList;
@@ -169,7 +167,7 @@ public class NewsData {
                     context.getResources().getString(R.string.news_description_nagarik), newsUrl));
         }
 
-        EventBus.post(newsObjs);
+//        EventBus.post(newsObjs);
 
     }
 
