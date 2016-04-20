@@ -155,8 +155,8 @@ public class Dashboard extends AppCompatActivity
              */
             sessionManager.switchNewsTo(1);
             //starting loginIntent
-            Intent loginIntent = new Intent(this, SelectCategoryActivity.class);
-//            Intent loginIntent = new Intent(this, LoginActivity.class);
+//            Intent loginIntent = new Intent(this, SelectCategoryActivity.class);
+            Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
@@ -165,6 +165,9 @@ public class Dashboard extends AppCompatActivity
 
         } else {
             isUser = sessionManager.isLoggedIn() ? true : false;
+            //added for testing
+//            startActivity(new Intent(Dashboard.this, SelectCategoryActivity.class));
+
         }
 
 
@@ -218,7 +221,6 @@ public class Dashboard extends AppCompatActivity
         }
 
 
-
     }
 
 //    @Override
@@ -245,6 +247,7 @@ public class Dashboard extends AppCompatActivity
 
         }
     }
+
     private void setUpVIewFlipper() {
         Animation slideInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in);
         Animation slideOutAnim = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
@@ -582,7 +585,8 @@ public class Dashboard extends AppCompatActivity
 
                 break;
 
-            case R.id.nav_share:
+            case R.id.nav_login:
+                startActivity(new Intent(Dashboard.this, LoginActivity.class));
                 break;
         }
 

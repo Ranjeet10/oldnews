@@ -25,6 +25,7 @@
     <string name="action_add">Add</string>
 
     <string name="login_text">Login</string>
+    <string name="skip_text">Skip</string>
     <string name="sign_up_text">Sign Up</string>
     <string name="login_facebook_text">Login with Facebook</string>
 

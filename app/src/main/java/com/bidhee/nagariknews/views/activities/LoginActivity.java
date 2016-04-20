@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.controller.SessionManager;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -78,9 +79,14 @@ public class LoginActivity extends AppCompatActivity implements
     // Google Play services
     private ConnectionResult mConnectionResult;
 
+    //SessionManager
+    SessionManager sessionManager;
+
 
     @Bind(R.id.btn_login)
     Button btnLogin;
+    @Bind(R.id.btn_skip)
+    Button btnSkip;
     @Bind(R.id.info_text_view)
     TextView infoTextView;
     @Bind(R.id.login_button)
@@ -94,6 +100,8 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
+
+        sessionManager = new SessionManager(this);
         ButterKnife.bind(this);
 
         dialog = new ProgressDialog(this);
@@ -265,13 +273,27 @@ public class LoginActivity extends AppCompatActivity implements
         });
     }
 
-
+    /**
+     * create login session for the recently logged in user
+     * from the class {@link SessionManager}
+     */
     @OnClick(R.id.btn_login)
     void onLoginClick() {
-        startActivity(new Intent(this, Dashboard.class));
+        sessionManager.createLoginSession("usernmae", "imagelink");
+        launchActivity(SelectCategoryActivity.class);
+    }
+
+    private void launchActivity(Class<?> activity) {
+        Intent intent = new Intent(LoginActivity.this, activity);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
         this.finish();
     }
 
+    @OnClick(R.id.btn_skip)
+    void onSkipClick() {
+        launchActivity(Dashboard.class);
+    }
 
     @Override
     protected void onDestroy() {
