@@ -41,7 +41,7 @@ public class BreakingAndLatestNewsChildAdapter extends RecyclerView.Adapter<Brea
         holder.newsSourceTextView.setText(listModels.get(position).getReportedBy());
         holder.newsDateTextView.setText(listModels.get(position).getDate());
         holder.titleTextView.setText(listModels.get(position).getTitle());
-        String desc = listModels.get(position).getDesc();
+        String desc = listModels.get(position).getIntroText();
         holder.descriptionTextView.setText(desc);
         Picasso.with(context)
                 .load(listModels.get(position).getImg())

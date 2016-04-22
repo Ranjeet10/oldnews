@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.android.volley.Network;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
@@ -65,7 +64,9 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     LinearLayout contentNotFoundLayout;
 
     ArrayList<NewsObj> newsObjs;
+    ArrayList<NewsObj> newsListToShow;
     NewsTitlesAdapter newsTitlesAdapter;
+
 
     private int newsType;
     private String categoryId;
@@ -74,8 +75,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     /**
      * response for the {@link com.android.volley.toolbox.Volley Request}
      */
-    private Response.Listener<String> serverResponse;
-    private Response.ErrorListener errorListener;
+    private Response.Listener<String> serverResponseNewsTitle;
+    private Response.ErrorListener errorListenerNewsTitle;
 
 
     public static SwipableFragment createNewInstance(TabModel tab) {
@@ -92,27 +93,30 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        newsListToShow = new ArrayList<>();
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
 
     }
 
     private void getNewsTitles(int pageIndex, String categoryId) {
+        if (pageIndex == 1)
+            loadingBar.setVisibility(View.VISIBLE);
 
-        loadingBar.setVisibility(View.VISIBLE);
-        handleServerResponse();
-
-        String url = BuildConfig.BASE_URL + "api/news/list?_format=json&page=" + pageIndex + "&category_id=" + categoryId;
-        WebService.getNewsTitle(url, serverResponse, errorListener);
+        handleServerResponseForNewsTitle();
+        //load news titles
+        WebService.getServerData(ServerConfig.getNewsTitleUrl(pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
 
     }
 
-    private void handleServerResponse() {
-        serverResponse = new Response.Listener<String>() {
+    private void handleServerResponseForNewsTitle() {
+        serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 loadingBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 try {
+                    newsObjs = new ArrayList<>();
                     JSONObject nodeObject = new JSONObject(response);
                     if (nodeObject.has("status")) {
                         JSONArray newsArray = nodeObject.getJSONArray("data");
@@ -120,18 +124,35 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                             JSONObject obj = newsArray.getJSONObject(i);
                             String newsId = obj.getString("id");
                             String newsTile = obj.getString("title");
-                            String newsDesc = obj.getString("intro_text");
+                            String introText = obj.getString("intro_text");
                             String publishDate = obj.getString("published_date");
                             String publishedBy = obj.getString("author_name");
+                            String img = obj.getString("featured_image");
 
-                            String img = "";
-                            if (obj.has("featured_image")) {
-                                img = obj.getString("featured_image");
+                            if (TextUtils.isEmpty(img)) {
+                                img = "https://lh3.googleusercontent.com/2BGOr1KnAekO9NmaU4VZg2ZLRs_-60aaA7p4ABYlZXnqsLrItMi4uhmA62pGQDx9NwU=s630-fcrop64=1,0723098ffae5f834";
                             }
 
-                            NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, categoryName, img, newsTile, publishedBy, publishDate, newsDesc, "");
+                            NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, categoryName, img, newsTile, publishedBy, publishDate, introText,"", "");
                             newsObjs.add(newsObj);
                         }
+
+                        /**
+                         * adding the newly fetched news to the newsListToShow
+                         * this newsListToShow is the main List to hold the real data
+                         */
+                        newsListToShow.addAll(newsObjs);
+
+                        /**
+                         * get the toal count of the newsTitlesAdapter
+                         * so that we can notify the position from where the newly fetched data to be inserted
+                         */
+                        int curSize = newsTitlesAdapter.getItemCount();
+
+                        /**
+                         * notify the adapter with the newly fetched data
+                         */
+                        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
                         newsTitlesAdapter.notifyDataSetChanged();
 
                         showContentNotFoundLayoutIfNeeded();
@@ -150,17 +171,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             }
         };
 
-        errorListener = new Response.ErrorListener()
+        errorListenerNewsTitle = new Response.ErrorListener()
 
         {
             @Override
             public void onErrorResponse(VolleyError error) {
                 loadingBar.setVisibility(View.GONE);
-                if (error instanceof Network) {
-                    Toast.makeText(getActivity(), "please check your network", Toast.LENGTH_SHORT).show();
-                } else if (error instanceof ServerError) {
-                    Toast.makeText(getActivity(), "Cannot connect to the server", Toast.LENGTH_SHORT).show();
-                }
+                progressBar.setVisibility(View.GONE);
+                showContentNotFoundLayoutIfNeeded();
             }
         }
 
@@ -169,11 +187,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     private void showContentNotFoundLayoutIfNeeded() {
         /**
-         * toggle the {@value contentNotFoundLayout}
-         * if the {@value newsObjs} is empty make it visible else,
+         * toggle the #contentNotFoundLayout
+         * if the  #newsObjs is empty make it visible else,
          * make it invisible
          */
-        if (newsObjs.size() > 0) {
+        if (newsListToShow.size() > 0) {
             contentNotFoundLayout.setVisibility(View.INVISIBLE);
         } else {
             contentNotFoundLayout.setVisibility(View.VISIBLE);
@@ -198,11 +216,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        newsObjs = new ArrayList<>();
 
 
         if (savedInstanceState != null) {
-            newsObjs = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
+            newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
         } else {
 
             switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
@@ -215,14 +232,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     // 1 means its for breaking and latest news
                     // >1 means its for normal news
                     newsType = 1;
-                    newsObjs = Integer.parseInt(categoryId) == 1 ?
+                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
                             NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
                             NewsData.getNewsRepublica(getActivity(), newsType, categoryId, categoryName);
                     break;
                 case 2:
                     newsType = 2;
                     if (Integer.parseInt(categoryId) == 1) {
-                        newsObjs = NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId);
+                        newsListToShow = NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId);
                     } else {
                         getNewsTitles(1, categoryId);
                     }
@@ -230,14 +247,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     break;
                 case 3:
                     newsType = 3;
-                    newsObjs = Integer.parseInt(categoryId) == 1 ?
+                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
                             NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
                             NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
                     break;
             }
         }
 
-        newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsObjs);
+        newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsListToShow);
         ScaleInAnimationAdapter bottomAnimationAdapter = new ScaleInAnimationAdapter(newsTitlesAdapter);
         bottomAnimationAdapter.setDuration(200);
         recyclerView.setAdapter(bottomAnimationAdapter);
@@ -245,6 +262,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
 
 
+        loadMoreListener(linearLayoutManager);
+
+    }
+
+    private void loadMoreListener(LinearLayoutManager linearLayoutManager) {
         if (Integer.parseInt(categoryId) != 1) {
             recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
                 @Override
@@ -254,30 +276,33 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                     progressBar.setVisibility(View.VISIBLE);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
-                                        NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
-                                        NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
+                    if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
+                        getNewsTitles(current_page, categoryId);
+                    } else {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
+                                            NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
+                                            NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
 
-                                int curSize = newsTitlesAdapter.getItemCount();
-                                newsObjs.addAll(moreNews);
-                                newsTitlesAdapter.notifyItemRangeInserted(curSize, newsObjs.size() - 1);
-                            } catch (NullPointerException npe) {
-                                npe.printStackTrace();
+                                    int curSize = newsTitlesAdapter.getItemCount();
+                                    newsListToShow.addAll(moreNews);
+                                    newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
+                                } catch (NullPointerException npe) {
+                                    npe.printStackTrace();
 
+                                }
+                                progressBar.setVisibility(View.GONE);
                             }
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }, 2000);
+                        }, 2000);
+                    }
 
                     Log.i(TAG, "current page No " + current_page);
                 }
             });
         }
-
     }
 
     private void addingSwipeRefreshListener() {
@@ -321,11 +346,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } else if (view.getId() == R.id.news_show_detail_text_view) {
 
         } else {
+
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-            NewsObj newsObj = newsObjs.get(position);
+            NewsObj newsObj = newsListToShow.get(position);
             newsObj.setNewsCategoryName(categoryName);
 
-            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
+            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
             startActivity(newsDetailIntent);
 
@@ -372,9 +398,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         }
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE, newsObjs);
+        outState.putParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE, newsListToShow);
     }
 }

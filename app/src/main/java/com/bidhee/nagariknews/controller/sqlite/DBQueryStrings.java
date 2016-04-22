@@ -28,6 +28,7 @@ public class DBQueryStrings {
             DBConstant.NEWS_ID + text +
             DBConstant.NEWS_CATEGORY_NAME + text +
             DBConstant.NEWS_TITLE + text +
+            DBConstant.NEWS_INTRO + text +
             DBConstant.NEWS_DESCRIPTION + text +
             DBConstant.NEWS_URL + text +
             DBConstant.NEWS_DATE + text +

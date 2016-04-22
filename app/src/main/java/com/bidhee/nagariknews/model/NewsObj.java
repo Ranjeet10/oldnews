@@ -13,7 +13,8 @@ public class NewsObj implements Parcelable {
     private String newsId;
     private String newsCategoryName;
     private String title;
-    private String desc;
+    private String introText;
+    private String description;
     private String newsUrl;
     private String date;
     private String img;
@@ -23,13 +24,15 @@ public class NewsObj implements Parcelable {
 //    }
 
 
-    public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title, String reportedBy, String date, String desc, String newsUrl) {
+    public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title,
+                   String reportedBy, String date, String introText, String description, String newsUrl) {
         this.newsType = newsType;
         this.newsCategoryId = newsCategoryId;
         this.newsId = newsId;
         this.newsCategoryName = newsCategoryName;
         this.title = title;
-        this.desc = desc;
+        this.introText = introText;
+        this.description = description;
         this.newsUrl = newsUrl;
         this.date = date;
         this.img = img;
@@ -42,7 +45,8 @@ public class NewsObj implements Parcelable {
         newsId = source.readString();
         newsCategoryName = source.readString();
         title = source.readString();
-        desc = source.readString();
+        introText = source.readString();
+        description = source.readString();
         newsUrl = source.readString();
         date = source.readString();
         img = source.readString();
@@ -73,8 +77,17 @@ public class NewsObj implements Parcelable {
     }
 
 
-    public String getDesc() {
-        return desc;
+    public String getIntroText() {
+        return introText;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getIsTOShow() {
@@ -109,8 +122,8 @@ public class NewsObj implements Parcelable {
         this.newsCategoryName = newsCategoryName;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setIntroText(String introText) {
+        this.introText = introText;
     }
 
     public String getNewsUrl() {
@@ -163,7 +176,8 @@ public class NewsObj implements Parcelable {
         dest.writeString(newsId);
         dest.writeString(newsCategoryName);
         dest.writeString(title);
-        dest.writeString(desc);
+        dest.writeString(introText);
+        dest.writeString(description);
         dest.writeString(newsUrl);
         dest.writeString(date);
         dest.writeString(img);
@@ -187,8 +201,11 @@ public class NewsObj implements Parcelable {
         if (title == null)
             title = "";
 
-        if (desc == null)
-            desc = "";
+        if (introText == null)
+            introText = "";
+
+        if (description == null)
+            description = "";
 
         if (newsUrl == null)
             newsUrl = "";

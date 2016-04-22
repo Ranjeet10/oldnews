@@ -6,8 +6,8 @@ package com.bidhee.nagariknews.views.activities;
 
 
 import android.animation.ObjectAnimator;
+import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,19 +30,22 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-//import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 import com.bidhee.nagariknews.controller.interfaces.FontSizeListener;
+import com.bidhee.nagariknews.controller.server_request.ServerConfig;
+import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.customviews.FontDialog;
 import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
-import com.squareup.picasso.Picasso;
 import com.wangjie.androidbucket.utils.ABTextUtil;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -50,12 +53,17 @@ import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+//import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 
 public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener, FontSizeListener, RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
     @Bind(R.id.news_type_image_logo)
@@ -109,6 +117,10 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     private int fabDrawable;
     private int MENU_COLOR;
 
+    private Response.Listener<String> serverResponseNewsDetail;
+    private Response.ErrorListener errorListenernewsDetail;
+    private ProgressDialog progressDialog;
+
     SqliteDatabase db;
     private Boolean isNewsInFavouite = false;
     private int NEWS_TYPE = 1;//default set to 1
@@ -133,10 +145,15 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         setTheme(Dashboard.currentTheme);
 
         setContentView(R.layout.news_detail_layout);
-
         ButterKnife.bind(this);
+
         db = new SqliteDatabase(NewsDetailActivity.this);
         db.open();
+
+        //initialize the progressdialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("loading...");
+        progressDialog.setCancelable(false);
 
         fontDialog = new FontDialog();
         fontDialog.setOnFontSizeListener(NewsDetailActivity.this);
@@ -147,7 +164,17 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
         if (newsObjs.size() > 0) {
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-            loadingDetail(selectedNews);
+            isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+            //modify later================================================================================
+            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
+                if (isNewsInFavouite) {
+                    loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+                } else {
+                    getNewsDetailFromServer(selectedNews.getNewsId());
+                }
+            } else {
+                loadingDetail(selectedNews);
+            }
             loadRelatedContent();
 
             relatedNewsTextView.setVisibility(View.VISIBLE);
@@ -194,14 +221,56 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
     }
 
-//    @Subscribe
-//    public void getTrendingNews(ArrayList<NewsObj> newsObjs) {
-//        this.newsObjs.addAll(newsObjs);
-//        newsTitlesAdapter.notifyItemRangeInserted(5, newsObjs.size() - 1);
-//    }
+    private void getNewsDetailFromServer(String newsId) {
+        progressDialog.show();
+        handleServerResponseForNewsDetail();
+        WebService.getServerData(ServerConfig.getNewsDetailUrl(newsId), serverResponseNewsDetail, errorListenernewsDetail);
+    }
+
+
+    private void handleServerResponseForNewsDetail() {
+        serverResponseNewsDetail = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                try {
+                    JSONObject nodeObject = new JSONObject(response);
+                    JSONObject newsDetailObject = nodeObject.getJSONObject("data");
+                    String id = newsDetailObject.getString("id");
+                    String title = newsDetailObject.getString("title");
+                    String detail = newsDetailObject.getString("content");
+                    String featuredImage = newsDetailObject.getString("featured_image");
+                    String publishDate = newsDetailObject.getString("published_date");
+                    String newsUrl = newsDetailObject.getString("url"); //semi url
+                    String authorName = newsDetailObject.getString("author_name");
+//                    newsDetail = new NewsDetail(id, title, detail, featuredImage, BuildConfig.BASE_URL + newsUrl, publishDate, authorName);
+//                    loadNewsDetail(newsDetail);
+                    selectedNews.setDescription(detail);
+                    selectedNews.setNewsUrl(BuildConfig.BASE_URL + newsUrl);
+
+                    isNewsInFavouite = false;
+                    loadingDetail(selectedNews);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+
+        errorListenernewsDetail = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+        };
+    }
+
 
     @OnClick(R.id.news_share)
     void onShareClick() {
+        Log.i("newsUrl", selectedNews.getNewsUrl());
         BasicUtilMethods.shareLink(this, selectedNews.getNewsUrl());
     }
 
@@ -216,6 +285,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
         } else {
             //if news is not present add the current newsObject to the sqlite database
+            //set news Description and news url to the newsObject
+
             db.saveNews(selectedNews);
             isNewsInFavouite = true;
             toggleFavouriteState();
@@ -297,19 +368,18 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         newsCategoryTextView.setText(news.getNewsCategoryName());
         newsTimeTextView.setText(news.getDate());
 
-        String desc = news.getDesc();
+        String desc = news.getDescription();
         desc = "<html><body><p align=\"justify\">" + news.getTitle() + "<br><br>" + desc + "</p></body></html>";
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
-        /**
-         * check if news is present in SQLite
-         */
-        isNewsInFavouite = checkIfNewsWasAddedToFavourite(news.getNewsType(), news.getNewsCategoryId(), news.getNewsId());
 
+        scrollUp();
         /**
          * toggle the favourite icon color for saved/empty respectively
          */
+
         toggleFavouriteState();
+
 
 
     }
@@ -367,6 +437,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
         try {
             newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
+
             Log.i(TAG, newsObjs.size() + "");
         } catch (Exception e) {
             e.printStackTrace();
@@ -453,9 +524,11 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     public void onChildItemPositionListen(int position, View view, Boolean isShown) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-        loadingDetail(selectedNews);
-
-        scrollUp();
+        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
+            getNewsDetailFromServer(selectedNews.getNewsId());
+        } else {
+            loadingDetail(selectedNews);
+        }
     }
 
     private void scrollUp() {

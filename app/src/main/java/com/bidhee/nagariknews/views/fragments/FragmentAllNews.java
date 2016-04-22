@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.widget.NewsPagerAdapter;

@@ -69,8 +69,6 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
         }
-//        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
-//        view.startAnimation(animation);
 
         return new ViewHolder(view);
     }
@@ -113,18 +111,13 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
 
         holder.categoryTextView.setText(no.getNewsCategoryName());
-
-        if (!TextUtils.isEmpty(no.getImg())) {
-            try {
                 Picasso.with(context)
                         .load(no.getImg())
                         .placeholder(R.drawable.nagariknews)
                         .error(R.drawable.nagariknews)
                         .into(holder.thumbnail);
-            } catch (IllegalArgumentException iae) {
-                iae.printStackTrace();
-            }
-        }
+
+
 
         holder.newsTitleTv.setText(no.getTitle());
 
