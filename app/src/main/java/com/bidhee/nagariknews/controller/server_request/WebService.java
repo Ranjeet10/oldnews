@@ -17,7 +17,7 @@ public class WebService {
      * @param response
      * @param errorListener
      */
-    public static void getNewsTitle(String url, Response.Listener<String> response, Response.ErrorListener errorListener) {
+    public static void getServerData(String url, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response, errorListener);
         AppController.getInstance().addToRequestQueue(stringRequest);
     }

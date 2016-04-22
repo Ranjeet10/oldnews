@@ -55,7 +55,8 @@ public class SqliteDatabase {
         contentValues.put(DBConstant.NEWS_ID, newsObj.getNewsId());
         contentValues.put(DBConstant.NEWS_CATEGORY_NAME, newsObj.getNewsCategoryName());
         contentValues.put(DBConstant.NEWS_TITLE, newsObj.getTitle());
-        contentValues.put(DBConstant.NEWS_DESCRIPTION, newsObj.getDesc());
+        contentValues.put(DBConstant.NEWS_INTRO, newsObj.getIntroText());
+        contentValues.put(DBConstant.NEWS_DESCRIPTION, newsObj.getDescription());
         contentValues.put(DBConstant.NEWS_URL, newsObj.getNewsUrl());
         contentValues.put(DBConstant.NEWS_DATE, newsObj.getDate());
         contentValues.put(DBConstant.NEWS_IMAGE, newsObj.getImg());
@@ -110,6 +111,7 @@ public class SqliteDatabase {
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_TITLE)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_REPORTED_BY)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DATE)),
+                                cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_INTRO)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DESCRIPTION)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)))
                 );
@@ -123,11 +125,43 @@ public class SqliteDatabase {
 
     }
 
+    public NewsObj getNewsObj(String newsType, String newsCategoryId, String newsId) {
+        NewsObj newsObj;
+        Cursor cursor = db.query(true, DBConstant.TABLE_NEWS, null,
+                DBConstant.NEWS_TYPE + "='" + newsType + "' AND " +
+                        DBConstant.NEWS_CATEGORY_ID + "='" + newsCategoryId + "' AND " +
+                        DBConstant.NEWS_ID + "='" + newsId + "'"
+                , null, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            newsObj = new NewsObj(cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_TYPE)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_CATEGORY_ID)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_ID)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_CATEGORY_NAME)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_IMAGE)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_REPORTED_BY)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DATE)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_INTRO)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)));
+            return newsObj;
+        }
+        return null;
+
+
+    }
+
     public void deleteRowFromNews(String newsType, String newsCategoryId, String newsId) {
         db.delete(DBConstant.TABLE_NEWS,
                 DBConstant.NEWS_TYPE + "=" + newsType + " AND " +
                         DBConstant.NEWS_CATEGORY_ID + "='" + newsCategoryId + "' AND " +
                         DBConstant.NEWS_ID + "='" + newsId + "'", null);
     }
+
+//    public void updateNewsDetail(String newsType, String newsCategoryId, String newsId, String newsDescription) {
+//        db.rawQuery("UPDATE "+DBConstant.TABLE_NEWS+" SET "+DBConstant.NEWS_DESCRIPTION)
+//    }
+
 
 }
