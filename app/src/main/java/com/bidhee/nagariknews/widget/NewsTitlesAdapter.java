@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,29 +114,19 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
         holder.categoryTextView.setText(no.getNewsCategoryName());
 
-
-        Picasso.with(context)
-                .load(no.getImg())
-                .placeholder(R.drawable.nagariknews)
-                .into(holder.thumbnail, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        holder.thumbnail.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onError() {
-//                        if (isFromDetail)
-//                            holder.thumbnail.setVisibility(View.VISIBLE);
-//                        else
-//                            holder.thumbnail.setVisibility(View.GONE);
-                    }
-                });
+        if (!TextUtils.isEmpty(no.getImg())) {
+            try {
+                Picasso.with(context)
+                        .load(no.getImg())
+                        .placeholder(R.drawable.nagariknews)
+                        .error(R.drawable.nagariknews)
+                        .into(holder.thumbnail);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+            }
+        }
 
         holder.newsTitleTv.setText(no.getTitle());
-//        holder.newsSemiDetailTv.setText(no.getDesc());
-//        holder.newsSourceTv.setText(no.getReportedBy());
-//        holder.newsDateTv.setText(no.getDate());
 
         View.OnClickListener myClickListener = new View.OnClickListener() {
             @Override
@@ -144,12 +135,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
             }
         };
 
-//        holder.newsShareTv.setOnClickListener(myClickListener);
-//        holder.showDetailTv.setOnClickListener(myClickListener);
         holder.newsShareTv.getRootView().setOnClickListener(myClickListener);
-
-//        Animation animation = AnimationUtils.loadAnimation(context, R.anim.row_item_animation);
-//        holder.newsDateTv.getRootView().startAnimation(animation);
     }
 
     @Override

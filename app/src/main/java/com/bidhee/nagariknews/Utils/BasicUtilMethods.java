@@ -88,34 +88,41 @@ public class BasicUtilMethods {
     }
 
     public static void loadImage(final Context context, final String url, final ImageView galleryThumbnail) {
-        Picasso.with(context)
-                .load(url)
-                .networkPolicy(NetworkPolicy.OFFLINE)
-                .into(galleryThumbnail, new Callback() {
-                    @Override
-                    public void onSuccess() {
+        try {
+            Picasso.with(context)
+                    .load(url)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(galleryThumbnail, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onError() {
-                        //Try again online if cache failed
-                        Picasso.with(context)
-                                .load(url)
-                                .error(R.drawable.nagariknews)
-                                .into(galleryThumbnail, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            try {
+                                Picasso.with(context)
+                                        .load(url)
+                                        .error(R.drawable.nagariknews)
+                                        .into(galleryThumbnail, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
 
-                                    }
+                                            }
 
-                                    @Override
-                                    public void onError() {
-                                        Log.v("Picasso", "Could not fetch image");
-                                    }
-                                });
-                    }
-                });
-
+                                            @Override
+                                            public void onError() {
+                                                Log.v("Picasso", "Could not fetch image");
+                                            }
+                                        });
+                            } catch (NullPointerException ne) {
+                                ne.printStackTrace();
+                            }
+                        }
+                    });
+        } catch (NullPointerException ne) {
+            ne.printStackTrace();
+        }
     }
 }

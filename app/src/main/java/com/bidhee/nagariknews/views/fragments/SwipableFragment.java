@@ -1,5 +1,6 @@
 package com.bidhee.nagariknews.views.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,27 +8,27 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Explode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Network;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.VolleyError;
+import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
-import com.bidhee.nagariknews.bus.EventBus;
-import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.server_request.ServerConfig;
+import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.activities.Dashboard;
@@ -35,16 +36,15 @@ import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 /**
  * Created by ronem on 2/9/16.
@@ -57,6 +57,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Bind(R.id.progess)
     ProgressBar progressBar;
 
+    //initial news loading progress bar
+    @Bind(R.id.loading_bar)
+    ProgressBar loadingBar;
+
     @Bind(R.id.content_not_found_parent_layout)
     LinearLayout contentNotFoundLayout;
 
@@ -66,6 +70,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     private int newsType;
     private String categoryId;
     private String categoryName;
+
+    /**
+     * response for the {@link com.android.volley.toolbox.Volley Request}
+     */
+    private Response.Listener<String> serverResponse;
+    private Response.ErrorListener errorListener;
 
 
     public static SwipableFragment createNewInstance(TabModel tab) {
@@ -81,10 +91,114 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.register(this);
 
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
+
+    }
+
+    private void getNewsTitles(int pageIndex, String categoryId) {
+
+        loadingBar.setVisibility(View.VISIBLE);
+        handleServerResponse();
+
+        String url = BuildConfig.BASE_URL + "api/news/list?_format=json&page=" + pageIndex + "&category_id=" + categoryId;
+        WebService.getNewsTitle(url, serverResponse, errorListener);
+
+    }
+
+    private void handleServerResponse() {
+        serverResponse = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                loadingBar.setVisibility(View.GONE);
+                try {
+                    JSONObject nodeObject = new JSONObject(response);
+                    if (nodeObject.has("status")) {
+                        JSONArray newsArray = nodeObject.getJSONArray("data");
+                        for (int i = 0; i < newsArray.length(); i++) {
+                            JSONObject obj = newsArray.getJSONObject(i);
+                            String newsId = obj.getString("id");
+                            String newsTile = obj.getString("title");
+                            String newsDesc = obj.getString("intro_text");
+                            String publishDate = obj.getString("published_date");
+                            String publishedBy = obj.getString("author_name");
+
+                            String img = "";
+                            if (obj.has("featured_image")) {
+                                img = obj.getString("featured_image");
+                            }
+
+                            NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, categoryName, img, newsTile, publishedBy, publishDate, newsDesc, "");
+                            newsObjs.add(newsObj);
+                        }
+                        newsTitlesAdapter.notifyDataSetChanged();
+
+                        showContentNotFoundLayoutIfNeeded();
+
+                    } else if (nodeObject.has("error")) {
+
+                        //handle error object
+                        JSONObject errorObject = nodeObject.getJSONObject("error");
+                        String errorcode = errorObject.getString("code");
+                        Toast.makeText(getActivity(), errorcode + " Error Found ", Toast.LENGTH_LONG).show();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        errorListener = new Response.ErrorListener()
+
+        {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                loadingBar.setVisibility(View.GONE);
+                if (error instanceof Network) {
+                    Toast.makeText(getActivity(), "please check your network", Toast.LENGTH_SHORT).show();
+                } else if (error instanceof ServerError) {
+                    Toast.makeText(getActivity(), "Cannot connect to the server", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        ;
+    }
+
+    private void showContentNotFoundLayoutIfNeeded() {
+        /**
+         * toggle the {@value contentNotFoundLayout}
+         * if the {@value newsObjs} is empty make it visible else,
+         * make it invisible
+         */
+        if (newsObjs.size() > 0) {
+            contentNotFoundLayout.setVisibility(View.INVISIBLE);
+        } else {
+            contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_swipable, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Log.i("category", categoryId + " " + categoryName);
+        addingSwipeRefreshListener();
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        newsObjs = new ArrayList<>();
 
 
         if (savedInstanceState != null) {
@@ -107,9 +221,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     break;
                 case 2:
                     newsType = 2;
-                    newsObjs = Integer.parseInt(categoryId) == 1 ?
-                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
-                            NewsData.getNewsNagarik(getActivity(), newsType, categoryId, categoryName);
+                    if (Integer.parseInt(categoryId) == 1) {
+                        newsObjs = NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId);
+                    } else {
+                        getNewsTitles(1, categoryId);
+                    }
+
                     break;
                 case 3:
                     newsType = 3;
@@ -118,43 +235,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                             NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
                     break;
             }
-        }
-
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_swipable, container, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        Log.i("category", categoryId + " " + categoryName);
-        addingSwipeRefreshListener();
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-//        recyclerView.setItemAnimator(scaleInAnimator);
-
-        /**
-         * toggle the {@value contentNotFoundLayout}
-         * if the {@value newsObjs} is empty make it visible else,
-         * make it invisible
-         */
-//        newsObjs = new ArrayList<>();
-        if (newsObjs.size() > 0) {
-            contentNotFoundLayout.setVisibility(View.INVISIBLE);
-        } else {
-            contentNotFoundLayout.setVisibility(View.VISIBLE);
         }
 
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsObjs);

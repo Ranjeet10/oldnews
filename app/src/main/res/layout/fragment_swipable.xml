@@ -30,5 +30,13 @@
             android:layout_above="@+id/progess"
             android:paddingLeft="@dimen/screen_padding_lr"
             android:paddingRight="@dimen/screen_padding_lr" />
+
+        <ProgressBar
+            android:id="@+id/loading_bar"
+            android:layout_width="@dimen/news_title_image_h"
+            android:layout_height="@dimen/news_title_image_h"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 </android.support.v4.widget.SwipeRefreshLayout>
