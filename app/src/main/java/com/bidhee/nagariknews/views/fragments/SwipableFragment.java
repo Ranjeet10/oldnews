@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -103,44 +104,38 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     }
 
-    private void getNewsTitles(int pageIndex, String categoryId) {
-
-        handleServerResponseForBreakingAndLatestNews();
-
-        if (categoryId.equals("1")) {
-            Log.i(TAG, "categoryId was 1");
-            WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(), serverResponseNewsTitle, errorListenerNewsTitle);
-        } else {
-            if (pageIndex == 1)
-                loadingBar.setVisibility(View.VISIBLE);
-            handleServerResponseForNewsTitle();
-            //load news titles
-            WebService.getServerData(ServerConfig.getNewsTitleUrl(pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
-        }
-
-
-    }
-
+    //========================================================================
+    //========================== HANDLE RESPONSES ============================
+    //========================================================================
     private void handleServerResponseForBreakingAndLatestNews() {
         serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                loadingBar.setVisibility(View.GONE);
                 Log.i(TAG, response);
                 try {
                     JSONObject nodeObject = new JSONObject(response);
                     if (nodeObject.has("success")) {
                         JSONObject dataObject = nodeObject.getJSONObject("data");
-                        String[] newsArray = new String[]{"importantNews", "latestNews", "featuredNews", "breakingNews"};
-                        for (int i = 0; i < newsArray.length; i++) {
-                            Log.i(TAG, "newsPosition" + 1);
-                            newsListToShow.addAll(getArrayList(dataObject, newsArray[i]));
-                        }
-                        int curSize = newsTitlesAdapter.getItemCount();
-                        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
-                        newsTitlesAdapter.notifyDataSetChanged();
 
-                        showContentNotFoundLayoutIfNeeded();
-                        Log.i("newsListSize", newsListToShow.size() + "");
+                        /**
+                         * listing all the keys for JSONArray from the JSONObject {@link nodeObject}
+                         */
+                        Iterator keys = dataObject.keys();
+                        while (keys.hasNext()) {
+
+                            /**
+                             * looping through out the no of keys
+                             * to get the list of {@link newsObjs} and adding to the {@link newsListToShow}
+                             */
+                            newsListToShow.addAll(getArrayList(dataObject, (String) keys.next()));
+                        }
+
+                        /**
+                         * Method to notify the inserted data item to the adapter{@link newsTitlesAdapter}
+                         */
+                        notifyDataSetChanged(newsListToShow);
+
 
                     } else {
                         //To do if its error
@@ -166,10 +161,63 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     }
 
-    //    private Collection<? extends NewsObj> getArrayList(JSONObject dataObject, String newsArray) {
-    private ArrayList<NewsObj> getArrayList(JSONObject dataObject, String newsArray) {
+    private void handleServerResponseForNewsTitle() {
+        serverResponseNewsTitle = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                loadingBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                try {
+                    newsObjs = new ArrayList<>();
+                    JSONObject nodeObject = new JSONObject(response);
+
+                    /**
+                     * pass the base object and JSONArray value name to the
+                     * method { #getArrayList(nodeObject,"data")}
+                     * to get the list of newsObjs
+                     */
+                    newsListToShow.addAll(getArrayList(nodeObject, "data"));
+                    notifyDataSetChanged(newsListToShow);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        errorListenerNewsTitle = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                loadingBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                showContentNotFoundLayoutIfNeeded();
+            }
+        }
+
+        ;
+    }
+
+    private void getNewsTitles(int pageIndex, String categoryId) {
+        loadingBar.setVisibility(View.VISIBLE);
+        handleServerResponseForBreakingAndLatestNews();
+
+        if (categoryId.equals("1")) {
+            Log.i(TAG, "categoryId was 1");
+            WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(), serverResponseNewsTitle, errorListenerNewsTitle);
+        } else {
+            if (pageIndex == 1)
+                loadingBar.setVisibility(View.VISIBLE);
+            handleServerResponseForNewsTitle();
+            //load news titles
+            WebService.getServerData(ServerConfig.getNewsTitleUrl(pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
+        }
+
+
+    }
+
+    private Collection<? extends NewsObj> getArrayList(JSONObject dataObject, String newsArray) {
+        newsObjs = new ArrayList<>();
         try {
-            newsObjs = new ArrayList<>();
             JSONArray jArray = dataObject.getJSONArray(newsArray);
             for (int i = 0; i < jArray.length(); i++) {
                 JSONObject obj = jArray.getJSONObject(i);
@@ -185,6 +233,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 }
 
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, newsArray, img, newsTile, publishedBy, publishDate, introText, "", "");
+
                 //if the object is at first position make the title visible; for this we have to set the boolean value to the 0'th newsObj
                 if (i == 0) {
                     newsObj.setIsTOShow(true);
@@ -197,84 +246,22 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         return newsObjs;
     }
 
-    private void handleServerResponseForNewsTitle() {
-        serverResponseNewsTitle = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                loadingBar.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-                try {
-                    newsObjs = new ArrayList<>();
-                    JSONObject nodeObject = new JSONObject(response);
-                    if (nodeObject.has("status")) {
-                        JSONArray newsArray = nodeObject.getJSONArray("data");
-                        for (int i = 0; i < newsArray.length(); i++) {
-                            JSONObject obj = newsArray.getJSONObject(i);
-                            String newsId = obj.getString("id");
-                            String newsTile = obj.getString("title");
-                            String introText = obj.getString("intro_text");
-                            String publishDate = obj.getString("published_date");
-                            String publishedBy = obj.getString("author_name");
-                            String img = obj.getString("featured_image");
+    private void notifyDataSetChanged(ArrayList<NewsObj> newsListToShow) {
+        /**
+         * get the previous items count and append the new items after the item which matches the curSize
+         */
+        int curSize = newsTitlesAdapter.getItemCount();
+        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
+        newsTitlesAdapter.notifyDataSetChanged();
 
-                            if (TextUtils.isEmpty(img)) {
-                                img = "https://lh3.googleusercontent.com/2BGOr1KnAekO9NmaU4VZg2ZLRs_-60aaA7p4ABYlZXnqsLrItMi4uhmA62pGQDx9NwU=s630-fcrop64=1,0723098ffae5f834";
-                            }
-
-                            NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "");
-                            newsObjs.add(newsObj);
-                        }
-
-                        /**
-                         * adding the newly fetched news to the newsListToShow
-                         * this newsListToShow is the main List to hold the real data
-                         */
-                        newsListToShow.addAll(newsObjs);
-
-                        /**
-                         * get the toal count of the newsTitlesAdapter
-                         * so that we can notify the position from where the newly fetched data to be inserted
-                         */
-                        int curSize = newsTitlesAdapter.getItemCount();
-
-                        /**
-                         * notify the adapter with the newly fetched data
-                         */
-                        newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
-                        newsTitlesAdapter.notifyDataSetChanged();
-
-                        showContentNotFoundLayoutIfNeeded();
-
-                    } else if (nodeObject.has("error")) {
-
-                        //handle error object
-                        JSONObject errorObject = nodeObject.getJSONObject("error");
-                        String errorcode = errorObject.getString("code");
-                        Toast.makeText(getActivity(), errorcode + " Error Found ", Toast.LENGTH_LONG).show();
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        errorListenerNewsTitle = new Response.ErrorListener()
-
-        {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                loadingBar.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-                showContentNotFoundLayoutIfNeeded();
-            }
-        }
-
-        ;
+        showContentNotFoundLayoutIfNeeded();
+        Log.i("newsListSize", newsListToShow.size() + "");
     }
+
 
     private void showContentNotFoundLayoutIfNeeded() {
         /**
@@ -329,13 +316,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     break;
                 case 2:
                     newsType = 2;
-//                    if (Integer.parseInt(categoryId) == 1) {
-//                        newsListToShow = NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId);
-//
-//                    } else {
                     getNewsTitles(1, categoryId);
-//                    }
-
                     break;
                 case 3:
                     newsType = 3;
