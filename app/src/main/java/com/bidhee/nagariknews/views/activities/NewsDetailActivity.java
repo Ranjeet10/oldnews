@@ -239,10 +239,10 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     String id = newsDetailObject.getString("id");
                     String title = newsDetailObject.getString("title");
                     String detail = newsDetailObject.getString("content");
-                    String featuredImage = newsDetailObject.getString("featured_image");
-                    String publishDate = newsDetailObject.getString("published_date");
+                    String featuredImage = newsDetailObject.getString("featuredImage");
+                    String publishDate = newsDetailObject.getString("publishOn");
                     String newsUrl = newsDetailObject.getString("url"); //semi url
-                    String authorName = newsDetailObject.getString("author_name");
+                    String authorName = newsDetailObject.getString("authorName");
 //                    newsDetail = new NewsDetail(id, title, detail, featuredImage, BuildConfig.BASE_URL + newsUrl, publishDate, authorName);
 //                    loadNewsDetail(newsDetail);
                     selectedNews.setDescription(detail);
