@@ -141,6 +141,14 @@ public class Dashboard extends AppCompatActivity
 
         userDetail = sessionManager.getLoginDetail();
 
+        //modify it later
+        if (userDetail != null) {
+            String userName = userDetail.get(SessionManager.KEY_USER_NAME);
+            if (!TextUtils.isEmpty(userName)) {
+                Toast.makeText(getApplicationContext(), "You are Logged in as " + userName, Toast.LENGTH_SHORT).show();
+            }
+        }
+
         if (sessionManager.isFirstRun(this)) {
             getSharedPreferences(SessionManager.FIRST_RUN_PREFERENCE_NAME, MODE_PRIVATE)
                     .edit()
@@ -366,7 +374,7 @@ public class Dashboard extends AppCompatActivity
             currentNewsType = getResources().getString(R.string.nagarik);
 
         } else if (sessionManager.getSwitchedNewsValue() == 3) {
-            navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_republica : R.menu.free_user_nav_menu_republica);
+            navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_nagarik : R.menu.free_user_nav_menu_nagarik);
             currentNewsType = getResources().getString(R.string.sukrabar);
         }
 
@@ -588,8 +596,14 @@ public class Dashboard extends AppCompatActivity
             case R.id.nav_login:
                 startActivity(new Intent(Dashboard.this, LoginActivity.class));
                 break;
-        }
 
+            case R.id.nav_logout:
+                sessionManager.clearSession();
+                finish();
+                startActivity(new Intent(Dashboard.this, Dashboard.class));
+                break;
+
+        }
 
         currentFragmentTag = replaceableFragment.getClass().getName();
         attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);

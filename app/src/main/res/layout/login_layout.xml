@@ -1,24 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingLeft="@dimen/screen_padding"
-    android:paddingRight="@dimen/screen_padding">
+    android:padding="@dimen/screen_padding">
 
+    <TextView
+        android:id="@+id/btnCreateAcc"
+        style="@style/text_button_style"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/no_account"
+        android:visibility="visible" />
 
-    <LinearLayout
-        android:id="@+id/form_layout"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/btnCreateAcc"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:orientation="vertical">
+        android:scrollbars="none">
 
-        <include layout="@layout/login_form_field" />
+        <RelativeLayout
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
 
-        <include layout="@layout/social_network_login_layout" />
+            <ImageView
+                android:id="@+id/logo_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/logo" />
 
-    </LinearLayout>
+            <!-- Sign in layout-->
+            <LinearLayout
+                android:id="@+id/loginLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/logo_image"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-</ScrollView>
+                <include layout="@layout/login_form_field" />
+
+                <include layout="@layout/social_network_login_layout" />
+            </LinearLayout>
+
+            <!-- Sign up layout-->
+            <LinearLayout
+                android:id="@+id/signup_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/logo_image"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/screen_padding"
+                android:background="@drawable/form_background_corner"
+                android:orientation="vertical"
+                android:padding="@dimen/tab_bar_menu_margin"
+                android:visibility="visible">
+
+                <!-- first name layout-->
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/firstNameLayout"
+                    style="@style/form_cell_parent_layout"
+                    android:visibility="visible">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/firstName"
+                        style="@style/auto_edit_text_style"
+                        android:hint="@string/prompt_first_name"
+                        android:nextFocusDown="@+id/lastName" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <!-- last name layout-->
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/lastNameLayout"
+                    style="@style/form_cell_parent_layout"
+                    android:visibility="visible">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/lastName"
+                        style="@style/auto_edit_text_style"
+                        android:hint="@string/prompt_last_name"
+                        android:nextFocusDown="@+id/signup_email" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <!-- email field-->
+                <android.support.design.widget.TextInputLayout style="@style/form_cell_parent_layout">
+
+                    <EditText
+                        android:id="@+id/signup_email"
+                        style="@style/auto_edit_text_style"
+                        android:hint="@string/prompt_email"
+                        android:inputType="textEmailAddress"
+                        android:nextFocusDown="@+id/signup_password" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <!-- password layout-->
+                <android.support.design.widget.TextInputLayout style="@style/form_cell_parent_layout">
+
+                    <EditText
+                        android:id="@+id/signup_password"
+                        style="@style/auto_edit_text_style"
+                        android:hint="@string/prompt_password"
+                        android:inputType="textPassword"
+                        android:nextFocusDown="@+id/signup_confirm_password" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <!-- confirm password-->
+                <android.support.design.widget.TextInputLayout style="@style/form_cell_parent_layout">
+
+                    <EditText
+                        android:id="@+id/signup_confirm_password"
+                        style="@style/auto_edit_text_style"
+                        android:hint="@string/prompt_confirm_password"
+                        android:inputType="textPassword"
+                        android:nextFocusDown="@+id/btnSignUp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnSignUp"
+                    style="@style/button_style"
+                    android:layout_marginTop="@dimen/screen_padding"
+                    android:text="@string/sign_up_text" />
+
+                <TextView
+                    android:id="@+id/btnBackToLogin"
+                    style="@style/text_button_style"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/screen_padding"
+                    android:text="@string/back_to_login"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

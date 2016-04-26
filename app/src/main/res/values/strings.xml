@@ -27,6 +27,8 @@
     <string name="login_text">Login</string>
     <string name="skip_text">Skip</string>
     <string name="sign_up_text">Sign Up</string>
+    <string name="no_account">Don\'t Have account ? Create one</string>
+    <string name="back_to_login">Already have account</string>
     <string name="login_facebook_text">Login with Facebook</string>
 
     <string name="logout_text">Logout</string>

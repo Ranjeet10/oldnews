@@ -63,21 +63,32 @@
     </style>
 
     <style name="button_style">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">@dimen/screen_padding_lr</item>
+        <item name="android:layout_marginTop">@dimen/screen_padding</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:background">@drawable/corner_button_primary_selector</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <!-- textView buttons style-->
+    <style name="text_button_style" parent="wrap_wrap">
+        <item name="android:paddingRight">@dimen/screen_padding</item>
+        <item name="android:paddingLeft">@dimen/screen_padding</item>
+        <item name="android:paddingTop">@dimen/screen_padding_lr</item>
+        <item name="android:paddingBottom">@dimen/screen_padding_lr</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
 
-    <style name="auto_edit_text_style" parent="match_wrap">
+    <style name="auto_edit_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/text_input_height</item>
         <item name="android:background">@color/transparent</item>
         <item name="android:imeOptions">actionNext</item>
         <item name="android:inputType">text</item>
+        <item name="android:paddingLeft">@dimen/screen_padding_lr</item>
         <item name="android:maxLines">1</item>
         <item name="android:singleLine">true</item>
 
@@ -86,6 +97,7 @@
     <style name="form_cell_parent_layout" parent="match_wrap">
         <item name="android:layout_marginTop">@dimen/screen_padding</item>
         <item name="android:background">@color/white</item>
+        <item name="android:theme">@style/TextLabel</item>
     </style>
 
     <style name="wrap_wrap">
@@ -174,6 +186,17 @@
         <item name="android:tint">@color/light_grey</item>
     </style>
 
+
+    <!-- input text attributes style-->
+    <style name="TextLabel" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/light_grey</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/nagarikColorPrimary</item>
+        <item name="colorControlNormal">@color/nagarikColorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+    </style>
 </resources>
 
 

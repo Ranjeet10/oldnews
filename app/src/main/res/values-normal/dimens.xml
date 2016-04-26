@@ -28,4 +28,7 @@
     <!-- fab menu attributes-->
     <dimen name="fab_menu_shadow_diameter">54dp</dimen>
     <dimen name="fab_menu_diameter">50dp</dimen>
+
+    <!-- attributes of textinput layout-->
+    <dimen name="text_input_height">30dp</dimen>
 </resources>
