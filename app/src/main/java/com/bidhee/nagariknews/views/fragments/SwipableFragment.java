@@ -1,6 +1,5 @@
 package com.bidhee.nagariknews.views.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
@@ -197,19 +194,19 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         ;
     }
 
-    private void getNewsTitles(int pageIndex, String categoryId) {
+    private void getNewsTitles(String baseUrl, int pageIndex, String categoryId) {
         loadingBar.setVisibility(View.VISIBLE);
         handleServerResponseForBreakingAndLatestNews();
 
         if (categoryId.equals("1")) {
             Log.i(TAG, "categoryId was 1");
-            WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(), serverResponseNewsTitle, errorListenerNewsTitle);
+            WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
         } else {
             if (pageIndex == 1)
                 loadingBar.setVisibility(View.VISIBLE);
             handleServerResponseForNewsTitle();
             //load news titles
-            WebService.getServerData(ServerConfig.getNewsTitleUrl(pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
+            WebService.getServerData(ServerConfig.getNewsTitleUrl(baseUrl, pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
         }
 
 
@@ -310,13 +307,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     // 1 means its for breaking and latest news
                     // >1 means its for normal news
                     newsType = 1;
-                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
-                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
-                            NewsData.getNewsRepublica(getActivity(), newsType, categoryId, categoryName);
+//                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
+//                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
+//                            NewsData.getNewsRepublica(getActivity(), newsType, categoryId, categoryName);
+                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
                     break;
                 case 2:
                     newsType = 2;
-                    getNewsTitles(1, categoryId);
+                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
                     break;
                 case 3:
                     newsType = 3;
@@ -349,8 +347,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                     progressBar.setVisibility(View.VISIBLE);
 
-                    if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
-                        getNewsTitles(current_page, categoryId);
+                    if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
+                        getNewsTitles(Dashboard.baseUrl, current_page, categoryId);
                     } else {
                         new Handler().postDelayed(new Runnable() {
                             @Override

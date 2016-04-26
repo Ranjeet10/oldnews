@@ -27,13 +27,15 @@ android {
         release {
             minifyEnabled false
             buildConfigField "String", "BUILD_STAGE", '"Beta"'
-            buildConfigField "String", "BASE_URL", '"http://nagarik.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com/"'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             buildConfigField "String", "BUILD_STAGE", '"debug"'
-            buildConfigField "String", "BASE_URL", '"http://nagarik.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com/"'
         }
     }
 }
@@ -63,6 +65,7 @@ dependencies {
 
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.2.4'

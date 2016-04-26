@@ -75,14 +75,14 @@ public class StaticStorage {
         switch (which) {
             case 0:
                 tabs.add(new TabModel("1", "Latest News"));
-                tabs.add(new TabModel("2", "Trending"));
-                tabs.add(new TabModel("3", "Politics"));
-                tabs.add(new TabModel("4", "Economics"));
-                tabs.add(new TabModel("5", "Society"));
-                tabs.add(new TabModel("6", "Sports"));
-                tabs.add(new TabModel("7", "Health"));
-                tabs.add(new TabModel("8", "Art"));
-                tabs.add(new TabModel("9", "Technology"));
+                tabs.add(new TabModel("23", "Politics"));
+                tabs.add(new TabModel("22", "Economy"));
+                tabs.add(new TabModel("24", "Society"));
+                tabs.add(new TabModel("26", "Sports"));
+                tabs.add(new TabModel("27", "World"));
+                tabs.add(new TabModel("81", "Opinion"));
+                tabs.add(new TabModel("35", "Life Style"));
+                tabs.add(new TabModel("117", "The Week"));
                 break;
             case 1:
                 tabs.add(new TabModel("1", "ताजा समाचार"));
