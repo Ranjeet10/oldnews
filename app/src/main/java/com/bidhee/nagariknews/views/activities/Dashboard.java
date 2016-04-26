@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
@@ -101,8 +102,10 @@ public class Dashboard extends AppCompatActivity
     public static String currentNewsType;
     public static int logoImage;
 
+    public static String baseUrl = "";
 
-    String navImageUrl = "http://nagariknews.com/media/k2/items/cache/x78fd7c7087409bceafbd973478ab7045_L.jpg.pagespeed.ic.YKq77EitMY.webp";
+
+    String navImageUrl = "https://s3.amazonaws.com/uploads.hipchat.com/509974/3391264/KWM6fpLrshlYjh0/profile.jpg";
     //    MyAnimation myAnimation;
     private Fragment replaceableFragment;
 
@@ -115,9 +118,11 @@ public class Dashboard extends AppCompatActivity
         sessionManager = new SessionManager(this);
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
+                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
                 currentTheme = R.style.RepublicaTheme;
                 break;
             case 2:
+                baseUrl = BuildConfig.BASE_URL_NAGARIK;
                 currentTheme = R.style.NagarikTheme;
                 break;
             case 3:

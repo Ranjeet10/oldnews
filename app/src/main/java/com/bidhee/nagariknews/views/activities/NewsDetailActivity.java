@@ -166,7 +166,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
             isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
             //modify later================================================================================
-            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
+            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue()==1) {
                 if (isNewsInFavouite) {
                     loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
                 } else {
@@ -224,7 +224,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     private void getNewsDetailFromServer(String newsId) {
         progressDialog.show();
         handleServerResponseForNewsDetail();
-        WebService.getServerData(ServerConfig.getNewsDetailUrl(newsId), serverResponseNewsDetail, errorListenernewsDetail);
+        WebService.getServerData(ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId), serverResponseNewsDetail, errorListenernewsDetail);
     }
 
 
@@ -239,6 +239,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     String id = newsDetailObject.getString("id");
                     String title = newsDetailObject.getString("title");
                     String detail = newsDetailObject.getString("content");
+                    Log.i("detail",detail);
                     String featuredImage = newsDetailObject.getString("featuredImage");
                     String publishDate = newsDetailObject.getString("publishOn");
                     String newsUrl = newsDetailObject.getString("url"); //semi url
@@ -246,7 +247,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 //                    newsDetail = new NewsDetail(id, title, detail, featuredImage, BuildConfig.BASE_URL + newsUrl, publishDate, authorName);
 //                    loadNewsDetail(newsDetail);
                     selectedNews.setDescription(detail);
-                    selectedNews.setNewsUrl(BuildConfig.BASE_URL + newsUrl);
+                    selectedNews.setNewsUrl(Dashboard.baseUrl + newsUrl);
 
                     isNewsInFavouite = false;
                     loadingDetail(selectedNews);
@@ -379,7 +380,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
          */
 
         toggleFavouriteState();
-
 
 
     }

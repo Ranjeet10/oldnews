@@ -16,6 +16,36 @@
             android:scaleType="fitXY"
             android:src="@drawable/andyrubin" />
 
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/news_title_image_h"
+            android:layout_height="@dimen/news_title_image_h"
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:layout_marginTop="@dimen/screen_padding"
+            android:src="@drawable/ram"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="2dp" />
+
+        <TextView
+            android:id="@+id/logged_in_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_below="@id/profile_image"
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:text="Ram Mandal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <TextView
+            android:id="@+id/logged_in_user_email"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/logged_in_user_name"
+            android:text="ram.cp18113@gmail.com"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
     </RelativeLayout>
 
     <RelativeLayout
