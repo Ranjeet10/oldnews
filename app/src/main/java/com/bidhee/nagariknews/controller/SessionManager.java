@@ -61,6 +61,13 @@ public class SessionManager {
         return LOGIN_PREFERENCE.getBoolean(IS_LOGIN, false);
     }
 
+    public void clearSession() {
+        loginEditor.putBoolean(IS_LOGIN, false);
+        loginEditor.putString(KEY_USER_NAME, "");
+        loginEditor.putString(KEY_USER_IMAGE, "");
+        loginEditor.commit();
+    }
+
 
     public HashMap<String, String> getLoginDetail() {
         HashMap<String, String> user = new HashMap<String, String>();

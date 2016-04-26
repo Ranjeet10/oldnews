@@ -6,7 +6,9 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,11 +86,19 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     @Bind(R.id.btn_login)
-    Button btnLogin;
-    @Bind(R.id.btn_skip)
-    Button btnSkip;
-    @Bind(R.id.info_text_view)
-    TextView infoTextView;
+    TextView btnLogin;
+    @Bind(R.id.btnSkip)
+    TextView btnSkip;
+    @Bind(R.id.btnCreateAcc)
+    TextView btnCreateAccount;
+    @Bind(R.id.btnBackToLogin)
+    TextView btnBackToLogin;
+
+    @Bind(R.id.signup_layout)
+    LinearLayout signUpLayout;
+    @Bind(R.id.loginLayout)
+    LinearLayout loginLayout;
+
     @Bind(R.id.login_button)
     LoginButton loginButton;
     @Bind(R.id.twitter_login_button)
@@ -183,9 +193,6 @@ public class LoginActivity extends AppCompatActivity implements
                 Long userid = session.getUserId();
 
 
-                infoTextView.setText("Hi " + username);
-                Log.i("userid", userid + "");
-
                 TwitterSession session =
                         Twitter.getSessionManager().getActiveSession();
                 Twitter.getApiClient(session).getAccountService()
@@ -199,7 +206,8 @@ public class LoginActivity extends AppCompatActivity implements
                                 imageUrl = imageUrl.replace("_normal", "");
                                 String email = user.email;
                                 Log.i("imageurl", imageUrl + ":" + email);
-
+                                sessionManager.createLoginSession(username, "imagelink");
+                                launchActivity(SelectCategoryActivity.class);
 
                             }
 
@@ -245,7 +253,11 @@ public class LoginActivity extends AppCompatActivity implements
                                     String gender = object.getString("gender");
                                     String img = "https://graph.facebook.com/" + id + "/picture?type=large";
                                     Log.d("responseebingi", email + "\n" + birthday + "\n" + name + "\n" + gender + "\n" + img);
-                                    infoTextView.setText(email + "\n" + birthday + "\n" + name + "\n" + gender + "\n" + img);
+//                                    infoTextView.setText(email + "\n" + birthday + "\n" + name + "\n" + gender + "\n" + img);
+
+                                    sessionManager.createLoginSession("Ram Mandal", "imagelink");
+
+                                    launchActivity(SelectCategoryActivity.class);
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -279,8 +291,38 @@ public class LoginActivity extends AppCompatActivity implements
      */
     @OnClick(R.id.btn_login)
     void onLoginClick() {
-        sessionManager.createLoginSession("usernmae", "imagelink");
+        sessionManager.createLoginSession("Ram Mandal", "imagelink");
         launchActivity(SelectCategoryActivity.class);
+    }
+
+    @OnClick(R.id.btnSkip)
+    void onSkipClick() {
+        launchActivity(Dashboard.class);
+    }
+
+    @OnClick(R.id.btnCreateAcc)
+    void onCreateAccountClicked() {
+        toggleLayout(1);
+    }
+
+    @OnClick(R.id.btnBackToLogin)
+    void onBackToLoginClicked() {
+        toggleLayout(2);
+    }
+
+    private void toggleLayout(int i) {
+        switch (i) {
+            case 1:
+                loginLayout.setVisibility(View.GONE);
+                signUpLayout.setVisibility(View.VISIBLE);
+                btnCreateAccount.setVisibility(View.GONE);
+                break;
+            case 2:
+                loginLayout.setVisibility(View.VISIBLE);
+                signUpLayout.setVisibility(View.GONE);
+                btnCreateAccount.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     private void launchActivity(Class<?> activity) {
@@ -290,10 +332,6 @@ public class LoginActivity extends AppCompatActivity implements
         this.finish();
     }
 
-    @OnClick(R.id.btn_skip)
-    void onSkipClick() {
-        launchActivity(Dashboard.class);
-    }
 
     @Override
     protected void onDestroy() {
@@ -415,6 +453,9 @@ public class LoginActivity extends AppCompatActivity implements
             if (signedInUser.hasDisplayName()) {
                 String userName = signedInUser.getDisplayName();
                 builder.append("userName : " + userName + "\nid :" + signedInUser.getId());
+
+                sessionManager.createLoginSession("Ram Mandal", "imagelink");
+                launchActivity(SelectCategoryActivity.class);
             }
 
             if (signedInUser.hasTagline()) {
@@ -452,7 +493,8 @@ public class LoginActivity extends AppCompatActivity implements
 //                        .execute(userProfilePicUrl);
             }
 
-            infoTextView.setText(builder.toString());
+
+//            infoTextView.setText(builder.toString());
         }
     }
 

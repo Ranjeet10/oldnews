@@ -48,11 +48,11 @@ public class NewsData {
                     newsType + categoryId + i,
                     categoryName,
                     (i % 2 == 0) ? imgArray[0] : (i == 3 || i == 5) ? imgArray[2] : imgArray[1],
-                    categoryName + " " + context.getResources().getString(R.string.news_title_republica),
-                    "Andy Rubin",
-                    "Jan 20 2016",
-                    "intro text",
-                    context.getResources().getString(R.string.news_description_republica), newsUrl);
+                    categoryName + " " + context.getResources().getString(R.string.news_title_nagarik),
+                    "कल्पना पौडेल",
+                    "आइतबार २ फागुन, २०७२",
+                    "आइतबार २ फागुन, २०७२",
+                    context.getResources().getString(R.string.news_description_nagarik), newsUrl);
             newsObjs.add(newsObj);
 
         }
@@ -110,11 +110,11 @@ public class NewsData {
                 case 3:
 
                     newsObj = new NewsObj(String.valueOf(newsType), categoryId,
-                            newsType + categoryId + 1 + i, context.getResources().getString(R.string.breaking_news), (i % 2 == 0) ? imgArray[0] : (i == 3) ? imgArray[2] : imgArray[1],
-                            context.getResources().getString(R.string.news_title_republica), "Andy Rubin",
-                            "Thu, 11-11-2015",
-                            "Thu, 11-11-2015",
-                            context.getResources().getString(R.string.news_description_republica), newsUrl);
+                            newsType + categoryId + 1 + i, context.getResources().getString(R.string.mukhya_samachar), (i % 2 == 0) ? imgArray[0] : (i == 3) ? imgArray[2] : imgArray[1],
+                            context.getResources().getString(R.string.news_title_nagarik), "कल्पना पौडेल",
+                            "आइतबार २ फागुन, २०७२",
+                            "आइतबार २ फागुन, २०७२",
+                            context.getResources().getString(R.string.news_description_nagarik), newsUrl);
                     break;
             }
 
@@ -148,11 +148,11 @@ public class NewsData {
                     break;
                 case 3:
                     newsObj = new NewsObj(String.valueOf(newsType), categoryId,
-                            newsType + categoryId + 2 + i, context.getResources().getString(R.string.latest_news), (i % 2 == 0) ? imgArray[0] : (i == 3) ? imgArray[2] : imgArray[1],
-                            context.getResources().getString(R.string.news_title_republica), "Andy Rubin",
+                            newsType + categoryId + 2 + i, context.getResources().getString(R.string.taja_samachar), (i % 2 == 0) ? imgArray[0] : (i == 3) ? imgArray[2] : imgArray[1],
+                            context.getResources().getString(R.string.news_title_nagarik), "कल्पना पौडेल",
+                            "आइतबार २ फागुन, २०७२",
                             "Thu, 11-11-2015",
-                            "Thu, 11-11-2015",
-                            context.getResources().getString(R.string.news_description_republica), newsUrl);
+                            context.getResources().getString(R.string.news_description_nagarik), newsUrl);
                     break;
             }
             listModels1.add(newsObj);

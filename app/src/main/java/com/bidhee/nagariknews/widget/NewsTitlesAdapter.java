@@ -59,15 +59,13 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view;
+        View view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
+
         if (isFromDetail) {
-            view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     StaticStorage.ROW_HEIGHT);
             view.setLayoutParams(params);
-        } else {
-            view = LayoutInflater.from(context).inflate(R.layout.news_title_layout, parent, false);
         }
 
         return new ViewHolder(view);
@@ -111,15 +109,18 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
 
         holder.categoryTextView.setText(no.getNewsCategoryName());
-                Picasso.with(context)
-                        .load(no.getImg())
-                        .placeholder(R.drawable.nagariknews)
-                        .error(R.drawable.nagariknews)
-                        .into(holder.thumbnail);
-
+        Picasso.with(context)
+                .load(no.getImg())
+                .placeholder(R.drawable.nagariknews)
+                .error(R.drawable.nagariknews)
+                .into(holder.thumbnail);
 
 
         holder.newsTitleTv.setText(no.getTitle());
+
+        Log.i("dateD", no.getDate());
+
+        holder.newsSourceTv.setText(no.getDate());
 
         View.OnClickListener myClickListener = new View.OnClickListener() {
             @Override
