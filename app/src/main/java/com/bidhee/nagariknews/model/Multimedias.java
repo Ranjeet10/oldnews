@@ -11,6 +11,10 @@ public class Multimedias implements Parcelable {
     private String title;
     private String multimediaPath;
 
+    //for video only
+    private String noOfViews;
+    private String date;
+
     public Multimedias() {
     }
 
@@ -18,12 +22,16 @@ public class Multimedias implements Parcelable {
         id = source.readString();
         title = source.readString();
         multimediaPath = source.readString();
+        noOfViews = source.readString();
+        date = source.readString();
     }
 
-    public Multimedias(String id, String title, String multimediaPath) {
+    public Multimedias(String id, String title, String multimediaPath, String noOfViews, String date) {
         this.id = id;
         this.title = title;
         this.multimediaPath = multimediaPath;
+        this.noOfViews = noOfViews;
+        this.date = date;
     }
 
     public String getId() {
@@ -50,6 +58,22 @@ public class Multimedias implements Parcelable {
         this.multimediaPath = multimediaPath;
     }
 
+    public String getNoOfViews() {
+        return noOfViews;
+    }
+
+    public void setNoOfViews(String noOfViews) {
+        this.noOfViews = noOfViews;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -61,6 +85,8 @@ public class Multimedias implements Parcelable {
         dest.writeString(id);
         dest.writeString(title);
         dest.writeString(multimediaPath);
+        dest.writeString(noOfViews);
+        dest.writeString(date);
     }
 
     private void applyDefaults() {
@@ -70,6 +96,10 @@ public class Multimedias implements Parcelable {
             title = "";
         if (multimediaPath == null)
             multimediaPath = "";
+        if (noOfViews == null)
+            noOfViews = "";
+        if (date == null)
+            date = "";
     }
 
     public static Creator<Multimedias> CREATOR = new Creator<Multimedias>() {

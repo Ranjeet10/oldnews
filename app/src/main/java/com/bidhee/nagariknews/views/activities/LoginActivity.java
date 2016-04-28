@@ -3,17 +3,29 @@ package com.bidhee.nagariknews.views.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.server_request.ServerConfig;
+import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -22,7 +34,6 @@ import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -43,7 +54,9 @@ import com.twitter.sdk.android.core.models.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,7 +83,10 @@ public class LoginActivity extends AppCompatActivity implements
      */
     private static final int SIGN_IN_REQUEST_CODE = 10;
     private static final int ERROR_DIALOG_REQUEST_CODE = 11;
+    private static final int PICK_IMAGE_REQUEST = 100;
 
+
+    private String TAG = getClass().getSimpleName();
     private ProgressDialog dialog;
 
     // For communicating with Google APIs
@@ -85,8 +101,6 @@ public class LoginActivity extends AppCompatActivity implements
     SessionManager sessionManager;
 
 
-    @Bind(R.id.btn_login)
-    TextView btnLogin;
     @Bind(R.id.btnSkip)
     TextView btnSkip;
     @Bind(R.id.btnCreateAcc)
@@ -94,17 +108,44 @@ public class LoginActivity extends AppCompatActivity implements
     @Bind(R.id.btnBackToLogin)
     TextView btnBackToLogin;
 
+    @Bind(R.id.btnSignUp)
+    Button btnSignUp;
+    @Bind(R.id.btn_login)
+    Button btnLogin;
+
+    //==========sign up form field===========
+    @Bind(R.id.signup_profile_image)
+    ImageView profileImage;
+    @Bind(R.id.firstName)
+    AutoCompleteTextView firstNameField;
+    @Bind(R.id.lastName)
+    AutoCompleteTextView lastNameField;
+    @Bind(R.id.signup_email)
+    EditText signUpEmailField;
+    @Bind(R.id.signup_password)
+    EditText signUpPasswordField;
+    @Bind(R.id.signup_confirm_password)
+    EditText signUpConfirmPasswordField;
+
+    private Response.Listener<String> signUpResponse;
+    private Response.ErrorListener errorListener;
+
+
     @Bind(R.id.signup_layout)
     LinearLayout signUpLayout;
     @Bind(R.id.loginLayout)
     LinearLayout loginLayout;
 
     @Bind(R.id.login_button)
-    LoginButton loginButton;
+    LoginButton btnFacebookLogin;
     @Bind(R.id.twitter_login_button)
-    TwitterLoginButton twitterLoginButton;
+    TwitterLoginButton btnTwitterLogin;
     @Bind(R.id.sign_in_button)
-    SignInButton googleLoginButton;
+    SignInButton btnGooglePlusLogin;
+
+    Boolean isCanceled = false;
+    View focusView = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +168,7 @@ public class LoginActivity extends AppCompatActivity implements
         // Initializing google plus api client
         mGoogleApiClient = buildGoogleAPIClient();
 
-        googleLoginButton.setSize(SignInButton.SIZE_STANDARD);
+        btnGooglePlusLogin.setSize(SignInButton.SIZE_STANDARD);
 
     }
 
@@ -183,7 +224,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     private void registerCallbackListenerForTwitterLoginButton() {
-        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+        btnTwitterLogin.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
 
@@ -229,9 +270,9 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void registerCallBackListenerForFacebookLoginButton() {
         callbackManager = CallbackManager.Factory.create();
-        loginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
+        btnFacebookLogin.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
@@ -305,10 +346,143 @@ public class LoginActivity extends AppCompatActivity implements
         toggleLayout(1);
     }
 
+    @OnClick(R.id.signup_profile_image)
+    void onProfileImageCLick() {
+        showFileChooser();
+    }
+
+    @OnClick(R.id.btnSignUp)
+    void onSignUpCreated() {
+        String fName = firstNameField.getText().toString();
+        String lName = lastNameField.getText().toString();
+        String email = signUpEmailField.getText().toString();
+        String password = signUpPasswordField.getText().toString();
+        String confirmPassword = signUpConfirmPasswordField.getText().toString();
+
+        attemptSignUp(fName, lName, email, password, confirmPassword);
+    }
+
     @OnClick(R.id.btnBackToLogin)
     void onBackToLoginClicked() {
         toggleLayout(2);
     }
+
+    //====================================================================================================
+    //========================================== SignUp Methods ==========================================
+    //====================================================================================================
+
+    private void showFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void attemptSignUp(String fName, String lName, String email, String password, String confirmPassword) {
+        firstNameField.setError(null);
+        lastNameField.setError(null);
+        signUpEmailField.setError(null);
+        signUpPasswordField.setError(null);
+        signUpConfirmPasswordField.setError(null);
+
+        isCanceled = false;
+        focusView = null;
+
+        if (!BasicUtilMethods.isValidPassword(password)) {
+            signUpPasswordField.setError("Password must be greater than 5 character");
+            requestFocusView(signUpPasswordField);
+        }
+
+        if (TextUtils.isEmpty(confirmPassword)) {
+            signUpConfirmPasswordField.setError("Please confirm your password");
+            requestFocusView(signUpConfirmPasswordField);
+        }
+
+        if (TextUtils.isEmpty(password)) {
+            signUpPasswordField.setError("Password required");
+            requestFocusView(signUpPasswordField);
+        }
+
+        if (TextUtils.isEmpty(email)) {
+            signUpEmailField.setError("Email required");
+            requestFocusView(signUpEmailField);
+        }
+
+        if (!BasicUtilMethods.isValidEmail(email)) {
+            signUpEmailField.setError("Email not valid");
+            requestFocusView(signUpEmailField);
+        }
+
+        if (TextUtils.isEmpty(lName)) {
+            lastNameField.setError("Last name required");
+            requestFocusView(lastNameField);
+        }
+
+        if (TextUtils.isEmpty(fName)) {
+            firstNameField.setError("First name required");
+            requestFocusView(firstNameField);
+        }
+
+        if (!confirmPassword.equals(password)) {
+            requestFocusView(signUpPasswordField);
+            requestFocusView(signUpConfirmPasswordField);
+            Toast.makeText(this, "Sorry Password not matched", Toast.LENGTH_SHORT).show();
+        }
+        if (isCanceled) {
+            focusView.requestFocus();
+        } else {
+            registerUser(fName + " " + lName, email, password);
+        }
+    }
+
+    private void registerUser(final String name, final String email, final String password) {
+        dialog.setMessage("Please wait...");
+        dialog.show();
+        handleSignUpResponse();
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("nagarik_consumer[name]", name);
+        params.put("nagarik_consumer[email]", email);
+        params.put("nagarik_consumer[plainPassword]", password);
+
+        WebService.registerUser(ServerConfig.REGISTER_URL, params, signUpResponse, errorListener);
+
+    }
+
+    private void handleSignUpResponse() {
+        signUpResponse = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                dialog.dismiss();
+                Log.i(TAG, response);
+                try {
+                    JSONObject sObject = new JSONObject(response);
+                    String status = sObject.getString("status");
+                    JSONObject dataObject = new JSONObject("data");
+                    String username = dataObject.getString("username");
+                    String email = dataObject.getString("email");
+                    String name = dataObject.getString("name");
+                    String token = dataObject.getString("token");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (dialog.isShowing())
+                    dialog.dismiss();
+            }
+        };
+    }
+
+    private void requestFocusView(View firstNameField) {
+        isCanceled = true;
+        focusView = firstNameField;
+    }
+
 
     private void toggleLayout(int i) {
         switch (i) {
@@ -342,7 +516,18 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SIGN_IN_REQUEST_CODE) {
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri filePath = data.getData();
+            try {
+                //Getting the Bitmap from Gallery
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                //Setting the Bitmap to ImageView
+                profileImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (requestCode == SIGN_IN_REQUEST_CODE) {
             if (resultCode != RESULT_OK) {
 
                 mSignInClicked = false;
@@ -363,7 +548,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
             try {
                 Log.i("twittercode", requestCode + "\n" + resultCode);
-                twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+                btnTwitterLogin.onActivityResult(requestCode, resultCode, data);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -418,7 +603,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.PLUS_ME), new Scope(Scopes.PROFILE))
                 .requestId()
                 .build();
-        googleLoginButton.setScopes(gso.getScopeArray());
+        btnGooglePlusLogin.setScopes(gso.getScopeArray());
 
         return new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

@@ -85,7 +85,8 @@
     <style name="auto_edit_text_style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/text_input_height</item>
-        <item name="android:background">@color/transparent</item>
+        <!--<item name="android:background">@color/transparent</item>-->
+        <item name="android:background">@drawable/input_field_drawable</item>
         <item name="android:imeOptions">actionNext</item>
         <item name="android:inputType">text</item>
         <item name="android:paddingLeft">@dimen/screen_padding_lr</item>
@@ -96,7 +97,7 @@
 
     <style name="form_cell_parent_layout" parent="match_wrap">
         <item name="android:layout_marginTop">@dimen/screen_padding</item>
-        <item name="android:background">@color/white</item>
+
         <item name="android:theme">@style/TextLabel</item>
     </style>
 
@@ -188,10 +189,10 @@
 
 
     <!-- input text attributes style-->
-    <style name="TextLabel" parent="TextAppearance.AppCompat">
+    <style name="TextLabel">
         <!-- Hint color and label color in FALSE state -->
-        <item name="android:textColorHint">@color/light_grey</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <!--<item name="android:textColorHint">@color/light_grey</item>-->
+        <!--<item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>-->
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/nagarikColorPrimary</item>
         <item name="colorControlNormal">@color/nagarikColorPrimary</item>

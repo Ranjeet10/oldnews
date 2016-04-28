@@ -524,7 +524,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     public void onChildItemPositionListen(int position, View view, Boolean isShown) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
+        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue()==1) {
             getNewsDetailFromServer(selectedNews.getNewsId());
         } else {
             loadingDetail(selectedNews);
