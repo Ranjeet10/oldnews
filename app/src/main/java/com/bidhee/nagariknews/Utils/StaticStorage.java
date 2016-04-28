@@ -133,6 +133,7 @@ public class StaticStorage {
     public static String KEY_CURRENT_TITLE = "current_title";
     public static String KEY_CURRENT_LOGO = "current_logo";
     public static String KEY_NEWS_SAVED_STATE = "news_saved_state";
+    public static String KEY_MULTIMEDIA_SAVED_STATE = "multimedia_saved_state";
     public static String KEY_GALLERY_TYPE = "galery_type";
     public static String KEY_VIDEO_BUNDLE = "video_bundle";
     public static String KEY_EPAPER_TYPE = "epaper_type";
@@ -172,41 +173,41 @@ public class StaticStorage {
     public static ArrayList<Multimedias> getGalleryList(int type) {
         ArrayList<Multimedias> multimediaList = new ArrayList<>();
         if (type == PHOTOS) {
-            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcQ3W9nImucyhYWc0mh3c9_YNmSwYPJ96IyCAEUylrRyX6RTOr"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTYm3vnXWhmTxNrra_jtqvqZBjnFZNxi8PTtkBkTTFQLSHKwX93"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQQ31ZjpY-62o-Buk7kIdLHqRft9Bv71tnMI2cPqMhVgKTk3nKNAg"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFyveauO6PNwN1wAMdTjkxUvUC3hTK5uaG7wgXoInPZLymWyFx"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR_uvGQvbqhAUfsqpzowejAb-fD_C6swvo3FSDIUFAf6QKa-Vn6"));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE"));
-            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg"));
+            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcQ3W9nImucyhYWc0mh3c9_YNmSwYPJ96IyCAEUylrRyX6RTOr", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTYm3vnXWhmTxNrra_jtqvqZBjnFZNxi8PTtkBkTTFQLSHKwX93", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQQ31ZjpY-62o-Buk7kIdLHqRft9Bv71tnMI2cPqMhVgKTk3nKNAg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFyveauO6PNwN1wAMdTjkxUvUC3hTK5uaG7wgXoInPZLymWyFx", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR_uvGQvbqhAUfsqpzowejAb-fD_C6swvo3FSDIUFAf6QKa-Vn6", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg", "", ""));
         } else if (type == CARTOONS) {
 
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/cartoon-fish-16120643.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs4.dreamstime.com/t/illustration-blue-bird-cartoon-singing-30204548.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/happy-elephant-cartoon-illustration-isolated-white-49398584.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs1.dreamstime.com/t/cute-snake-cartoon-illustration-55471879.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs6.dreamstime.com/t/cartoon-cow-friendly-expression-59284628.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/reindeer-cartoon-christmas-set-collection-six-funny-characters-different-positions-expressions-isolated-white-35098489.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/x/group-cartoon-pirates-funny-animals-43401148.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-forest-landscape-endless-vector-nature-background-computer-games-tree-outdoor-plant-green-natural-environment-58460655.jpg"));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg"));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/cartoon-fish-16120643.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs4.dreamstime.com/t/illustration-blue-bird-cartoon-singing-30204548.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/happy-elephant-cartoon-illustration-isolated-white-49398584.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs1.dreamstime.com/t/cute-snake-cartoon-illustration-55471879.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs6.dreamstime.com/t/cartoon-cow-friendly-expression-59284628.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/reindeer-cartoon-christmas-set-collection-six-funny-characters-different-positions-expressions-isolated-white-35098489.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/x/group-cartoon-pirates-funny-animals-43401148.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-forest-landscape-endless-vector-nature-background-computer-games-tree-outdoor-plant-green-natural-environment-58460655.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg", "", ""));
 
         } else if (type == VIDEOS) {
-            multimediaList.add(new Multimedias("id", "Video shows terrified tourists as the temple collapses - BBC News", "Yyhh98NDLNs"));
-            multimediaList.add(new Multimedias("id", "New Nepali Movie PARDESHI Song Kura Khatti Ho || Official Full Video HD", "77LB0TP57JA"));
-            multimediaList.add(new Multimedias("id", "Nagariknews Video: World's shortest man Chandra Bahadur Dangi", "RnfiL5JZ5io"));
-            multimediaList.add(new Multimedias("id", "Interview With Miss Nepal 2016", "K9UejuHHgto"));
-            multimediaList.add(new Multimedias("id", "IBelly dance by Miss Nepal contestant Namrata Shrestha", "8jyMJDiIaNk"));
-            multimediaList.add(new Multimedias("id", "Group fight on Holi", "oahhDybedIc"));
-            multimediaList.add(new Multimedias("id", "Naya Shakti - Clean Kathmandu-Green Kathmandu", "Ojpwxx_4Aqk"));
-            multimediaList.add(new Multimedias("id", "Holi Special Program 2072 with Rampyari and K Ma Timro Hoina Ra Film Unit - RED STUDIO HD", "f1cgzpgW_Zs"));
-            multimediaList.add(new Multimedias("id", "Football Team's Grand Welcome in Jhapa-2", "BG5rW6eoJZ8"));
-            multimediaList.add(new Multimedias("id", "PM Narendramodi and PM KP Oli inaugurate Dhalkebar Muzaffarpur transmission line", "tEcc9RO6Ehg"));
-            multimediaList.add(new Multimedias("id", "PM Kp Sharma Oli", "MNp1e0kqt4w"));
-            multimediaList.add(new Multimedias("id", "Nepali Cricket supporter In Bangladesh", "vjIYurEgkvU"));
+            multimediaList.add(new Multimedias("id", "Video shows terrified tourists as the temple collapses - BBC News", "Yyhh98NDLNs", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "New Nepali Movie PARDESHI Song Kura Khatti Ho || Official Full Video HD", "77LB0TP57JA", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Nagariknews Video: World's shortest man Chandra Bahadur Dangi", "RnfiL5JZ5io", "241views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Interview With Miss Nepal 2016", "K9UejuHHgto", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "IBelly dance by Miss Nepal contestant Namrata Shrestha", "8jyMJDiIaNk", "124views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Group fight on Holi", "oahhDybedIc", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Naya Shakti - Clean Kathmandu-Green Kathmandu", "Ojpwxx_4Aqk", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Holi Special Program 2072 with Rampyari and K Ma Timro Hoina Ra Film Unit - RED STUDIO HD", "f1cgzpgW_Zs", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "Football Team's Grand Welcome in Jhapa-2", "BG5rW6eoJZ8", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "PM Narendramodi and PM KP Oli inaugurate Dhalkebar Muzaffarpur transmission line", "tEcc9RO6Ehg", "24views", "2012-10-11"));
+            multimediaList.add(new Multimedias("id", "PM Kp Sharma Oli", "MNp1e0kqt4w", "24views", ""));
+            multimediaList.add(new Multimedias("id", "Nepali Cricket supporter In Bangladesh", "vjIYurEgkvU", "24views", ""));
 
         }
 

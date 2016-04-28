@@ -38,13 +38,16 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     @Override
     public GalleryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.single_row_gallery, parent, false);
+
+        View view = TYPE == StaticStorage.VIDEOS ? LayoutInflater.from(context).inflate(R.layout.single_row_video, parent, false) :
+                LayoutInflater.from(context).inflate(R.layout.single_row_gallery, parent, false);
         return new GalleryViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final GalleryViewHolder holder, int position) {
-        holder.galleryItemTitleTextView.setText(multimediaList.get(position).getTitle());
+        Multimedias multimedias = multimediaList.get(position);
+        holder.galleryItemTitleTextView.setText(multimedias.getTitle());
 
         /**
          * getting thumbnail path from the server accordingly
@@ -53,9 +56,16 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
          * {@link StaticStorage.VIDEO_THUMBNAIL_POSTFIX}
          * else leave the url as it is
          */
-        final String url = TYPE == StaticStorage.VIDEOS ?
-                StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimediaList.get(position).getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX :
-                multimediaList.get(position).getMultimediaPath();
+        String url;
+        if (TYPE == StaticStorage.VIDEOS) {
+            url = StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimedias.getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX;
+            holder.galleryItemNoOfViews.setText(multimedias.getNoOfViews());
+            holder.galleryItempublishDate.setText(multimedias.getDate());
+        } else {
+            url = multimedias.getMultimediaPath();
+
+        }
+
 
         /**
          * calling the function to load the image in {@link holder.galleryThumbnail}
@@ -76,6 +86,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         ImageView galleryThumbnail;
         @Bind(R.id.gallery_item_title)
         TextView galleryItemTitleTextView;
+
+        @Bind(R.id.gallery_item_no_of_views)
+        TextView galleryItemNoOfViews;
+        @Bind(R.id.gallery_item_date)
+        TextView galleryItempublishDate;
 
 
         public GalleryViewHolder(View itemView) {

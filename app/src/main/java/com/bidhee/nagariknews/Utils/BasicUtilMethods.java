@@ -125,4 +125,14 @@ public class BasicUtilMethods {
             ne.printStackTrace();
         }
     }
+
+    public static Boolean isValidPassword(String text) {
+        if (text.length() > 5)
+            return true;
+        return false;
+    }
+
+    public static Boolean isValidEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 }

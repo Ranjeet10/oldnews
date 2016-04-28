@@ -13,6 +13,7 @@
         android:text="@string/no_account"
         android:visibility="visible" />
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,10 +23,10 @@
         android:scrollbars="none">
 
         <RelativeLayout
-            android:focusableInTouchMode="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
+            android:focusableInTouchMode="true">
 
             <ImageView
                 android:id="@+id/logo_image"
@@ -63,6 +64,12 @@
                 android:padding="@dimen/tab_bar_menu_margin"
                 android:visibility="visible">
 
+                <ImageView
+                    android:id="@+id/signup_profile_image"
+                    android:layout_width="@dimen/news_title_image_w"
+                    android:layout_height="@dimen/news_title_image_w"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/empty" />
                 <!-- first name layout-->
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/firstNameLayout"

@@ -1,5 +1,7 @@
 package com.bidhee.nagariknews.controller.server_request;
 
+import com.bidhee.nagariknews.BuildConfig;
+
 /**
  * Created by ronem on 4/20/16.
  */
@@ -24,4 +26,11 @@ public class ServerConfig {
         String url = baseUrl + "api/news/latest-breaking?_format=json";
         return url;
     }
+
+    public static String getYoutubeChannelLinkUrl() {
+        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults=50&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+        return url;
+    }
+
+    public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
 }
