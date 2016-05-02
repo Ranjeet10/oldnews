@@ -71,7 +71,7 @@ public class StaticStorage {
     /////////////////  tabs in list  /////////////////////////
     public static ArrayList<TabModel> getTabData(int which) {
         ArrayList<TabModel> tabs = new ArrayList<>();
-
+        //republica
         switch (which) {
             case 0:
                 tabs.add(new TabModel("1", "Latest News"));
@@ -84,6 +84,7 @@ public class StaticStorage {
                 tabs.add(new TabModel("35", "Life Style"));
                 tabs.add(new TabModel("117", "The Week"));
                 break;
+            //nagarik
             case 1:
                 tabs.add(new TabModel("1", "ताजा समाचार"));
                 tabs.add(new TabModel("21", "राजनीति"));
@@ -99,21 +100,14 @@ public class StaticStorage {
                 tabs.add(new TabModel("82", "अन्तर्वार्ता"));
                 tabs.add(new TabModel("37", "ब्लग"));
                 break;
-
+            //sukrabar
             case 2:
-                tabs.add(new TabModel("1", "ताजा समाचार"));
-                tabs.add(new TabModel("2", "राजनीति"));
-                tabs.add(new TabModel("23", "आर्थीक्"));
-                tabs.add(new TabModel("4", "समाजिक्"));
-                tabs.add(new TabModel("5", "कला"));
-                tabs.add(new TabModel("6", "खेल्कुद्"));
-                tabs.add(new TabModel("7", "विश्व"));
-                tabs.add(new TabModel("8", "प्रवास"));
-                tabs.add(new TabModel("9", "प्रविधि"));
-                tabs.add(new TabModel("10", "स्वास्थ्य"));
-                tabs.add(new TabModel("11", "विचार"));
-                tabs.add(new TabModel("12", "अन्तर्वार्ता"));
-                tabs.add(new TabModel("13", "ब्लग"));
+                tabs.add(new TabModel("1", "कभर स्टोरी"));
+                tabs.add(new TabModel("2", "विविध"));
+                tabs.add(new TabModel("3", "मव सम्मत"));
+                tabs.add(new TabModel("4", "प्रविधि"));
+                tabs.add(new TabModel("5", "संगाीत"));
+                tabs.add(new TabModel("22", "टिप्स"));
                 break;
         }
 
@@ -140,6 +134,12 @@ public class StaticStorage {
     public static String KEY_EPAPER = "epaper";
     public static String KEY_EPAPER_PAGE = "epaper_page";
     public static String KEY_IS_FROM_FAV = "favourite";
+
+    /////////////////// login type ///////////////////
+    public static int LOGIN_TYPE_FORM = 1;
+    public static int LOGIN_TYPE_FACEBOOK = 2;
+    public static int LOGIN_TYPE_TWITTER = 3;
+    public static int LOGIN_TYPE_GOOGLE = 4;
 
 
     public static ArrayList<ExtraModel> getExtraList() {
@@ -185,15 +185,8 @@ public class StaticStorage {
             multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg", "", ""));
         } else if (type == CARTOONS) {
 
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/cartoon-fish-16120643.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs4.dreamstime.com/t/illustration-blue-bird-cartoon-singing-30204548.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs9.dreamstime.com/t/happy-elephant-cartoon-illustration-isolated-white-49398584.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs1.dreamstime.com/t/cute-snake-cartoon-illustration-55471879.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs6.dreamstime.com/t/cartoon-cow-friendly-expression-59284628.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/reindeer-cartoon-christmas-set-collection-six-funny-characters-different-positions-expressions-isolated-white-35098489.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/x/group-cartoon-pirates-funny-animals-43401148.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-forest-landscape-endless-vector-nature-background-computer-games-tree-outdoor-plant-green-natural-environment-58460655.jpg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "मूहुर्त", "http://nagarik.bidheegroup.com/uploads/media//cartoon/274da0858cfef8a4aea36fceeb569c2f_L.jpg", "", ""));
+            multimediaList.add(new Multimedias("id", "मूहुर्त", "http://nagarik.bidheegroup.com/uploads/media//2016/may/1-10/cartoon.jpg", "", ""));
 
         } else if (type == VIDEOS) {
             multimediaList.add(new Multimedias("id", "Video shows terrified tourists as the temple collapses - BBC News", "Yyhh98NDLNs", "24views", "2012-10-11"));

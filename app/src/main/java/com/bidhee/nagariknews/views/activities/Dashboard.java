@@ -12,6 +12,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,9 +27,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -50,7 +54,16 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.plus.Plus;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.Twitter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -61,7 +74,14 @@ import butterknife.ButterKnife;
 
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+        BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    public static Dashboard instance = null;
+
+    public static Dashboard getInstance() {
+        return instance;
+    }
 
     private String TAG = getClass().getSimpleName();
     Menu menu;
@@ -84,9 +104,12 @@ public class Dashboard extends AppCompatActivity
     @Bind(R.id.fragment_container_layout)
     FrameLayout fragmentContainer;
 
+    GoogleApiClient googleApiClient;
+
     private ControllableAppBarLayout.LayoutParams params;
     LinearLayout switchMenusLayout;
-    ImageView navImageView;
+    ImageView navImageView, userImageView;
+    TextView userNameTextView, userEmailTextView;
     ImageView switchNagarik, switchRepublica, switchSukrabar;
     Handler handler;
     Runnable runnable;
@@ -94,6 +117,9 @@ public class Dashboard extends AppCompatActivity
     Boolean isUser;
     public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
+    public static String userName = "";
+    public static String userEmail = "";
+    public static String userImage = "";
 
     private MyAnimation myAnimation;
     private String currentFragmentTag;
@@ -108,6 +134,9 @@ public class Dashboard extends AppCompatActivity
     String navImageUrl = "https://s3.amazonaws.com/uploads.hipchat.com/509974/3391264/KWM6fpLrshlYjh0/profile.jpg";
     //    MyAnimation myAnimation;
     private Fragment replaceableFragment;
+    private FragmentManager fragmentManager;
+
+    Boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,17 +155,20 @@ public class Dashboard extends AppCompatActivity
                 currentTheme = R.style.NagarikTheme;
                 break;
             case 3:
+                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
                 currentTheme = R.style.SukrabarTheme;
                 break;
         }
 
         setTheme(currentTheme);
+        instance = this;
 
         /**
          * main content view
          */
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
+        fragmentManager = getSupportFragmentManager();
         handler = new Handler();
         myAnimation = new MyAnimation();
         printHashKey();
@@ -144,15 +176,8 @@ public class Dashboard extends AppCompatActivity
         setUpImageSlider();
 //        setUpVIewFlipper();
 
-        userDetail = sessionManager.getLoginDetail();
 
-        //modify it later
-        if (userDetail != null) {
-            String userName = userDetail.get(SessionManager.KEY_USER_NAME);
-            if (!TextUtils.isEmpty(userName)) {
-                Toast.makeText(getApplicationContext(), "You are Logged in as " + userName, Toast.LENGTH_SHORT).show();
-            }
-        }
+        userDetail = sessionManager.getLoginDetail();
 
         if (sessionManager.isFirstRun(this)) {
             getSharedPreferences(SessionManager.FIRST_RUN_PREFERENCE_NAME, MODE_PRIVATE)
@@ -168,7 +193,6 @@ public class Dashboard extends AppCompatActivity
              */
             sessionManager.switchNewsTo(1);
             //starting loginIntent
-//            Intent loginIntent = new Intent(this, SelectCategoryActivity.class);
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -178,8 +202,13 @@ public class Dashboard extends AppCompatActivity
 
         } else {
             isUser = sessionManager.isLoggedIn() ? true : false;
-            //added for testing
-//            startActivity(new Intent(Dashboard.this, SelectCategoryActivity.class));
+            if (isUser) {
+                userName = userDetail.get(SessionManager.KEY_USER_NAME);
+                userImage = userDetail.get(SessionManager.KEY_USER_IMAGE);
+                userEmail = userDetail.get(SessionManager.KEY_USER_EMAIL);
+            }
+
+            googleClientConfigure();
 
         }
 
@@ -205,7 +234,7 @@ public class Dashboard extends AppCompatActivity
 
             newsTypeImageLogo.setImageResource(logoImage);
             replaceableFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
-            attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
+            attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, false);
 
         } else {
 
@@ -230,10 +259,27 @@ public class Dashboard extends AppCompatActivity
             newsTypeImageLogo.setImageResource(logoImage);
             replaceableFragment = FragmentAllNews.createNewInstance();
             currentFragmentTag = replaceableFragment.getClass().getName();
-            attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
+            attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, false);
         }
 
 
+    }
+
+    private void googleClientConfigure() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PROFILE))
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                .requestProfile()
+                .requestEmail()
+                .build();
+
+        // Build a GoogleApiClient with access to the Google Sign-In API
+        // and the options specified by gGoogleSignInOptions.
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Plus.API)
+                .build();
     }
 
 //    @Override
@@ -354,14 +400,25 @@ public class Dashboard extends AppCompatActivity
 
     }
 
-    private void attachFragment(Fragment fragment, String currentFragmentTag, String currentNewsType, String currentTitle) {
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container_layout, fragment, currentFragmentTag)
-                .commit();
+    private void attachFragment(Fragment fragment, String currentFragmentTag, String currentNewsType, String currentTitle, Boolean addToBackStack) {
+        if (addToBackStack) {
+            fragmentManager.popBackStack();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragment_container_layout, fragment, currentFragmentTag)
+                    .addToBackStack(null)
+                    .commit();
 
 //        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+        } else {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragment_container_layout, fragment, currentFragmentTag)
+                    .commit();
+
+//        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
+        }
+
         Log.d(TAG, currentFragmentTag);
 
     }
@@ -385,6 +442,10 @@ public class Dashboard extends AppCompatActivity
 
         switchMenusLayout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.switch_menus_background_layout);
         navImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_image_view);
+        userImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
+        userNameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.logged_in_user_name);
+        userEmailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.logged_in_user_email);
+
         switchRepublica = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_republica);
         switchNagarik = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
         switchSukrabar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_sukrabar);
@@ -394,6 +455,13 @@ public class Dashboard extends AppCompatActivity
                 .error(R.drawable.nagariknews)
                 .placeholder(R.drawable.nagariknews)
                 .into(navImageView);
+
+        if (userDetail != null) {
+            Log.i(TAG, "user detail was null");
+            BasicUtilMethods.loadImage(this, userImage, userImageView);
+            userNameTextView.setText(userName);
+            userEmailTextView.setText(userEmail);
+        }
 
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
@@ -465,10 +533,29 @@ public class Dashboard extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (fragmentManager.getBackStackEntryCount() > 0) {
+
+            fragmentManager.popBackStack();
+            navigationView.setCheckedItem(R.id.nav_all_news);
         } else {
-            super.onBackPressed();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Tap back again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -603,6 +690,39 @@ public class Dashboard extends AppCompatActivity
                 break;
 
             case R.id.nav_logout:
+                String wasFrom = "";
+                switch (sessionManager.getLoginType()) {
+                    case 1:
+                        //login type is simple form
+                        wasFrom = "facebook";
+                        break;
+                    case 2:
+                        //login type is facebook
+                        LoginManager.getInstance().logOut();
+                        wasFrom = "facebook";
+                        break;
+                    case 3:
+                        wasFrom = "twitter";
+                        try {
+                            CookieSyncManager.createInstance(this);
+                            CookieManager cookieManager = CookieManager.getInstance();
+                            cookieManager.removeSessionCookie();
+                            Twitter.getSessionManager().clearActiveSession();
+                            Twitter.logOut();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                    case 4:
+                        wasFrom = "google";
+
+                        Plus.AccountApi.clearDefaultAccount(googleApiClient);
+                        googleApiClient.disconnect();
+                        googleApiClient.connect();
+                        break;
+                }
+                Log.i(TAG, wasFrom);
                 sessionManager.clearSession();
                 finish();
                 startActivity(new Intent(Dashboard.this, Dashboard.class));
@@ -611,7 +731,7 @@ public class Dashboard extends AppCompatActivity
         }
 
         currentFragmentTag = replaceableFragment.getClass().getName();
-        attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle);
+        attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, true);
 
         return true;
     }
@@ -660,4 +780,8 @@ public class Dashboard extends AppCompatActivity
     }
 
 
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
 }

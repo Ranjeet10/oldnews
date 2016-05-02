@@ -100,6 +100,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     ImageView newsShare;
     @Bind(R.id.news_add_to_fav)
     ImageView newsAddToFav;
+    @Bind(R.id.vertical_line_separator)
+    View verticalLineSeparator;
 
     NewsTitlesAdapter newsTitlesAdapter;
     WebSettings webSettings;
@@ -134,7 +136,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
          *
          */
         super.onCreate(savedInstanceState);
-//        EventBus.register(this);
 
         initActivityTransitions();
         NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
@@ -160,21 +161,31 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
         gettingBundle();
 
+
+        /**
+         * hide the add to favourite icon if the user is not loggedin
+         */
+        if (!Dashboard.sessionManager.isLoggedIn()) {
+            newsAddToFav.setVisibility(View.GONE);
+            verticalLineSeparator.setVisibility(View.GONE);
+        }
+
+
         webSettings = descriptionTextView.getSettings();
 
         if (newsObjs.size() > 0) {
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
             isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
             //modify later================================================================================
-            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue()==1) {
+//            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
                 if (isNewsInFavouite) {
                     loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
                 } else {
                     getNewsDetailFromServer(selectedNews.getNewsId());
                 }
-            } else {
-                loadingDetail(selectedNews);
-            }
+//            } else {
+//                loadingDetail(selectedNews);
+//            }
             loadRelatedContent();
 
             relatedNewsTextView.setVisibility(View.VISIBLE);
@@ -239,7 +250,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     String id = newsDetailObject.getString("id");
                     String title = newsDetailObject.getString("title");
                     String detail = newsDetailObject.getString("content");
-                    Log.i("detail",detail);
+                    Log.i("detail", detail);
                     String featuredImage = newsDetailObject.getString("featuredImage");
                     String publishDate = newsDetailObject.getString("publishOn");
                     String newsUrl = newsDetailObject.getString("url"); //semi url
@@ -524,7 +535,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     public void onChildItemPositionListen(int position, View view, Boolean isShown) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue()==1) {
+        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
             getNewsDetailFromServer(selectedNews.getNewsId());
         } else {
             loadingDetail(selectedNews);

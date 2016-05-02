@@ -4,7 +4,7 @@
     <!-- API KEYS FOR THE SOCIAL NETWORK-->
     <!-- ===============================================================================================-->
     <!-- google api key-->
-    <string name="apikey">AIzaSyAX2C4ZX2yHWM8_I9nKgudhWrMoNPHfOj8</string>
+    <string name="apikey">AIzaSyARzDSEGAMscF5wy-fJ2eS_Z36UzXOJM-0</string>
     <string name="sender_id">424391978066</string>
 
     <!-- facebook api key-->
@@ -23,6 +23,7 @@
 
     <string name="action_search">Search</string>
     <string name="action_add">Add</string>
+    <string name="select_category">Select Interested Category</string>
 
     <string name="login_text">Login</string>
     <string name="skip_text">Skip</string>

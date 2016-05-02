@@ -307,9 +307,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     // 1 means its for breaking and latest news
                     // >1 means its for normal news
                     newsType = 1;
-//                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
-//                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
-//                            NewsData.getNewsRepublica(getActivity(), newsType, categoryId, categoryName);
                     getNewsTitles(Dashboard.baseUrl, 1, categoryId);
                     break;
                 case 2:
@@ -318,9 +315,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     break;
                 case 3:
                     newsType = 3;
-                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
-                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
-                            NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
+                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+//                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
+//                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
+//                            NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
                     break;
             }
         }

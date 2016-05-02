@@ -26,13 +26,47 @@ public class WebService {
         AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
-    public static void registerUser(String url, final HashMap<String, String> params, Response.Listener<String> response, Response.ErrorListener errorListener) {
+    public static void hitServerWithParams(String url, final HashMap<String, String> params, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 return params;
             }
 
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public static void saveCategoryList(String url, final HashMap<String, String> header, final HashMap<String, String> params, Response.Listener<String> response, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public static void authRequest(String url, final String body, Response.Listener<String> response, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("Content-Type", "application/json");
+                return header;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                return body.getBytes();
+            }
         };
         AppController.getInstance().addToRequestQueue(stringRequest);
     }

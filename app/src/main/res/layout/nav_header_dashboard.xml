@@ -13,8 +13,7 @@
             android:id="@+id/nav_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:src="@drawable/andyrubin" />
+            android:scaleType="fitXY" />
 
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profile_image"
@@ -22,7 +21,7 @@
             android:layout_height="@dimen/news_title_image_h"
             android:layout_marginLeft="@dimen/screen_padding"
             android:layout_marginTop="@dimen/screen_padding"
-            android:src="@drawable/ram"
+            android:src="@drawable/empty"
             app:civ_border_color="@color/white"
             app:civ_border_width="2dp" />
 
@@ -30,21 +29,21 @@
             android:id="@+id/logged_in_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:layout_below="@id/profile_image"
             android:layout_marginLeft="@dimen/screen_padding"
-            android:text="Ram Mandal"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+            android:text=""
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/logged_in_user_email"
-            android:textColor="@color/white"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="@dimen/screen_padding"
             android:layout_height="wrap_content"
             android:layout_below="@id/logged_in_user_name"
-            android:text="ram.cp18113@gmail.com"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:text=""
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 

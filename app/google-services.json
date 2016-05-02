@@ -1,86 +1,42 @@
 {
   "project_info": {
-    "project_id": "nagarik-news",
-    "project_number": "424391978066",
-    "name": "Nagarik News"
+    "project_number": "329117814887",
+    "project_id": "nagariknews-1298"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:424391978066:android:f36173e948059ccb",
-        "client_id": "android:gcm.play.android.samples.com.gcmquickstart",
-        "client_type": 1,
+        "mobilesdk_app_id": "1:329117814887:android:8abd122f47ecdbbe",
         "android_client_info": {
-          "package_name": "gcm.play.android.samples.com.gcmquickstart",
-          "certificate_hash": []
+          "package_name": "com.bidhee.nagariknews"
         }
       },
       "oauth_client": [
         {
-          "client_id": "424391978066-rs9ulalqrn106uo7jotr83gaihcbuq8b.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:424391978066:android:8abd122f47ecdbbe",
-        "client_id": "android:com.bidhee.nagariknews",
-        "client_type": 1,
-        "android_client_info": {
-          "package_name": "com.bidhee.nagariknews",
-          "certificate_hash": []
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "424391978066-j3t73ei0mlevtd9h6js2ndfcr1f18ph6.apps.googleusercontent.com",
+          "client_id": "329117814887-ret8tbaqirq5p096hod6scftv3r5pqht.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.bidhee.nagariknews",
-            "certificate_hash": "ECC28E1F6B60FF8A60282463A5CA2733A80A4DE3"
+            "certificate_hash": "452389DEC71756C184525600A7177FA8B6CF8ACA"
           }
         },
         {
-          "client_id": "424391978066-rs9ulalqrn106uo7jotr83gaihcbuq8b.apps.googleusercontent.com",
+          "client_id": "329117814887-v3ci5ltks15nd5t3itmv71820jgcsnl4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvELddBEyLHGK1Y6DFZhk0ZMyHnRtgNUQ"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
         },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
-        },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 2
         },
         "ads_service": {
           "status": 1
@@ -88,6 +44,5 @@
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }
