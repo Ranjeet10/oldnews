@@ -6,6 +6,7 @@ package com.bidhee.nagariknews.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 
@@ -28,8 +29,11 @@ public class SessionManager {
     public static final String isFirstRun = "isFirstRun";
 
     private static final String IS_LOGIN = "isLoggedIn";
+    private static final String KEY_LOGIN_TYPE = "loginType";
     public static final String KEY_USER_NAME = "userName";
     public static final String KEY_USER_IMAGE = "userImage";
+    public static final String KEY_USER_EMAIL = "userEmail";
+    public static final String KEY_USER_TOKEN = "userToken";
 
     public static final String KEY_NEWS_SWITCHED_TO = "newsSwitchedTo";
 
@@ -49,10 +53,13 @@ public class SessionManager {
     }
 
     //creating new session for the  user
-    public void createLoginSession(String user_name, String user_image) {
+    public void createLoginSession(int loginType, String user_name, String user_email, String user_image, String token) {
         loginEditor.putBoolean(IS_LOGIN, true);
+        loginEditor.putInt(KEY_LOGIN_TYPE, loginType);
         loginEditor.putString(KEY_USER_NAME, user_name);
+        loginEditor.putString(KEY_USER_EMAIL, user_email);
         loginEditor.putString(KEY_USER_IMAGE, user_image);
+        loginEditor.putString(KEY_USER_TOKEN, token);
         loginEditor.commit();
     }
 
@@ -61,19 +68,35 @@ public class SessionManager {
         return LOGIN_PREFERENCE.getBoolean(IS_LOGIN, false);
     }
 
+    public int getLoginType() {
+        return LOGIN_PREFERENCE.getInt(KEY_LOGIN_TYPE, 0);
+    }
+
+    public String getToken() {
+        return LOGIN_PREFERENCE.getString(KEY_USER_TOKEN, "");
+    }
+
     public void clearSession() {
         loginEditor.putBoolean(IS_LOGIN, false);
+        loginEditor.putInt(KEY_LOGIN_TYPE, 0);
         loginEditor.putString(KEY_USER_NAME, "");
+        loginEditor.putString(KEY_USER_EMAIL, "");
         loginEditor.putString(KEY_USER_IMAGE, "");
+        loginEditor.putString(KEY_USER_TOKEN, "");
         loginEditor.commit();
     }
 
 
     public HashMap<String, String> getLoginDetail() {
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         user.put(KEY_USER_NAME, LOGIN_PREFERENCE.getString(KEY_USER_NAME, null));
-        user.put(KEY_USER_NAME, LOGIN_PREFERENCE.getString(KEY_USER_IMAGE, null));
-        return user;
+        user.put(KEY_USER_EMAIL, LOGIN_PREFERENCE.getString(KEY_USER_EMAIL, null));
+        user.put(KEY_USER_IMAGE, LOGIN_PREFERENCE.getString(KEY_USER_IMAGE, null));
+
+        if (!TextUtils.isEmpty(user.get(KEY_USER_NAME)) || !TextUtils.isEmpty(user.get(KEY_USER_EMAIL)) || !TextUtils.isEmpty(user.get(KEY_USER_IMAGE))) {
+            return user;
+        }
+        return null;
     }
 
     //first run app ?

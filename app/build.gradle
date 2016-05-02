@@ -27,15 +27,17 @@ android {
         release {
             minifyEnabled false
             buildConfigField "String", "BUILD_STAGE", '"Beta"'
-            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com/"'
-            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://sukrabar.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com"'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             debuggable true
             buildConfigField "String", "BUILD_STAGE", '"debug"'
-            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com/"'
-            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com/"'
+            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://sukrabar.bidheegroup.com"'
         }
     }
 }

@@ -43,7 +43,7 @@
                 android:layout_below="@+id/logo_image"
                 android:layout_centerVertical="true"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <include layout="@layout/login_form_field" />
 
@@ -62,7 +62,7 @@
                 android:background="@drawable/form_background_corner"
                 android:orientation="vertical"
                 android:padding="@dimen/tab_bar_menu_margin"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/signup_profile_image"

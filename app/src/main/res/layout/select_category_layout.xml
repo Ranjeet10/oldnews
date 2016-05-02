@@ -4,22 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/toolbar_layout" />
+    <!--<include layout="@layout/toolbar_layout" />-->
+    <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="0dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_collapseMode="pin"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <Button
         android:id="@+id/btn_done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/button_style"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-
-        android:text="Done" />
+        android:layout_margin="@dimen/screen_padding_lr"
+        android:text="Submit" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/btn_done"
-        android:layout_below="@+id/toolbar">
+        android:layout_below="@+id/toolbar"
+        android:padding="@dimen/screen_padding_lr">
 
         <LinearLayout
             android:id="@+id/select_category_layout"

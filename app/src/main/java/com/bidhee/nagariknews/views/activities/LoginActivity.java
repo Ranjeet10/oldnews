@@ -2,7 +2,6 @@ package com.bidhee.nagariknews.views.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,26 +22,30 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -66,7 +69,7 @@ import butterknife.OnClick;
  * Created by ronem on 2/4/16.
  */
 public class LoginActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener {
     /**
      * for facebook
      */
@@ -81,21 +84,17 @@ public class LoginActivity extends AppCompatActivity implements
     /**
      * for google plus
      */
-    private static final int SIGN_IN_REQUEST_CODE = 10;
-    private static final int ERROR_DIALOG_REQUEST_CODE = 11;
+
     private static final int PICK_IMAGE_REQUEST = 100;
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleApiClient mGoogleApiClient;
+    private TextView mStatusTextView;
+//    private ProgressDialog mProgressDialog;
 
 
     private String TAG = getClass().getSimpleName();
     private ProgressDialog dialog;
 
-    // For communicating with Google APIs
-    private GoogleApiClient mGoogleApiClient;
-    private boolean mSignInClicked;
-    private boolean mIntentInProgress;
-    // contains all possible error codes for when a client fails to connect to
-    // Google Play services
-    private ConnectionResult mConnectionResult;
 
     //SessionManager
     SessionManager sessionManager;
@@ -108,8 +107,12 @@ public class LoginActivity extends AppCompatActivity implements
     @Bind(R.id.btnBackToLogin)
     TextView btnBackToLogin;
 
-    @Bind(R.id.btnSignUp)
-    Button btnSignUp;
+
+    //=========Sign in form field============
+    @Bind(R.id.login_email_field)
+    AutoCompleteTextView loginEmailField;
+    @Bind(R.id.login_password_password)
+    EditText loginPasswordField;
     @Bind(R.id.btn_login)
     Button btnLogin;
 
@@ -126,6 +129,8 @@ public class LoginActivity extends AppCompatActivity implements
     EditText signUpPasswordField;
     @Bind(R.id.signup_confirm_password)
     EditText signUpConfirmPasswordField;
+    @Bind(R.id.btnSignUp)
+    Button btnSignUp;
 
     private Response.Listener<String> signUpResponse;
     private Response.ErrorListener errorListener;
@@ -143,8 +148,17 @@ public class LoginActivity extends AppCompatActivity implements
     @Bind(R.id.sign_in_button)
     SignInButton btnGooglePlusLogin;
 
-    Boolean isCanceled = false;
-    View focusView = null;
+    Boolean isSignUpCanceled = false;
+    Boolean isLoginCanceled = false;
+
+    View signUpFormFieldView = null;
+    View loginFormFieldView = null;
+
+    //facebook tracker object
+    AccessTokenTracker accessTokenTracker;
+    private String fbAccessToken;
+
+    public static String avatarImage = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQyK7CYeBTH0OML49nzdiFcszgtGpaj67qRVrRT3dp-sSz1k-QXGA";
 
 
     @Override
@@ -159,67 +173,76 @@ public class LoginActivity extends AppCompatActivity implements
         dialog.setMessage("signing in...");
         registerCallBackListenerForFacebookLoginButton();
         registerCallbackListenerForTwitterLoginButton();
-        registerForGooglePlusLogin();
 
-
+        configuringGooglePlus();
+        trackFacebookToken();
     }
 
-    private void registerForGooglePlusLogin() {
-        // Initializing google plus api client
-        mGoogleApiClient = buildGoogleAPIClient();
+    private void trackFacebookToken() {
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+
+            }
+        };
+    }
+
+    private void configuringGooglePlus() {
+        // [START configure_signin]
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestEmail()
+//                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+//                .build();
+
+        // Configure sign-in to request the user's ID, email address, and basic profile.
+        // ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope(Scopes.PROFILE))
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
+                .requestProfile()
+                .requestEmail()
+                .build();
+
+        // Build a GoogleApiClient with access to the Google Sign-In API
+        // and the options specified by gGoogleSignInOptions.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(Plus.API)
+                .build();
+
+        // [END build_client]
+
+        // [START customize_button]
+        // Customize sign-in button. The sign-in button can be displayed in
+        // multiple sizes and color schemes. It can also be contextually
+        // rendered based on the requested scopes. For example. a red button may
+        // be displayed when Google+ scopes are requested, but a white button
+        // may be displayed when only basic profile is requested. Try adding the
+        // Scopes.PLUS_LOGIN scope to the GoogleSignInOptions to see the
+        // difference.
 
         btnGooglePlusLogin.setSize(SignInButton.SIZE_STANDARD);
-
+        btnGooglePlusLogin.setScopes(gso.getScopeArray());
+        // [END customize_button]
     }
 
 
     @OnClick(R.id.sign_in_button)
     void onSignINClicked() {
-        processSignIn();
-    }
-
-
-    /**
-     * API to handler sign in of user If error occurs while connecting process
-     * it in processSignInError() api
-     */
-    private void processSignIn() {
-
-        if (!mGoogleApiClient.isConnecting()) {
-            processSignInError();
-            mSignInClicked = true;
-        }
-
-    }
-
-    /**
-     * API to handle sign out of user
-     */
-    private void processSignOut() {
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
-        }
-
-    }
-
-    /**
-     * API to process sign in error Handle error based on ConnectionResult
-     */
-    private void processSignInError() {
-        if (mConnectionResult != null && mConnectionResult.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                dialog.show();
-                mConnectionResult.startResolutionForResult(this,
-                        SIGN_IN_REQUEST_CODE);
-                dialog.show();
-            } catch (IntentSender.SendIntentException e) {
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
-            }
-        }
+        signIn();
     }
 
 
@@ -234,8 +257,7 @@ public class LoginActivity extends AppCompatActivity implements
                 Long userid = session.getUserId();
 
 
-                TwitterSession session =
-                        Twitter.getSessionManager().getActiveSession();
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
                 Twitter.getApiClient(session).getAccountService()
                         .verifyCredentials(true, false, new Callback<User>() {
 
@@ -247,8 +269,8 @@ public class LoginActivity extends AppCompatActivity implements
                                 imageUrl = imageUrl.replace("_normal", "");
                                 String email = user.email;
                                 Log.i("imageurl", imageUrl + ":" + email);
-                                sessionManager.createLoginSession(username, "imagelink");
-                                launchActivity(SelectCategoryActivity.class);
+
+                                createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_TWITTER, username, email, imageUrl, "");
 
                             }
 
@@ -276,40 +298,46 @@ public class LoginActivity extends AppCompatActivity implements
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // App code
-                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//
+//                GraphRequest request = GraphRequest.newMeRequest(
+//                        loginResult.getAccessToken(),
+//                        new GraphRequest.GraphJSONObjectCallback() {
+//                            @Override
+//                            public void onCompleted(JSONObject object, GraphResponse response) {
+//                                Log.v("LoginActivity", response.getRawResponse());
+//                                String _response = response.getRawResponse();
+//
+//
+//                                // Application code
+//                                try {
+//                                    JSONObject jsonObject = new JSONObject(_response);
+//                                    String email = jsonObject.getString("email");
+//                                    String id = jsonObject.getString("id");
+//                                    String name = jsonObject.getString("name");
+//                                    String gender = jsonObject.getString("gender");
+//                                    String img = "https://graph.facebook.com/" + id + "/picture?type=large";
+//
+//                                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FACEBOOK, name, email, img,"");
+//
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//
+//                            }
+//                        });
+//                Bundle parameters = new Bundle();
+//                parameters.putString("fields", "id,name,email,gender,birthday");
+//                request.setParameters(parameters);
+//                request.executeAsync();
 
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.v("LoginActivity", response.toString());
+                fbAccessToken = loginResult.getAccessToken().getToken();
+                Log.i(TAG, "accesstoken : " + fbAccessToken);
+                dialog.show();
 
-                                // Application code
-                                try {
-                                    String email = object.getString("email");
-                                    String birthday = object.getString("birthday"); // 01/31/1980 format
-                                    String id = object.getString("id");
-                                    String name = object.getString("name");
-                                    String gender = object.getString("gender");
-                                    String img = "https://graph.facebook.com/" + id + "/picture?type=large";
-                                    Log.d("responseebingi", email + "\n" + birthday + "\n" + name + "\n" + gender + "\n" + img);
-//                                    infoTextView.setText(email + "\n" + birthday + "\n" + name + "\n" + gender + "\n" + img);
 
-                                    sessionManager.createLoginSession("Ram Mandal", "imagelink");
+//                WebService.authRequest(ServerConfig.AUTH_URL,);
 
-                                    launchActivity(SelectCategoryActivity.class);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,email,gender,birthday");
-                request.setParameters(parameters);
-                request.executeAsync();
             }
 
             @Override
@@ -332,7 +360,58 @@ public class LoginActivity extends AppCompatActivity implements
      */
     @OnClick(R.id.btn_login)
     void onLoginClick() {
-        sessionManager.createLoginSession("Ram Mandal", "imagelink");
+
+        attemptLogin(loginEmailField.getText().toString(), loginPasswordField.getText().toString());
+
+    }
+
+    private void attemptLogin(String email, String password) {
+        loginEmailField.setError(null);
+        loginPasswordField.setError(null);
+
+        isLoginCanceled = false;
+        loginFormFieldView = null;
+
+        if (TextUtils.isEmpty(password)) {
+            loginPasswordField.setError("password required");
+            requestFocusView(false, loginPasswordField);
+        } else if (!BasicUtilMethods.isValidPassword(password)) {
+            loginPasswordField.setError("password must be greater than 5 character");
+            requestFocusView(false, loginPasswordField);
+        }
+
+        if (TextUtils.isEmpty(email)) {
+            loginEmailField.setError("Email required");
+            requestFocusView(false, loginEmailField);
+        } else if (!BasicUtilMethods.isValidEmail(email)) {
+            loginEmailField.setError("Email is not valid");
+            requestFocusView(false, loginEmailField);
+        }
+
+        if (isLoginCanceled) {
+            loginFormFieldView.requestFocus();
+        } else {
+            dialog.setMessage("Please wait...");
+            dialog.show();
+            handleParamsResponseForLoginSignup();
+            HashMap<String, String> params = new HashMap<>();
+            params.put("_username", email);
+            params.put("_password", password);
+            WebService.hitServerWithParams(ServerConfig.LOGIN_URL, params, signUpResponse, errorListener);
+        }
+
+
+    }
+
+    private void createSessionAndLaunchSelectCategoryActivity(int loginType, String userName, String userEmail, String avatarImage, String token) {
+        /**
+         * if {@link Dashboard} was created before
+         * clear the instance and proceed the further
+         */
+        if (Dashboard.getInstance() != null) {
+            Dashboard.getInstance().finish();
+        }
+        sessionManager.createLoginSession(loginType, userName, userEmail, avatarImage, token);
         launchActivity(SelectCategoryActivity.class);
     }
 
@@ -385,51 +464,51 @@ public class LoginActivity extends AppCompatActivity implements
         signUpPasswordField.setError(null);
         signUpConfirmPasswordField.setError(null);
 
-        isCanceled = false;
-        focusView = null;
+        isSignUpCanceled = false;
+        signUpFormFieldView = null;
 
         if (!BasicUtilMethods.isValidPassword(password)) {
             signUpPasswordField.setError("Password must be greater than 5 character");
-            requestFocusView(signUpPasswordField);
+            requestFocusView(true, signUpPasswordField);
         }
 
         if (TextUtils.isEmpty(confirmPassword)) {
             signUpConfirmPasswordField.setError("Please confirm your password");
-            requestFocusView(signUpConfirmPasswordField);
+            requestFocusView(true, signUpConfirmPasswordField);
         }
 
         if (TextUtils.isEmpty(password)) {
             signUpPasswordField.setError("Password required");
-            requestFocusView(signUpPasswordField);
+            requestFocusView(true, signUpPasswordField);
         }
 
         if (TextUtils.isEmpty(email)) {
             signUpEmailField.setError("Email required");
-            requestFocusView(signUpEmailField);
+            requestFocusView(true, signUpEmailField);
         }
 
         if (!BasicUtilMethods.isValidEmail(email)) {
             signUpEmailField.setError("Email not valid");
-            requestFocusView(signUpEmailField);
+            requestFocusView(true, signUpEmailField);
         }
 
         if (TextUtils.isEmpty(lName)) {
             lastNameField.setError("Last name required");
-            requestFocusView(lastNameField);
+            requestFocusView(true, lastNameField);
         }
 
         if (TextUtils.isEmpty(fName)) {
             firstNameField.setError("First name required");
-            requestFocusView(firstNameField);
+            requestFocusView(true, firstNameField);
         }
 
         if (!confirmPassword.equals(password)) {
-            requestFocusView(signUpPasswordField);
-            requestFocusView(signUpConfirmPasswordField);
+            requestFocusView(true, signUpPasswordField);
+            requestFocusView(true, signUpConfirmPasswordField);
             Toast.makeText(this, "Sorry Password not matched", Toast.LENGTH_SHORT).show();
         }
-        if (isCanceled) {
-            focusView.requestFocus();
+        if (isSignUpCanceled) {
+            signUpFormFieldView.requestFocus();
         } else {
             registerUser(fName + " " + lName, email, password);
         }
@@ -438,18 +517,18 @@ public class LoginActivity extends AppCompatActivity implements
     private void registerUser(final String name, final String email, final String password) {
         dialog.setMessage("Please wait...");
         dialog.show();
-        handleSignUpResponse();
+        handleParamsResponseForLoginSignup();
 
         HashMap<String, String> params = new HashMap<>();
         params.put("nagarik_consumer[name]", name);
         params.put("nagarik_consumer[email]", email);
         params.put("nagarik_consumer[plainPassword]", password);
 
-        WebService.registerUser(ServerConfig.REGISTER_URL, params, signUpResponse, errorListener);
+        WebService.hitServerWithParams(ServerConfig.REGISTER_URL, params, signUpResponse, errorListener);
 
     }
 
-    private void handleSignUpResponse() {
+    private void handleParamsResponseForLoginSignup() {
         signUpResponse = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -458,11 +537,22 @@ public class LoginActivity extends AppCompatActivity implements
                 try {
                     JSONObject sObject = new JSONObject(response);
                     String status = sObject.getString("status");
-                    JSONObject dataObject = new JSONObject("data");
-                    String username = dataObject.getString("username");
-                    String email = dataObject.getString("email");
-                    String name = dataObject.getString("name");
-                    String token = dataObject.getString("token");
+                    if (status.equals("success")) {
+                        JSONObject dataObject = sObject.getJSONObject("data");
+                        String username = dataObject.getString("username");
+                        String email = dataObject.getString("email");
+                        String name = dataObject.getString("name");
+                        String token = dataObject.getString("token");
+                        String profile_pic = dataObject.getString("profile_picture");
+
+                        createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, avatarImage, token);
+                    } else if (status.equals("error")) {
+                        if (sObject.has("message")) {
+                            String message = sObject.getString("message");
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -478,9 +568,15 @@ public class LoginActivity extends AppCompatActivity implements
         };
     }
 
-    private void requestFocusView(View firstNameField) {
-        isCanceled = true;
-        focusView = firstNameField;
+
+    private void requestFocusView(Boolean isFromSignUp, View formField) {
+        if (isFromSignUp) {
+            isSignUpCanceled = true;
+            signUpFormFieldView = formField;
+        } else {
+            isLoginCanceled = true;
+            loginFormFieldView = formField;
+        }
     }
 
 
@@ -517,7 +613,12 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+
+        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri filePath = data.getData();
             try {
                 //Getting the Bitmap from Gallery
@@ -526,17 +627,6 @@ public class LoginActivity extends AppCompatActivity implements
                 profileImage.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-        } else if (requestCode == SIGN_IN_REQUEST_CODE) {
-            if (resultCode != RESULT_OK) {
-
-                mSignInClicked = false;
-            }
-            dialog.dismiss();
-            mIntentInProgress = false;
-
-            if (!mGoogleApiClient.isConnecting()) {
-                mGoogleApiClient.connect();
             }
         } else {
 
@@ -556,17 +646,93 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
+    // [START handleSignInResult]
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            Log.i(TAG, "google login successful with " + acct.getDisplayName() + "\nemail :" + acct.getEmail() + "\nid" + acct.getId() + "\nproimage :" + acct.getPhotoUrl() + "\nidtoken " + acct.getIdToken());
+            createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_GOOGLE, acct.getDisplayName(), acct.getEmail(), acct.getPhotoUrl().toString(), "");
+        } else {
+
+        }
+    }
+    // [END handleSignInResult]
+
+
+    // [START signIn]
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    // [END signIn]
+
+    /*
+    // [START signOut]
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // [START_EXCLUDE]
+                        updateUI(false);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+    // [END signOut]
+
+    */
+    /*
+    // [START revokeAccess]
+    private void revokeAccess() {
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // [START_EXCLUDE]
+                        updateUI(false);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+    // [END revokeAccess]
+
+*/
+
+
     @Override
     protected void onStart() {
         super.onStart();
         // make sure to initiate connection
-        mGoogleApiClient.connect();
+//        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+//        if (opr.isDone()) {
+//            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+//            // and the GoogleSignInResult will be available instantly.
+//            Log.d(TAG, "Got cached sign-in");
+//            GoogleSignInResult result = opr.get();
+//            handleSignInResult(result);
+//        } else {
+//            // If the user has not previously signed in on this device or the sign-in has expired,
+//            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+//            // single sign-on will occur in this branch.
+//            //            showProgressDialog();
+//            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+//                @Override
+//                public void onResult(GoogleSignInResult googleSignInResult) {
+//                    //                    hideProgressDialog();
+//                    handleSignInResult(googleSignInResult);
+//                }
+//            });
+//        }
+        accessTokenTracker.startTracking();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
+        accessTokenTracker.stopTracking();
 
     }
 
@@ -585,140 +751,14 @@ public class LoginActivity extends AppCompatActivity implements
         AppEventsLogger.deactivateApp(this);
     }
 
-
-    /**
-     * API to return GoogleApiClient Make sure to create new after revoking
-     * access or for first time sign in
-     *
-     * @return
-     */
-
-
-    private GoogleApiClient buildGoogleAPIClient() {
-
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .requestProfile()
-                .requestScopes(new Scope(Scopes.PLUS_LOGIN), new Scope(Scopes.PLUS_ME), new Scope(Scopes.PROFILE))
-                .requestId()
-                .build();
-        btnGooglePlusLogin.setScopes(gso.getScopeArray());
-
-        return new GoogleApiClient.Builder(this).addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
-
-
-    }
-
-    /**
-     * Callback for GoogleApiClient connection success
-     */
     @Override
-    public void onConnected(Bundle connectionHint) {
-        mSignInClicked = false;
-
-        Toast.makeText(getApplicationContext(), "Signed In Successfully",
-                Toast.LENGTH_LONG).show();
-
-        processUserInfoAndUpdateUI();
-
-    }
-
-    /**
-     * API to update signed in user information
-     */
-    private void processUserInfoAndUpdateUI() {
-        Person signedInUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-        StringBuilder builder = new StringBuilder();
-        if (signedInUser != null) {
-
-            if (signedInUser.hasDisplayName()) {
-                String userName = signedInUser.getDisplayName();
-                builder.append("userName : " + userName + "\nid :" + signedInUser.getId());
-
-                sessionManager.createLoginSession("Ram Mandal", "imagelink");
-                launchActivity(SelectCategoryActivity.class);
-            }
-
-            if (signedInUser.hasTagline()) {
-                String tagLine = signedInUser.getTagline();
-                builder.append("\ntagline : " + tagLine);
-            }
-
-            if (signedInUser.hasAboutMe()) {
-                String aboutMe = signedInUser.getAboutMe();
-                builder.append("\nabout me : " + aboutMe);
-            }
-
-            if (signedInUser.hasBirthday()) {
-                String birthday = signedInUser.getBirthday();
-                builder.append("\nbirthday :" + birthday);
-            }
-
-            if (signedInUser.hasCurrentLocation()) {
-                String userLocation = signedInUser.getCurrentLocation();
-                builder.append("\nlocation :" + userLocation);
-            }
-
-            String userEmail = Plus.AccountApi.getAccountName(mGoogleApiClient);
-            builder.append("\nemail : " + userEmail);
-
-            if (signedInUser.hasImage()) {
-                String userProfilePicUrl = signedInUser.getImage().getUrl();
-                // default size is 50x50 in pixels.changes it to desired size
-                int profilePicRequestSize = 250;
-
-                userProfilePicUrl = userProfilePicUrl.substring(0,
-                        userProfilePicUrl.length() - 2) + profilePicRequestSize;
-                builder.append("\nimagepath : " + userProfilePicUrl);
-//                new UpdateProfilePicTask(userProfilePic)
-//                        .execute(userProfilePicUrl);
-            }
-
-
-//            infoTextView.setText(builder.toString());
-        }
-    }
-
-    /**
-     * Callback for suspension of current connection
-     */
-    @Override
-    public void onConnectionSuspended(int cause) {
-        mGoogleApiClient.connect();
-
-    }
-
-
-    /**
-     * Callback for GoogleApiClient connection failure
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-
-        // Most of the time, the connection will fail with a
-        // user resolvable result. We can store that in our
-        // mConnectionResult property ready for to be used
-        // when the user clicks the sign-in button.
-
-        if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    ERROR_DIALOG_REQUEST_CODE).show();
-            return;
-        }
-        if (!mIntentInProgress) {
-            mConnectionResult = result;
-
-            if (mSignInClicked) {
-                processSignInError();
-            }
-        }
-
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 }
+
 
 //
 //    public void logoutTwitter() {

@@ -36,14 +36,6 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@mipmap/ic_settings_black_24dp"
-                android:title="Send" />
-            <item
                 android:id="@+id/nav_login"
                 android:icon="@mipmap/ic_settings_black_24dp"
                 android:title="Login" />
