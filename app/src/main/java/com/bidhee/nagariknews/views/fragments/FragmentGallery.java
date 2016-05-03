@@ -151,13 +151,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         } else {
             if (TYPE == StaticStorage.VIDEOS) {
 
-                if (Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-                    fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
-                } else if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
-                    fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
-                } else {
-                    fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
-                }
+                fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
 
             } else if (TYPE == StaticStorage.PHOTOS) {
 
@@ -246,7 +240,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
                             String publishDagte = snippet.getString("publishedAt");
                             publishDagte = publishDagte.substring(0, publishDagte.lastIndexOf("."));
                             publishDagte = publishDagte.replace("T", " ");
-                            publishDagte = getTimeAgo(publishDagte);
+                            publishDagte = BasicUtilMethods.getTimeAgo(publishDagte);
 
                             String title = snippet.getString("title");
                             multimediaList.add(new Multimedias("", title, id, "", publishDagte));
@@ -285,60 +279,6 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         };
     }
 
-    private String getTimeAgo(String publishDagte) {
-        Log.i("publishDate", publishDagte);
-        String resultTimeAgo = "";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        try {
-            Date videoDate = sdf.parse(publishDagte);
-            Log.i("videoDate", videoDate + "");
-            Date systemDate = new Date();
-
-            long vDateMilli = videoDate.getTime();
-            Log.i("videoDMilli", vDateMilli + "");
-            long systemDateMilli = systemDate.getTime();
-
-            long resultInMilli = systemDateMilli - vDateMilli;
-
-
-            long seconds, minutes, hour, day, week, month, year;
-
-            seconds = resultInMilli / 1000;
-
-            minutes = seconds / 60;
-            if (minutes >= 60) {
-                hour = minutes / 60;
-                if (hour >= 24) {
-                    day = hour / 24;
-                    if (day >= 7) {
-                        week = day / 7;
-                        if (week >= 5) {
-                            month = week / 5;
-                            if (month >= 12) {
-                                year = month / 12;
-                                resultTimeAgo = String.valueOf(year) + "year ago";
-                            } else {
-                                resultTimeAgo = String.valueOf(month) + "months ago";
-                            }
-                        } else {
-                            resultTimeAgo = String.valueOf(week) + "weeks ago";
-                        }
-                    } else {
-                        resultTimeAgo = String.valueOf(day) + "days ago";
-                    }
-                } else {
-                    resultTimeAgo = String.valueOf(hour) + "hours ago";
-                }
-            } else {
-                resultTimeAgo = String.valueOf(minutes) + "minutes ago";
-            }
-
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return resultTimeAgo;
-    }
 
     @Override
     public void onDestroyView() {

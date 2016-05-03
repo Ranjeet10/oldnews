@@ -1,7 +1,5 @@
 package com.bidhee.nagariknews.controller.server_request;
 
-import com.bidhee.nagariknews.BuildConfig;
-
 /**
  * Created by ronem on 4/20/16.
  */

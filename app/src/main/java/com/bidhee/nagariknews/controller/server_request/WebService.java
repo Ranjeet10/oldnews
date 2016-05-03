@@ -6,6 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.bidhee.nagariknews.controller.AppController;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,17 +56,27 @@ public class WebService {
 
     public static void authRequest(String url, final String body, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
+//            @Override
+//            public String getBodyContentType() {
+//                return "application/json";
+//            }
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> header = new HashMap<>();
-                header.put("Content-Type", "application/json");
+                header.put("Content-Type", "application/json; charset=utf-8");
                 return header;
             }
 
             @Override
             public byte[] getBody() throws AuthFailureError {
-
-                return body.getBytes();
+                byte[] byteBody = null;
+                try {
+                    byteBody = body.getBytes("utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                return byteBody;
             }
         };
         AppController.getInstance().addToRequestQueue(stringRequest);

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
+import android.support.design.internal.NavigationMenuView;
+import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ImageView;
@@ -20,6 +22,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by ronem on 2/4/16.
@@ -75,7 +80,7 @@ public class BasicUtilMethods {
         appBarLayout.setEnabled(true);
         appBarLayout.expandToolbar(true);
         if (menu != null)
-            menu.getItem(0).setVisible(true);
+            menu.getItem(0).setVisible(false);
     }
 
 
@@ -135,4 +140,70 @@ public class BasicUtilMethods {
     public static Boolean isValidEmail(String email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
+    public static void disableNavigationViewScrollbars(NavigationView navigationView) {
+        if (navigationView != null) {
+            NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
+            if (navigationMenuView != null) {
+                navigationMenuView.setVerticalScrollBarEnabled(false);
+            }
+        }
+    }
+
+    public static String getTimeAgo(String publishDagte) {
+        Log.i("publishDate", publishDagte);
+        String resultTimeAgo = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        try {
+            Date videoDate = sdf.parse(publishDagte);
+            Log.i("videoDate", videoDate + "");
+            Date systemDate = new Date();
+
+            long vDateMilli = videoDate.getTime();
+            Log.i("videoDMilli", vDateMilli + "");
+            long systemDateMilli = systemDate.getTime();
+
+            long resultInMilli = systemDateMilli - vDateMilli;
+
+
+            long seconds, minutes, hour, day, week, month, year;
+
+            seconds = resultInMilli / 1000;
+
+            minutes = seconds / 60;
+            if (minutes >= 60) {
+                hour = minutes / 60;
+                if (hour >= 24) {
+                    day = hour / 24;
+                    if (day >= 7) {
+                        week = day / 7;
+                        if (week >= 5) {
+                            month = week / 5;
+                            if (month >= 12) {
+                                year = month / 12;
+                                resultTimeAgo = String.valueOf(year) + "year ago";
+                            } else {
+                                resultTimeAgo = String.valueOf(month) + "months ago";
+                            }
+                        } else {
+                            resultTimeAgo = String.valueOf(week) + "weeks ago";
+                        }
+                    } else {
+                        resultTimeAgo = String.valueOf(day) + "days ago";
+                    }
+                } else {
+                    resultTimeAgo = String.valueOf(hour) + "hours ago";
+                }
+            } else {
+                resultTimeAgo = String.valueOf(minutes) + "minutes ago";
+            }
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return resultTimeAgo;
+    }
+
+
 }

@@ -20,7 +20,7 @@ import android.widget.ProgressBar;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.R;
-import com.bidhee.nagariknews.Utils.NewsData;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
@@ -122,7 +122,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                         while (keys.hasNext()) {
 
                             /**
-                             * looping through out the no of keys
+                             * looping through out the no. of keys
                              * to get the list of {@link newsObjs} and adding to the {@link newsListToShow}
                              */
                             newsListToShow.addAll(getArrayList(dataObject, (String) keys.next()));
@@ -198,8 +198,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         loadingBar.setVisibility(View.VISIBLE);
         handleServerResponseForBreakingAndLatestNews();
 
-        if (categoryId.equals("1")) {
-            Log.i(TAG, "categoryId was 1");
+        /**
+         * category id 0 means
+         * the first index of tab is for Latest news
+         */
+        if (categoryId.equals("0")) {
+            Log.i(TAG, "categoryId was 0");
             WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
         } else {
             if (pageIndex == 1)
@@ -221,7 +225,17 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 String newsId = obj.getString("id");
                 String newsTile = obj.getString("title");
                 String introText = obj.getString("introText");
+
                 String publishDate = obj.getString("publishOn");
+                try {
+                    publishDate = publishDate.substring(0, publishDate.lastIndexOf("+"));
+                    publishDate = publishDate.replace("T", " ");
+                    publishDate = BasicUtilMethods.getTimeAgo(publishDate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
                 String publishedBy = "";
                 String img = obj.getString("featuredImage");
 
@@ -294,33 +308,15 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
         if (savedInstanceState != null) {
-            newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
-        } else {
 
-            switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
-                // case
-                // 1 is for republica
-                // 2 for nagarik
-                // 3 for sukrabar
-                case 1:
-                    //categoryId
-                    // 1 means its for breaking and latest news
-                    // >1 means its for normal news
-                    newsType = 1;
-                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
-                    break;
-                case 2:
-                    newsType = 2;
-                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
-                    break;
-                case 3:
-                    newsType = 3;
-                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
-//                    newsListToShow = Integer.parseInt(categoryId) == 1 ?
-//                            NewsData.loadBreakingLatestNewsTesting(getActivity(), newsType, categoryId) :
-//                            NewsData.getSukrabar(getActivity(), newsType, categoryId, categoryName);
-                    break;
-            }
+            newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
+
+        } else {
+            newsType = Dashboard.sessionManager.getSwitchedNewsValue();
+
+            getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+
+
         }
 
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsListToShow);
@@ -336,7 +332,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     }
 
     private void loadMoreListener(LinearLayoutManager linearLayoutManager) {
-        if (Integer.parseInt(categoryId) != 1) {
+        if (Integer.parseInt(categoryId) != 0) {
             recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
@@ -345,28 +341,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                     progressBar.setVisibility(View.VISIBLE);
 
-                    if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-                        getNewsTitles(Dashboard.baseUrl, current_page, categoryId);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ArrayList<NewsObj> moreNews = Dashboard.sessionManager.getSwitchedNewsValue() == 1 ?
-                                            NewsData.getNewsRepublica(getContext(), newsType, categoryId, categoryName) :
-                                            NewsData.getNewsNagarik(getContext(), newsType, categoryId, categoryName);
+                    getNewsTitles(Dashboard.baseUrl, current_page, categoryId);
 
-                                    int curSize = newsTitlesAdapter.getItemCount();
-                                    newsListToShow.addAll(moreNews);
-                                    newsTitlesAdapter.notifyItemRangeInserted(curSize, newsListToShow.size() - 1);
-                                } catch (NullPointerException npe) {
-                                    npe.printStackTrace();
-
-                                }
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        }, 2000);
-                    }
 
                     Log.i(TAG, "current page No " + current_page);
                 }

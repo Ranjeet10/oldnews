@@ -76,7 +76,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         final NewsObj no = newsObjs.get(position);
 
         //categoryId == 1 means it is from breaking and latest news
-        if (categoryId == 1) {
+        if (categoryId == 0) {
             if (no.isToShow()) {
                 holder.categoryTextView.setVisibility(View.VISIBLE);
                 switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
