@@ -50,10 +50,10 @@ import com.google.android.gms.plus.Plus;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.core.models.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -255,35 +255,42 @@ public class LoginActivity extends AppCompatActivity implements
             @Override
             public void success(Result<TwitterSession> result) {
 
-
-                session = result.data;
-                final String username = session.getUserName();
-                Long userid = session.getUserId();
-
-
                 TwitterSession session = Twitter.getSessionManager().getActiveSession();
-                Twitter.getApiClient(session).getAccountService()
-                        .verifyCredentials(true, false, new Callback<User>() {
+                TwitterAuthToken authToken = session.getAuthToken();
+                String token = authToken.token;
+                String secret = authToken.secret;
 
+                dialog.show();
+                WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_TWITTER, token, secret), signUpResponse, errorListener);
 
-                            @Override
-                            public void success(Result<User> userResult) {
-                                User user = userResult.data;
-                                String imageUrl = user.profileImageUrl;
-                                imageUrl = imageUrl.replace("_normal", "");
-                                String email = user.email;
-                                Log.i("imageurl", imageUrl + ":" + email);
-
-                                createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_TWITTER, username, email, imageUrl, "");
-
-                            }
-
-                            @Override
-                            public void failure(TwitterException e) {
-
-                            }
-
-                        });
+//                session = result.data;
+//                final String username = session.getUserName();
+//                Long userid = session.getUserId();
+//
+//
+//                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+//                Twitter.getApiClient(session).getAccountService()
+//                        .verifyCredentials(true, false, new Callback<User>() {
+//
+//
+//                            @Override
+//                            public void success(Result<User> userResult) {
+//                                User user = userResult.data;
+//                                String imageUrl = user.profileImageUrl;
+//                                imageUrl = imageUrl.replace("_normal", "");
+//                                String email = user.email;
+//                                Log.i("imageurl", imageUrl + ":" + email);
+//
+//                                createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_TWITTER, username, email, imageUrl, "");
+//
+//                            }
+//
+//                            @Override
+//                            public void failure(TwitterException e) {
+//
+//                            }
+//
+//                        });
 
             }
 
@@ -305,7 +312,7 @@ public class LoginActivity extends AppCompatActivity implements
                 fbAccessToken = loginResult.getAccessToken().getToken();
                 Log.i(TAG, "accesstoken : " + fbAccessToken);
                 dialog.show();
-                WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_FACEBOOK, fbAccessToken), signUpResponse, errorListener);
+                WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_FACEBOOK, fbAccessToken, null), signUpResponse, errorListener);
 
             }
 
@@ -323,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements
         });
     }
 
-    private String getJsonBody(int loginType, String token) {
+    private String getJsonBody(int loginType, String token, String secret) {
         JSONObject bodyObject = new JSONObject();
         String authKey = "";
         try {
@@ -334,8 +341,14 @@ public class LoginActivity extends AppCompatActivity implements
             } else if (loginType == StaticStorage.LOGIN_TYPE_TWITTER) {
                 authKey = "auth_twitter";
             }
+
             bodyObject.put(authKey, new Boolean(true));
             bodyObject.put("access_token", token);
+
+            if (!TextUtils.isEmpty(secret)) {
+                bodyObject.put("access_token_secret", secret);
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -641,8 +654,8 @@ public class LoginActivity extends AppCompatActivity implements
             // Signed in successfully, show authenticated UI.
             Log.i(TAG, "login was success");
             dialog.show();
-            String jsonBody = getJsonBody(StaticStorage.LOGIN_TYPE_GOOGLE, token).toString();
-            Log.i(TAG,jsonBody);
+            String jsonBody = getJsonBody(StaticStorage.LOGIN_TYPE_GOOGLE, token, null).toString();
+            Log.i(TAG, jsonBody);
             WebService.authRequest(ServerConfig.AUTH_URL, jsonBody, signUpResponse, errorListener);
         } else {
 

@@ -22,6 +22,7 @@ public class StaticStorage {
     // sudo mv adb /usr/bin/adb
     //
 
+    public static String DEFAULT_IMAGE = "https://lh3.googleusercontent.com/2BGOr1KnAekO9NmaU4VZg2ZLRs_-60aaA7p4ABYlZXnqsLrItMi4uhmA62pGQDx9NwU=s630-fcrop64=1,0723098ffae5f834";
     //getting height of each row of the news item in recyclerview
     public static int ROW_HEIGHT = 0;
 

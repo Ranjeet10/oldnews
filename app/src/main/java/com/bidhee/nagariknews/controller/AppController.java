@@ -7,6 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.Volley;
+import com.bidhee.nagariknews.R;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.squareup.picasso.OkHttpDownloader;
@@ -23,10 +24,6 @@ import io.fabric.sdk.android.Fabric;
 public class AppController extends Application {
 
     private String TAG = getClass().getSimpleName();
-
-    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-    private static final String TWITTER_KEY = "C6WHEGzaCeOWYryxelmJ7hYH0";
-    private static final String TWITTER_SECRET = "0nHYouAd0NypXEE036wQ50ZCoMNYsOhIgR5XCPJs51risc7Orw ";
 
     private RequestQueue requestQueue;
     private static AppController instance;
@@ -62,7 +59,7 @@ public class AppController extends Application {
         /**
          * Initialize Twitter sdk with consumer api key and consumer secrete key
          */
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(getResources().getString(R.string.twitter_consumer_api_key), getResources().getString(R.string.twitter_consumer_secrete_key));
         Fabric.with(this, new Twitter(authConfig));
 
     }
