@@ -8,12 +8,12 @@
     <string name="sender_id">424391978066</string>
 
     <!-- facebook api key-->
-    <string name="facebook_app_id">1007272449348327</string>
+    <string name="facebook_app_id">1035290163212506</string>
     <string name="hash_key">7MKOH2tg/4pgKCRjpconM6gKTeM=</string>
 
     <!-- twitter consumer key and consumer secrete key-->
-    <string name="twitter_consumer_api_key">C6WHEGzaCeOWYryxelmJ7hYH0</string>
-    <string name="twitter_consumer_secrete_key">0nHYouAd0NypXEE036wQ50ZCoMNYsOhIgR5XCPJs51risc7Orw</string>
+    <string name="twitter_consumer_api_key">hC0cFgSZeGOzbRdJVsn5au52o</string>
+    <string name="twitter_consumer_secrete_key">yl76O9K4JRpEr0OwCw6hyymeHVTAFY6fYYH7ADuRr3wVUW5N3q</string>
 
     <!-- =================================================================================================-->
 

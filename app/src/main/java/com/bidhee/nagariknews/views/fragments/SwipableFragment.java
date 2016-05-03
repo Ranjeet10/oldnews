@@ -240,7 +240,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 String img = obj.getString("featuredImage");
 
                 if (TextUtils.isEmpty(img)) {
-                    img = "https://lh3.googleusercontent.com/2BGOr1KnAekO9NmaU4VZg2ZLRs_-60aaA7p4ABYlZXnqsLrItMi4uhmA62pGQDx9NwU=s630-fcrop64=1,0723098ffae5f834";
+                    img = StaticStorage.DEFAULT_IMAGE;
                 }
 
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, newsArray, img, newsTile, publishedBy, publishDate, introText, "", "");

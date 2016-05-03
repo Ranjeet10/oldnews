@@ -109,12 +109,16 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
 
         holder.categoryTextView.setText(no.getNewsCategoryName());
-        Picasso.with(context)
-                .load(no.getImg())
-                .placeholder(R.drawable.nagariknews)
-                .error(R.drawable.nagariknews)
-                .into(holder.thumbnail);
-
+        if (no.getImg().equals(StaticStorage.DEFAULT_IMAGE)) {
+            holder.thumbnail.setVisibility(View.GONE);
+        } else {
+            Picasso.with(context)
+                    .load(no.getImg())
+                    .placeholder(R.drawable.nagariknews)
+                    .error(R.drawable.nagariknews)
+                    .into(holder.thumbnail);
+            holder.thumbnail.setVisibility(View.VISIBLE);
+        }
 
         holder.newsTitleTv.setText(no.getTitle());
 
