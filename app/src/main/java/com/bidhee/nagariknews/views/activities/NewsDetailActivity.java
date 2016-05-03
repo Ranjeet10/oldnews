@@ -176,16 +176,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         if (newsObjs.size() > 0) {
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
             isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-            //modify later================================================================================
-//            if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-                if (isNewsInFavouite) {
-                    loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
-                } else {
-                    getNewsDetailFromServer(selectedNews.getNewsId());
-                }
-//            } else {
-//                loadingDetail(selectedNews);
-//            }
+
+            if (isNewsInFavouite) {
+                loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+            } else {
+                getNewsDetailFromServer(selectedNews.getNewsId());
+            }
+
             loadRelatedContent();
 
             relatedNewsTextView.setVisibility(View.VISIBLE);
@@ -312,16 +309,16 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
         List<RFACLabelItem> items = new ArrayList<>();
         items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Large Font")
-                        .setResId(R.mipmap.ic_format_size_black_24dp)
+                        .setLabel("Increase font size")
+                        .setResId(R.mipmap.ifont)
                         .setIconNormalColor(MENU_COLOR)
                         .setIconPressedColor(getResources().getColor(R.color.white))
                         .setLabelColor(getResources().getColor(R.color.light_black))
                         .setWrapper(0)
         );
         items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Normal Font")
-                        .setResId(R.mipmap.ic_format_size_black_24dp)
+                        .setLabel("Decrease font size")
+                        .setResId(R.mipmap.df)
                         .setIconNormalColor(MENU_COLOR)
                         .setIconPressedColor(getResources().getColor(R.color.white))
                         .setLabelColor(getResources().getColor(R.color.light_black))
@@ -535,11 +532,9 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     public void onChildItemPositionListen(int position, View view, Boolean isShown) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-        if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-            getNewsDetailFromServer(selectedNews.getNewsId());
-        } else {
-            loadingDetail(selectedNews);
-        }
+
+        getNewsDetailFromServer(selectedNews.getNewsId());
+
     }
 
     private void scrollUp() {

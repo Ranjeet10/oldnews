@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -34,16 +35,16 @@ import com.facebook.FacebookException;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.twitter.sdk.android.Twitter;
@@ -171,6 +172,9 @@ public class LoginActivity extends AppCompatActivity implements
 
         dialog = new ProgressDialog(this);
         dialog.setMessage("signing in...");
+
+        handleParamsResponseForLoginSignup();
+
         registerCallBackListenerForFacebookLoginButton();
         registerCallbackListenerForTwitterLoginButton();
 
@@ -297,46 +301,11 @@ public class LoginActivity extends AppCompatActivity implements
         btnFacebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
-//                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
-//
-//                GraphRequest request = GraphRequest.newMeRequest(
-//                        loginResult.getAccessToken(),
-//                        new GraphRequest.GraphJSONObjectCallback() {
-//                            @Override
-//                            public void onCompleted(JSONObject object, GraphResponse response) {
-//                                Log.v("LoginActivity", response.getRawResponse());
-//                                String _response = response.getRawResponse();
-//
-//
-//                                // Application code
-//                                try {
-//                                    JSONObject jsonObject = new JSONObject(_response);
-//                                    String email = jsonObject.getString("email");
-//                                    String id = jsonObject.getString("id");
-//                                    String name = jsonObject.getString("name");
-//                                    String gender = jsonObject.getString("gender");
-//                                    String img = "https://graph.facebook.com/" + id + "/picture?type=large";
-//
-//                                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FACEBOOK, name, email, img,"");
-//
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            }
-//                        });
-//                Bundle parameters = new Bundle();
-//                parameters.putString("fields", "id,name,email,gender,birthday");
-//                request.setParameters(parameters);
-//                request.executeAsync();
 
                 fbAccessToken = loginResult.getAccessToken().getToken();
                 Log.i(TAG, "accesstoken : " + fbAccessToken);
                 dialog.show();
-
-
-//                WebService.authRequest(ServerConfig.AUTH_URL,);
+                WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_FACEBOOK, fbAccessToken), signUpResponse, errorListener);
 
             }
 
@@ -352,6 +321,25 @@ public class LoginActivity extends AppCompatActivity implements
                 Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private String getJsonBody(int loginType, String token) {
+        JSONObject bodyObject = new JSONObject();
+        String authKey = "";
+        try {
+            if (loginType == StaticStorage.LOGIN_TYPE_GOOGLE) {
+                authKey = "auth_google";
+            } else if (loginType == StaticStorage.LOGIN_TYPE_FACEBOOK) {
+                authKey = "auth_facebook";
+            } else if (loginType == StaticStorage.LOGIN_TYPE_TWITTER) {
+                authKey = "auth_twitter";
+            }
+            bodyObject.put(authKey, new Boolean(true));
+            bodyObject.put("access_token", token);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return bodyObject.toString();
     }
 
     /**
@@ -393,7 +381,7 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             dialog.setMessage("Please wait...");
             dialog.show();
-            handleParamsResponseForLoginSignup();
+
             HashMap<String, String> params = new HashMap<>();
             params.put("_username", email);
             params.put("_password", password);
@@ -517,7 +505,6 @@ public class LoginActivity extends AppCompatActivity implements
     private void registerUser(final String name, final String email, final String password) {
         dialog.setMessage("Please wait...");
         dialog.show();
-        handleParamsResponseForLoginSignup();
 
         HashMap<String, String> params = new HashMap<>();
         params.put("nagarik_consumer[name]", name);
@@ -536,22 +523,22 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.i(TAG, response);
                 try {
                     JSONObject sObject = new JSONObject(response);
-                    String status = sObject.getString("status");
-                    if (status.equals("success")) {
-                        JSONObject dataObject = sObject.getJSONObject("data");
-                        String username = dataObject.getString("username");
-                        String email = dataObject.getString("email");
-                        String name = dataObject.getString("name");
-                        String token = dataObject.getString("token");
-                        String profile_pic = dataObject.getString("profile_picture");
+//                    String status = sObject.getString("status");
+//                    if (status.equals("success")) {
+                    JSONObject dataObject = sObject.getJSONObject("data");
+                    String username = dataObject.getString("username");
+                    String email = dataObject.getString("email");
+                    String name = dataObject.getString("name");
+                    String token = dataObject.getString("token");
+                    String profile_pic = dataObject.getString("profile_picture");
 
-                        createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, avatarImage, token);
-                    } else if (status.equals("error")) {
-                        if (sObject.has("message")) {
-                            String message = sObject.getString("message");
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+//                    } else if (status.equals("error")) {
+//                        if (sObject.has("message")) {
+//                            String message = sObject.getString("message");
+//                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -616,7 +603,8 @@ public class LoginActivity extends AppCompatActivity implements
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+
+            new RetrieveTokenTask(result).execute();
 
         } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri filePath = data.getData();
@@ -647,13 +635,15 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     // [START handleSignInResult]
-    private void handleSignInResult(GoogleSignInResult result) {
+    private void handleSignInResult(GoogleSignInResult result, String token) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            Log.i(TAG, "google login successful with " + acct.getDisplayName() + "\nemail :" + acct.getEmail() + "\nid" + acct.getId() + "\nproimage :" + acct.getPhotoUrl() + "\nidtoken " + acct.getIdToken());
-            createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_GOOGLE, acct.getDisplayName(), acct.getEmail(), acct.getPhotoUrl().toString(), "");
+            Log.i(TAG, "login was success");
+            dialog.show();
+            String jsonBody = getJsonBody(StaticStorage.LOGIN_TYPE_GOOGLE, token).toString();
+            Log.i(TAG,jsonBody);
+            WebService.authRequest(ServerConfig.AUTH_URL, jsonBody, signUpResponse, errorListener);
         } else {
 
         }
@@ -757,6 +747,42 @@ public class LoginActivity extends AppCompatActivity implements
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////  BACKGROUND TASK TO GET ACCESS TOKEN FOR GOOGLE PLUS  //////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    private class RetrieveTokenTask extends AsyncTask<String, Void, String> {
+        GoogleSignInResult result;
+
+        public RetrieveTokenTask(GoogleSignInResult result) {
+            this.result = result;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String token = null;
+            String scopes = "oauth2:profile email";
+            try {
+                token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient), scopes);
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+            } catch (UserRecoverableAuthException e) {
+                startActivityForResult(e.getIntent(), RC_SIGN_IN);
+            } catch (GoogleAuthException e) {
+                Log.e(TAG, e.getMessage());
+            }
+            return token;
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.i("googletoken", s + "");
+            handleSignInResult(result, s);
+        }
+    }
 }
 
 
@@ -784,3 +810,39 @@ public class LoginActivity extends AppCompatActivity implements
 //            cookieSyncMngr.sync();
 //        }
 //    }
+
+
+// App code
+//                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//
+//                GraphRequest request = GraphRequest.newMeRequest(
+//                        loginResult.getAccessToken(),
+//                        new GraphRequest.GraphJSONObjectCallback() {
+//                            @Override
+//                            public void onCompleted(JSONObject object, GraphResponse response) {
+//                                Log.v("LoginActivity", response.getRawResponse());
+//                                String _response = response.getRawResponse();
+//
+//
+//                                // Application code
+//                                try {
+//                                    JSONObject jsonObject = new JSONObject(_response);
+//                                    String email = jsonObject.getString("email");
+//                                    String id = jsonObject.getString("id");
+//                                    String name = jsonObject.getString("name");
+//                                    String gender = jsonObject.getString("gender");
+//                                    String img = "https://graph.facebook.com/" + id + "/picture?type=large";
+//
+//                                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FACEBOOK, name, email, img,"");
+//
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//
+//                            }
+//                        });
+//                Bundle parameters = new Bundle();
+//                parameters.putString("fields", "id,name,email,gender,birthday");
+//                request.setParameters(parameters);
+//                request.executeAsync();
+

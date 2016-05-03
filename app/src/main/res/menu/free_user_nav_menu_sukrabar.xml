@@ -6,31 +6,28 @@
             android:id="@+id/nav_all_news"
             android:checked="true"
             android:icon="@mipmap/ic_list_black_24dp"
-            android:title="@string/all_news_r" />
+            android:title="@string/all_news_n" />
         <item
             android:id="@+id/nav_videos"
             android:icon="@mipmap/ic_video_library_black_24dp"
-            android:title="@string/videos_r" />
+            android:title="@string/videos_n" />
         <item
             android:id="@+id/nav_photos"
             android:icon="@mipmap/ic_collections_black_24dp"
-            android:title="@string/photos_r" />
-        <item
-            android:id="@+id/nav_cartoons"
-            android:icon="@mipmap/ic_photo_album_black_24dp"
-            android:title="@string/cartoon_r" />
+            android:title="@string/photos_n" />
+
         <item
             android:id="@+id/nav_epaper"
             android:icon="@mipmap/ic_apps_black_24dp"
-            android:title="@string/e_paper_r" />
+            android:title="@string/e_paper_n" />
         <item
             android:id="@+id/nav_saved"
             android:icon="@mipmap/ic_save_black_24dp"
-            android:title="@string/saved_r" />
+            android:title="@string/saved_n" />
         <item
             android:id="@+id/nav_extras"
             android:icon="@mipmap/ic_library_add_black_24dp"
-            android:title="@string/extra_r" />
+            android:title="@string/extra_n" />
     </group>
 
     <item android:title="Communicate">
@@ -39,7 +36,6 @@
                 android:id="@+id/nav_login"
                 android:icon="@mipmap/ic_lock_open_black_24dp"
                 android:title="Login" />
-
         </menu>
     </item>
 

@@ -22,6 +22,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_search">Search</string>
+    <string name="action_small_font">Decrease font</string>
+    <string name="action_large_font">Increase font</string>
     <string name="action_add">Add</string>
     <string name="select_category">Select Interested Category</string>
 
@@ -115,4 +117,8 @@
     <string name="bla">
         I really want to see how its like inside black hole
     </string>
+
+    <!-- preference activity data-->
+    <string name="preference_checkbox_key">check_box</string>
+    <string name="preference_toolbar_title">Settings</string>
 </resources>

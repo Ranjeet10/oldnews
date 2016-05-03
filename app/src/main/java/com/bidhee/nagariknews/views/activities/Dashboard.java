@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -13,7 +11,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,7 +38,6 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.AppController;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
@@ -62,7 +58,6 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
-import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 
 import java.security.MessageDigest;
@@ -114,7 +109,8 @@ public class Dashboard extends AppCompatActivity
     Handler handler;
     Runnable runnable;
 
-    Boolean isUser;
+    private Boolean isUser;
+    private Boolean shouldReplaceFragment = false;
     public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
     public static String userName = "";
@@ -425,6 +421,7 @@ public class Dashboard extends AppCompatActivity
 
 
     private void setUpNavigation() {
+
         if (sessionManager.getSwitchedNewsValue() == 1) {
 
             //value 1 means saved newstype was for Republica
@@ -436,9 +433,12 @@ public class Dashboard extends AppCompatActivity
             currentNewsType = getResources().getString(R.string.nagarik);
 
         } else if (sessionManager.getSwitchedNewsValue() == 3) {
-            navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_nagarik : R.menu.free_user_nav_menu_nagarik);
+            navigationView.inflateMenu(isUser ? R.menu.user_logged_in_nav_menu_sukrabar : R.menu.free_user_nav_menu_sukrabar);
             currentNewsType = getResources().getString(R.string.sukrabar);
         }
+
+        //hide navigation scroll bar
+        BasicUtilMethods.disableNavigationViewScrollbars(navigationView);
 
         switchMenusLayout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.switch_menus_background_layout);
         navImageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_image_view);
@@ -450,11 +450,8 @@ public class Dashboard extends AppCompatActivity
         switchNagarik = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_nagarik);
         switchSukrabar = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.switch_sukrabar);
 
-        Picasso.with(this)
-                .load(navImageUrl)
-                .error(R.drawable.nagariknews)
-                .placeholder(R.drawable.nagariknews)
-                .into(navImageView);
+
+        BasicUtilMethods.loadImage(this, navImageUrl, navImageView);
 
         if (userDetail != null) {
             Log.i(TAG, "user detail was null");
@@ -641,22 +638,22 @@ public class Dashboard extends AppCompatActivity
         switch (id) {
             case R.id.nav_all_news:
                 replaceableFragment = FragmentAllNews.createNewInstance();
-
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_photos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.PHOTOS);
-
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_cartoons:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.CARTOONS);
-
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_videos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.VIDEOS);
-
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_epaper:
@@ -673,20 +670,23 @@ public class Dashboard extends AppCompatActivity
                         break;
                 }
                 replaceableFragment = FragmentEpaper.createNewInstance(epaperId);
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_saved:
                 replaceableFragment = FragmentSaved.createNewInstance();
+                shouldReplaceFragment = true;
                 break;
 
 
             case R.id.nav_extras:
                 replaceableFragment = FragmentExtra.createNewInstance();
-
+                shouldReplaceFragment = true;
                 break;
 
             case R.id.nav_login:
                 startActivity(new Intent(Dashboard.this, LoginActivity.class));
+                shouldReplaceFragment = false;
                 break;
 
             case R.id.nav_logout:
@@ -726,12 +726,20 @@ public class Dashboard extends AppCompatActivity
                 sessionManager.clearSession();
                 finish();
                 startActivity(new Intent(Dashboard.this, Dashboard.class));
+                shouldReplaceFragment = false;
+                break;
+
+            case R.id.nav_settings:
+                startActivity(new Intent(Dashboard.this, SettingActivity.class));
+                shouldReplaceFragment = false;
                 break;
 
         }
 
-        currentFragmentTag = replaceableFragment.getClass().getName();
-        attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, true);
+        if (shouldReplaceFragment) {
+            currentFragmentTag = replaceableFragment.getClass().getName();
+            attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, true);
+        }
 
         return true;
     }
