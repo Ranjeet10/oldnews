@@ -1,5 +1,6 @@
 package com.bidhee.nagariknews.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
@@ -203,6 +207,56 @@ public class BasicUtilMethods {
             e.printStackTrace();
         }
         return resultTimeAgo;
+    }
+
+    public static void logout(Activity context) {
+//        clearApplicationData(context);
+        clearCache(context);
+    }
+
+    private static void clearCache(Activity context) {
+        new SessionManager(context).clearEditorData();
+
+        SqliteDatabase db = new SqliteDatabase(context);
+        db.open();
+        db.deleteAllNews();
+//        context.getSharedPreferences(context.getPackageName(), context.MODE_PRIVATE).edit().clear();
+
+        db.close();
+
+//        context.startActivity(new Intent(context, Dashboard.class));
+        context.finish();
+    }
+
+    public static void clearApplicationData(final Context context) {
+        File cache = context.getCacheDir();
+        File appDir = new File(cache.getParent());
+        if (appDir.exists()) {
+            String[] children = appDir.list();
+            for (String s : children) {
+                File f = new File(appDir, s);
+                if (deleteDir(f)) {
+                    AppLog.i("Util", String.format("DELETED::", f.getAbsolutePath()));
+                }
+            }
+        }
+        context.getSharedPreferences(context.getPackageName(), context.MODE_PRIVATE).edit().clear();
+
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                AppLog.i("Util", "DELETING:: " + aChildren);
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        assert dir != null;
+        return dir.delete();
     }
 
 
