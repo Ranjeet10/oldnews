@@ -72,6 +72,14 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="alert_button_style">
+        <item name="android:layout_width">@dimen/news_title_image_w</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:layout_margin">@dimen/screen_padding_lr</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <!-- textView buttons style-->
     <style name="text_button_style" parent="wrap_wrap">
         <item name="android:paddingRight">@dimen/screen_padding</item>
