@@ -163,5 +163,8 @@ public class SqliteDatabase {
 //        db.rawQuery("UPDATE "+DBConstant.TABLE_NEWS+" SET "+DBConstant.NEWS_DESCRIPTION)
 //    }
 
+    public void deleteAllNews() {
+        db.execSQL(DBQueryStrings.DELETE_FROM + DBConstant.TABLE_NEWS);
+    }
 
 }

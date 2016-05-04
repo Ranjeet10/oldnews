@@ -52,6 +52,12 @@ public class SessionManager {
         fontControllerEditor = FONT_CONTROLLER_PREFERENCE.edit();
     }
 
+    public void clearEditorData() {
+        loginEditor.clear().commit();
+        switchedToEditor.clear().commit();
+        switchedToEditor.clear().commit();
+    }
+
     //creating new session for the  user
     public void createLoginSession(int loginType, String user_name, String user_email, String user_image, String token) {
         loginEditor.putBoolean(IS_LOGIN, true);

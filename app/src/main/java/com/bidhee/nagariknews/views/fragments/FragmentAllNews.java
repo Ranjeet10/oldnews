@@ -133,7 +133,7 @@ public class FragmentAllNews extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+//        ButterKnife.unbind(this);
         Log.d("called", "onDestroyView");
     }
 }

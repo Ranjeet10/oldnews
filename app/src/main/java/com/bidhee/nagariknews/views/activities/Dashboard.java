@@ -39,6 +39,7 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
 import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
@@ -134,6 +135,8 @@ public class Dashboard extends AppCompatActivity
 
     Boolean doubleBackToExitPressedOnce = false;
 
+    private SqliteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,6 +161,9 @@ public class Dashboard extends AppCompatActivity
 
         setTheme(currentTheme);
         instance = this;
+
+        db = new SqliteDatabase(this);
+        db.open();
 
         /**
          * main content view
@@ -724,9 +730,10 @@ public class Dashboard extends AppCompatActivity
                 }
                 Log.i(TAG, wasFrom);
                 sessionManager.clearSession();
-                finish();
+                db.deleteAllNews();
                 startActivity(new Intent(Dashboard.this, Dashboard.class));
-                shouldReplaceFragment = false;
+//                shouldReplaceFragment = false;
+                finish();
                 break;
 
             case R.id.nav_settings:
@@ -757,6 +764,7 @@ public class Dashboard extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+        db.close();
         Log.i("onDestroy", "called");
     }
 
