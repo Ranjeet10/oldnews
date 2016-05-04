@@ -121,4 +121,13 @@
     <!-- preference activity data-->
     <string name="preference_checkbox_key">check_box</string>
     <string name="preference_toolbar_title">Settings</string>
+
+    <!-- alert dialog texts-->
+    <string name="nagarik_alert_title">नागरिक समाचार</string>
+    <string name="myrepublica_alert_title">My Republica</string>
+    <string name="sukrabar_alert_title">शुक्रबार समाचार</string>
+
+    <string name="nepali_alert_desc">माफ गर्नुहोला ! तपाइलाई यो समाचार मन परेको क्याटेगोरिमा राख्ने अनुमती छैन । यो सुविधा लाई सक्षम गर्नलाई लग-इन गर्नुहोस ।</string>
+    <string name="eng_alert_desc">Sorry you are not allowed to save this news as favourite.You must login to enable this feature</string>
+
 </resources>

@@ -36,4 +36,7 @@
     <!-- attributes of textinput layout-->
     <dimen name="text_input_height">60dp</dimen>
 
+    <!-- alert button-->
+    <dimen name="button_height">80dp</dimen>
+
 </resources>

@@ -7,6 +7,7 @@ package com.bidhee.nagariknews.views.activities;
 
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -29,21 +30,21 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.interfaces.FontSizeListener;
+import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
-import com.bidhee.nagariknews.views.customviews.FontDialog;
 import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 import com.wangjie.androidbucket.utils.ABTextUtil;
@@ -65,7 +66,11 @@ import butterknife.OnClick;
 
 //import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 
-public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesAdapter.RecyclerPositionListener, FontSizeListener, RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
+public class NewsDetailActivity extends AppCompatActivity implements
+        NewsTitlesAdapter.RecyclerPositionListener,
+
+        RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener,
+        AlertDialogListener {
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
     @Bind(R.id.collapsing_toolbar)
@@ -105,7 +110,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
     NewsTitlesAdapter newsTitlesAdapter;
     WebSettings webSettings;
-    FontDialog fontDialog;
 
 
     private String TAG = getClass().getSimpleName();
@@ -126,6 +130,10 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
     SqliteDatabase db;
     private Boolean isNewsInFavouite = false;
     private int NEWS_TYPE = 1;//default set to 1
+
+    private AlertDialog alertDialog;
+    private String alertTitle;
+    private String alertDescription;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -156,19 +164,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
 
-        fontDialog = new FontDialog();
-        fontDialog.setOnFontSizeListener(NewsDetailActivity.this);
 
         gettingBundle();
-
-
-        /**
-         * hide the add to favourite icon if the user is not loggedin
-         */
-        if (!Dashboard.sessionManager.isLoggedIn()) {
-            newsAddToFav.setVisibility(View.GONE);
-            verticalLineSeparator.setVisibility(View.GONE);
-        }
 
 
         webSettings = descriptionTextView.getSettings();
@@ -195,6 +192,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     selectedNewsType = getResources().getString(R.string.republica);        //setting the title for the toolbar (not showing but jst geting for future use)
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_republica_background);
+                    alertTitle = getResources().getString(R.string.myrepublica_alert_title);
+                    alertDescription = getResources().getString(R.string.eng_alert_desc);
                     break;
                 case 2:
                     fabDrawable = R.drawable.menu_nagarik_corner_fab;
@@ -203,6 +202,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     related = getResources().getString(R.string.sambandhit_news);
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
+                    alertTitle = getResources().getString(R.string.nagarik_alert_title);
+                    alertDescription = getResources().getString(R.string.nepali_alert_desc);
                     break;
                 case 3:
                     fabDrawable = R.drawable.menu_sukrabar_corner_fab;
@@ -211,6 +212,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
                     related = getResources().getString(R.string.related_news);
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
+                    alertTitle = getResources().getString(R.string.sukrabar_alert_title);
+                    alertDescription = getResources().getString(R.string.nepali_alert_desc);
                     break;
             }
 
@@ -285,21 +288,27 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
 
     @OnClick(R.id.news_add_to_fav)
     void onAddToFavCilck() {
-        if (isNewsInFavouite) {
-            //if news is in persist state remove it and toggle the favourite state
-            db.deleteRowFromNews(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-            isNewsInFavouite = false;
-            toggleFavouriteState();
-            Log.i(TAG, "news was present");
+        if (Dashboard.sessionManager.isLoggedIn()) {
+            if (isNewsInFavouite) {
+                //if news is in persist state remove it and toggle the favourite state
+                db.deleteRowFromNews(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+                isNewsInFavouite = false;
+                toggleFavouriteState();
+                Log.i(TAG, "news was present");
 
+            } else {
+                //if news is not present add the current newsObject to the sqlite database
+                //set news Description and news url to the newsObject
+
+                db.saveNews(selectedNews);
+                isNewsInFavouite = true;
+                toggleFavouriteState();
+                Log.i(TAG, "news was not present");
+            }
         } else {
-            //if news is not present add the current newsObject to the sqlite database
-            //set news Description and news url to the newsObject
-
-            db.saveNews(selectedNews);
-            isNewsInFavouite = true;
-            toggleFavouriteState();
-            Log.i(TAG, "news was not present");
+            alertDialog = new AlertDialog(this, alertTitle, alertDescription);
+            alertDialog.setOnAlertDialogListener(this);
+            alertDialog.show();
         }
     }
 
@@ -543,10 +552,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         ObjectAnimator.ofInt(scrollView, "scrollY", View.FOCUS_UP).setDuration(2500).start();
     }
 
-    @Override
-    public void onFontChanged(int fontSize) {
-        webSettings.setDefaultFontSize(fontSize);
-    }
 
     @Override
     public void onRFACItemLabelClick(int i, RFACLabelItem rfacLabelItem) {
@@ -574,4 +579,17 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsTitlesA
         setFont(i);
     }
 
+    @Override
+    public void alertPositiveButtonClicked() {
+
+        Intent loginIntent = new Intent(NewsDetailActivity.this, LoginActivity.class);
+        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(loginIntent);
+
+    }
+
+    @Override
+    public void alertNegativeButtonClicked() {
+        alertDialog.dismiss();
+    }
 }
