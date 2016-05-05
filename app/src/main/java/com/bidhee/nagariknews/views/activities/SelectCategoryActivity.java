@@ -83,7 +83,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
          */
         int checkedCount = 0;
         for (int i = 0; i < listOfCheckedItem.size(); i++) {
-            if (listOfCheckedItem.get(i).getIsChecked()) {
+            if (listOfCheckedItem.get(i).getIsPreferred()) {
                 checkedCount++;
             }
         }
@@ -96,7 +96,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
             String[] checkedArray = new String[checkedCount];
             checkedCount = 0;
             for (int i = 0; i < listOfCheckedItem.size(); i++) {
-                if (listOfCheckedItem.get(i).getIsChecked()) {
+                if (listOfCheckedItem.get(i).getIsPreferred()) {
                     checkedArray[checkedCount] = listOfCheckedItem.get(i).getId();
                     checkedCount++;
                 }
@@ -140,8 +140,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
                     JSONObject nodeObject = new JSONObject(response);
                     String status = nodeObject.getString("status");
                     if (status.equals("success")) {
-//                        JSONObject dataObject = nodeObject.getJSONObject("data");
-//                        String categories = dataObject.getString("categories");
 
                         Intent intent = new Intent(SelectCategoryActivity.this, Dashboard.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -174,7 +172,11 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         handleServerResponse();
         dialog.show();
-        WebService.getServerData(ServerConfig.getCategoryListUrl(BuildConfig.BASE_URL_NAGARIK), serverResponse, errorListener);
+
+        HashMap<String, String> header = new HashMap<>();
+        header.put("apikey", sessionManager.getToken());
+
+        WebService.getCategoryList(ServerConfig.getCategoryListUrl(sessionManager.getSwitchedNewsValue()), header, serverResponse, errorListener);
 
     }
 
@@ -185,6 +187,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 dialog.dismiss();
                 try {
                     JSONObject nodeObject = new JSONObject(response);
+                    Log.i(TAG, response);
                     String status = nodeObject.getString("status");
 
                     if (status.equals("success")) {
@@ -193,20 +196,23 @@ public class SelectCategoryActivity extends AppCompatActivity {
                             JSONObject catObject = dataArray.getJSONObject(i);
                             String id = catObject.getString("id");
                             String name = catObject.getString("name");
-                            listOfCheckedItem.add(new MyCheckBox(id, false, name));
+                            String alias = catObject.getString("alias");
+                            Boolean isPreferred = catObject.getBoolean("isPreferred");
+
+                            listOfCheckedItem.add(new MyCheckBox(id, name, alias, isPreferred));
                         }
                         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         for (int i = 0; i < listOfCheckedItem.size(); i++) {
                             final MyCheckBox myCheckBox = listOfCheckedItem.get(i);
                             CheckBox checkBox = new CheckBox(SelectCategoryActivity.this);
 //            checkBox.setButtonDrawable(R.drawable.checkbox_selector_background);
-                            checkBox.setChecked(myCheckBox.getIsChecked());
-                            checkBox.setText(myCheckBox.getText());
+                            checkBox.setChecked(myCheckBox.getIsPreferred());
+                            checkBox.setText(myCheckBox.getName() + " " + myCheckBox.getAlias());
                             selectCategoryLayout.addView(checkBox, params);
                             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                 @Override
                                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                    myCheckBox.setIsChecked(isChecked);
+                                    myCheckBox.setIsPreferred(isChecked);
 
                                 }
                             });

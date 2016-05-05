@@ -1,5 +1,7 @@
 package com.bidhee.nagariknews.controller.server_request;
 
+import com.bidhee.nagariknews.BuildConfig;
+
 /**
  * Created by ronem on 4/20/16.
  */
@@ -12,8 +14,22 @@ public class ServerConfig {
     public static String NAGARIK_VIDEO_CHANNEL_ID = "UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults";
     public static String MYREPUBLICA_VIDEO_CHANNEL_ID = "UCkGUD1LtYhxNyY-XoE2wICQ";
 
-    public static String getCategoryListUrl(String baseUrl) {
-        String url = baseUrl + "/api/category/list?_format=json";
+    public static String getCategoryListUrl(int newsType) {
+        String baseUrl = "";
+        switch (newsType) {
+            case 0:
+            case 1:
+                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
+                break;
+            case 2:
+                baseUrl = BuildConfig.BASE_URL_NAGARIK;
+                break;
+            case 3:
+                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
+                break;
+
+        }
+        String url = baseUrl + "/api/auth/categories";
         return url;
     }
 
@@ -49,8 +65,7 @@ public class ServerConfig {
     }
 
 
-
-    public static String AUTH_URL="http://consumers.bidheegroup.com/api/consumer/oauth";
+    public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
     public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
     public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
 

@@ -38,6 +38,17 @@ public class WebService {
         AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
+
+    public static void getCategoryList(String url, final HashMap<String, String> header, Response.Listener<String> response, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return header;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
     public static void saveCategoryList(String url, final HashMap<String, String> header, final HashMap<String, String> params, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
             @Override
