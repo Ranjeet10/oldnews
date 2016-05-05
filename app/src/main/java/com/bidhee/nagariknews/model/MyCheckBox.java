@@ -5,13 +5,16 @@ package com.bidhee.nagariknews.model;
  */
 public class MyCheckBox {
     private String id;
-    private Boolean isChecked;
-    private String text;
+    private String name;
+    private String alias;
+    private Boolean isPreferred;
 
-    public MyCheckBox(String id,Boolean isChecked, String text) {
+
+    public MyCheckBox(String id, String name, String alias, Boolean isPreferred) {
         this.id = id;
-        this.isChecked = isChecked;
-        this.text = text;
+        this.name = name;
+        this.alias = alias;
+        this.isPreferred = isPreferred;
     }
 
     public String getId() {
@@ -22,19 +25,27 @@ public class MyCheckBox {
         this.id = id;
     }
 
-    public Boolean getIsChecked() {
-        return isChecked;
+    public String getName() {
+        return name;
     }
 
-    public void setIsChecked(Boolean isChecked) {
-        this.isChecked = isChecked;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getText() {
-        return text;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public Boolean getIsPreferred() {
+        return isPreferred;
+    }
+
+    public void setIsPreferred(Boolean isPreferred) {
+        this.isPreferred = isPreferred;
     }
 }
