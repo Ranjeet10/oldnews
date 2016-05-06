@@ -13,7 +13,7 @@
             android:title="@string/videos_n" />
         <item
             android:id="@+id/nav_photos"
-            android:icon="@mipmap/ic_collections_black_24dp"
+            android:icon="@mipmap/ic_camera_black_24dp"
             android:title="@string/photos_n" />
         <item
             android:id="@+id/nav_epaper"
@@ -27,18 +27,19 @@
             android:id="@+id/nav_extras"
             android:icon="@mipmap/ic_library_add_black_24dp"
             android:title="@string/extra_n" />
+
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_logout"
-                android:icon="@mipmap/ic_lock_outline_black_24dp"
-                android:title="Logout" />
-            <item
                 android:id="@+id/nav_settings"
                 android:icon="@mipmap/ic_settings_black_24dp"
-                android:title="Setting" />
+                android:title="@string/settings_n" />
+            <item
+                android:id="@+id/nav_select_categorylist"
+                android:icon="@mipmap/ic_check_box_black_24dp"
+                android:title="@string/catlist_n" />
         </menu>
     </item>
 

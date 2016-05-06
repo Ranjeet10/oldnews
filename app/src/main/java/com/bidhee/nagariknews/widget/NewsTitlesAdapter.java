@@ -75,8 +75,9 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final NewsObj no = newsObjs.get(position);
 
-        //categoryId == 1 means it is from breaking and latest news
-        if (categoryId == 0) {
+        //categoryId == -1 means it is from breaking and latest news
+        //categoryId == 0 means it is from Mero Ruchi
+        if (categoryId == -1) {
             if (no.isToShow()) {
                 holder.categoryTextView.setVisibility(View.VISIBLE);
                 switch (Dashboard.sessionManager.getSwitchedNewsValue()) {

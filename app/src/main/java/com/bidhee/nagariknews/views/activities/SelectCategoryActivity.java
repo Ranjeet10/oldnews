@@ -79,48 +79,38 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         /**
          * first get the number of check items
-         * for the category
+         * for the category and add to the body list
          */
-        int checkedCount = 0;
+
+        ArrayList<Integer> bodyList = new ArrayList<>();
         for (int i = 0; i < listOfCheckedItem.size(); i++) {
             if (listOfCheckedItem.get(i).getIsPreferred()) {
-                checkedCount++;
+                bodyList.add(Integer.parseInt(listOfCheckedItem.get(i).getId()));
             }
         }
 
-        /**
-         * if the checkedCount is greater than 0
-         * make the array of the category id
-         */
-        if (checkedCount > 0) {
-            String[] checkedArray = new String[checkedCount];
-            checkedCount = 0;
-            for (int i = 0; i < listOfCheckedItem.size(); i++) {
-                if (listOfCheckedItem.get(i).getIsPreferred()) {
-                    checkedArray[checkedCount] = listOfCheckedItem.get(i).getId();
-                    checkedCount++;
-                }
-            }
-            String media = "nagarik";
-            String categories = Arrays.toString(checkedArray);
-            Log.i(TAG, categories);
-
+        if (bodyList.size() > 0) {
             handlePostServerResponse();
 
-            //header
-            HashMap<String, String> header = new HashMap<>();
-            header.put("apikey", sessionManager.getToken().toString());
+            //body
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("categories", new JSONArray(bodyList));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String requestBody = jsonObject.toString();
+            Log.i(TAG, "request body :" + requestBody);
 
-            Log.i(TAG, "apikey: " + sessionManager.getToken());
-
-            //params
-            HashMap<String, String> params = new HashMap<>();
-            params.put("media", media);
-            params.put("categories", categories);
+            String apiKey = sessionManager.getToken();
+            Log.i(TAG, apiKey);
+//            hO5mvOYDz2S4opvEdmKXyZfTUNXfkfs1t-8cfu2dxe8
+            String url = ServerConfig.getCategoryListSaveurl(sessionManager.getSwitchedNewsValue());
+            Log.i(TAG, url);
 
             dialog.setMessage("please wait...");
             dialog.show();
-            WebService.saveCategoryList(ServerConfig.getCategoryListSaveurl(BuildConfig.BASE_URL_NAGARIK), header, params, serverResponse, errorListener);
+            WebService.saveCategoryList(url, apiKey, requestBody, serverResponse, errorListener);
 
         } else {
             Toast.makeText(getApplicationContext(), "select atleast one category", Toast.LENGTH_SHORT).show();
@@ -175,6 +165,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         HashMap<String, String> header = new HashMap<>();
         header.put("apikey", sessionManager.getToken());
+        Log.i(TAG, sessionManager.getToken());
 
         WebService.getCategoryList(ServerConfig.getCategoryListUrl(sessionManager.getSwitchedNewsValue()), header, serverResponse, errorListener);
 

@@ -387,7 +387,7 @@ public class NewsDetailActivity extends AppCompatActivity implements
         newsTimeTextView.setText(news.getDate());
 
         String desc = news.getDescription();
-        desc = "<html><body><p align=\"justify\">" + news.getTitle() + "<br><br>" + desc + "</p></body></html>";
+        desc = "<html><body><p align=\"justify\">" + desc + "</p></body></html>";
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
 
