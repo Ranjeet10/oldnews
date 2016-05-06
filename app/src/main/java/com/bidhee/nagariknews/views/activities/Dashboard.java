@@ -39,7 +39,9 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
+import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
 import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
@@ -71,7 +73,7 @@ import butterknife.ButterKnife;
 public class Dashboard extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener {
 
     public static Dashboard instance = null;
 
@@ -112,6 +114,9 @@ public class Dashboard extends AppCompatActivity
 
     private Boolean isUser;
     private Boolean shouldReplaceFragment = false;
+    private Boolean isProfileImageClicked = false;
+    private AlertDialog alertDialog;
+
     public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
     public static String userName = "";
@@ -164,6 +169,7 @@ public class Dashboard extends AppCompatActivity
 
         db = new SqliteDatabase(this);
         db.open();
+
 
         /**
          * main content view
@@ -495,22 +501,39 @@ public class Dashboard extends AppCompatActivity
                 // sukrabar 3
                 switch (v.getId()) {
                     case R.id.switch_republica:
+                        isProfileImageClicked = false;
                         sessionManager.switchNewsTo(1);
                         break;
                     case R.id.switch_nagarik:
+                        isProfileImageClicked = false;
                         sessionManager.switchNewsTo(2);
                         break;
                     case R.id.switch_sukrabar:
+                        isProfileImageClicked = false;
                         sessionManager.switchNewsTo(3);
                         break;
+                    case R.id.profile_image:
+                        isProfileImageClicked = true;
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        if (sessionManager.isLoggedIn()) {
+                            alertDialog = new AlertDialog(getInstance(), "Logout", "Taping on OK take you to the login page. Would you like to log-out ?");
+                        } else {
+                            alertDialog = new AlertDialog(getInstance(), "Login", "Taping on OK take you to the login page. Would you like to login ?");
+                        }
+                        alertDialog.setOnAlertDialogListener(getInstance());
+                        alertDialog.show();
+                        break;
                 }
-                reLaunch();
+                if (!isProfileImageClicked)
+                    reLaunch();
             }
         };
 
         switchRepublica.setOnClickListener(switchListener);
         switchNagarik.setOnClickListener(switchListener);
         switchSukrabar.setOnClickListener(switchListener);
+        userImageView.setOnClickListener(switchListener);
+
 
     }
 
@@ -690,50 +713,15 @@ public class Dashboard extends AppCompatActivity
                 shouldReplaceFragment = true;
                 break;
 
+            case R.id.nav_select_categorylist:
+                shouldReplaceFragment = false;
+                startActivity(new Intent(this, SelectCategoryActivity.class));
+
+                break;
+
             case R.id.nav_login:
                 startActivity(new Intent(Dashboard.this, LoginActivity.class));
                 shouldReplaceFragment = false;
-                break;
-
-            case R.id.nav_logout:
-                String wasFrom = "";
-                switch (sessionManager.getLoginType()) {
-                    case 1:
-                        //login type is simple form
-                        wasFrom = "facebook";
-                        break;
-                    case 2:
-                        //login type is facebook
-                        LoginManager.getInstance().logOut();
-                        wasFrom = "facebook";
-                        break;
-                    case 3:
-                        wasFrom = "twitter";
-                        try {
-                            CookieSyncManager.createInstance(this);
-                            CookieManager cookieManager = CookieManager.getInstance();
-                            cookieManager.removeSessionCookie();
-                            Twitter.getSessionManager().clearActiveSession();
-                            Twitter.logOut();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        break;
-                    case 4:
-                        wasFrom = "google";
-
-                        Plus.AccountApi.clearDefaultAccount(googleApiClient);
-                        googleApiClient.disconnect();
-                        googleApiClient.connect();
-                        break;
-                }
-                Log.i(TAG, wasFrom);
-                sessionManager.clearSession();
-                db.deleteAllNews();
-                startActivity(new Intent(Dashboard.this, Dashboard.class));
-//                shouldReplaceFragment = false;
-                finish();
                 break;
 
             case R.id.nav_settings:
@@ -799,5 +787,63 @@ public class Dashboard extends AppCompatActivity
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void alertPositiveButtonClicked() {
+        alertDialog.dismiss();
+        if(sessionManager.isLoggedIn()){
+            logout();
+        }else{
+            Intent loginIntent = new Intent(getInstance(), LoginActivity.class);
+            startActivity(loginIntent);
+        }
+
+    }
+
+    private void logout() {
+        String wasFrom = "";
+        switch (sessionManager.getLoginType()) {
+            case 1:
+                //login type is simple form
+                wasFrom = "simple login";
+                break;
+            case 2:
+                //login type is facebook
+                LoginManager.getInstance().logOut();
+                wasFrom = "facebook";
+                break;
+            case 3:
+                wasFrom = "twitter";
+                try {
+                    CookieSyncManager.createInstance(this);
+                    CookieManager cookieManager = CookieManager.getInstance();
+                    cookieManager.removeSessionCookie();
+                    Twitter.getSessionManager().clearActiveSession();
+                    Twitter.logOut();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case 4:
+                wasFrom = "google";
+
+                Plus.AccountApi.clearDefaultAccount(googleApiClient);
+                googleApiClient.disconnect();
+                googleApiClient.connect();
+                break;
+        }
+        Log.i(TAG, wasFrom);
+        sessionManager.clearSession();
+        db.deleteAllNews();
+        startActivity(new Intent(Dashboard.this, Dashboard.class));
+//                shouldReplaceFragment = false;
+        finish();
+    }
+
+    @Override
+    public void alertNegativeButtonClicked() {
+        alertDialog.dismiss();
     }
 }

@@ -27,6 +27,7 @@
                 android:layout_marginTop="@dimen/screen_padding"
                 android:text="News title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:layout_marginBottom="@dimen/screen_padding_lr"
                 android:textColor="@color/black" />
 
             <include layout="@layout/publish_news_time_layout" />

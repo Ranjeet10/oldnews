@@ -16,25 +16,48 @@ public class ServerConfig {
 
     public static String getCategoryListUrl(int newsType) {
         String baseUrl = "";
+        String media = "";
         switch (newsType) {
             case 0:
             case 1:
+                media = "myrepublica";
                 baseUrl = BuildConfig.BASE_URL_REPUBLICA;
                 break;
             case 2:
+                media = "nagarik";
                 baseUrl = BuildConfig.BASE_URL_NAGARIK;
                 break;
             case 3:
+                media = "sukrabar";
                 baseUrl = BuildConfig.BASE_URL_SUKRABAR;
                 break;
 
         }
-        String url = baseUrl + "/api/auth/categories";
+        String url = baseUrl + "/api/auth/categories?media=" + media;
         return url;
     }
 
-    public static String getCategoryListSaveurl(String baseUrl) {
-        String url = "http://consumers.bidheegroup.com/api/consumer/topics/save";
+    public static String getCategoryListSaveurl(int newsType) {
+        String media = "";
+        String baseUrl = "";
+        switch (newsType) {
+            case 0:
+            case 1:
+                media = "myrepublica";
+                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
+
+                break;
+            case 2:
+                media = "nagarik";
+                baseUrl = BuildConfig.BASE_URL_NAGARIK;
+                break;
+            case 3:
+                media = "sukrabar";
+                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
+                break;
+
+        }
+        String url = baseUrl + "/api/auth/change-categories?media=" + media;
         return url;
     }
 
@@ -50,6 +73,12 @@ public class ServerConfig {
 
     public static String getLatestBreakingNewsUrl(String baseUrl) {
         String url = baseUrl + "/api/news/latest-breaking?_format=json";
+        return url;
+    }
+
+    public static String getMeroRuchiUrl(String baseUrl) {
+        String url = baseUrl + "/api/auth/interested-news?media=nagarik";
+
         return url;
     }
 

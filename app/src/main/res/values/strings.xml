@@ -84,7 +84,11 @@
     <string name="e_paper_r">e-Paper</string>
     <string name="saved_r">Saved</string>
     <string name="extra_r">Extra</string>
+
+    <string name="login_r">Login</string>
+    <string name="logout_r">Logout</string>
     <string name="settings_r">Settings</string>
+    <string name="catlist_r">Change category list</string>
 
 
     <!-- nagarik-->
@@ -95,7 +99,11 @@
     <string name="e_paper_n">ई-पेपर</string>
     <string name="saved_n">सेव्ड्</string>
     <string name="extra_n">अन्य</string>
+
+    <string name="login_n">लग - इन</string>
+    <string name="logout_n">लग - आउट</string>
     <string name="settings_n">सेटिङ्स</string>
+    <string name="catlist_n">क्याटेगोरिज बदल्नुहोस </string>
 
     <!-- Breaking and latest-->
     <string name="breaking_news">BREAKING NEWS</string>

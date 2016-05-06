@@ -94,7 +94,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i(TAG, "oncreate called");
         newsListToShow = new ArrayList<>();
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
@@ -105,6 +105,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     //========================== HANDLE RESPONSES ============================
     //========================================================================
     private void handleServerResponseForBreakingAndLatestNews() {
+
         serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -202,9 +203,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
          * category id 0 means
          * the first index of tab is for Latest news
          */
-        if (categoryId.equals("0")) {
-            Log.i(TAG, "categoryId was 0");
+        if (categoryId.equals("-1")) {
+            Log.i(TAG, "categoryId was -1");
             WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
+        } else if (categoryId.equals("0")) {
+
         } else {
             if (pageIndex == 1)
                 loadingBar.setVisibility(View.VISIBLE);
@@ -241,6 +244,19 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                 if (TextUtils.isEmpty(img)) {
                     img = StaticStorage.DEFAULT_IMAGE;
+                }
+
+                /**
+                 * change the english categories to nepali
+                 */
+                if (newsArray.equalsIgnoreCase("importantNews")) {
+                    newsArray = "महत्वपुर्न समाचार";
+                } else if (newsArray.equalsIgnoreCase("breakingNews")) {
+                    newsArray = "मुख्य समाचार";
+                } else if (newsArray.equalsIgnoreCase("latestnews")) {
+                    newsArray = "ताजा समाचार";
+                } else if (newsArray.equalsIgnoreCase("featuredNews")) {
+                    newsArray = "फीचर न्युज ";
                 }
 
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, newsArray, img, newsTile, publishedBy, publishDate, introText, "", "");
@@ -308,13 +324,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
         if (savedInstanceState != null) {
-
+            Log.i(TAG, "saved instance state");
             newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
 
         } else {
             newsType = Dashboard.sessionManager.getSwitchedNewsValue();
-
-            getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+            Log.i(TAG, "not saved instance state");
+            if (newsListToShow.size() <= 0)
+                getNewsTitles(Dashboard.baseUrl, 1, categoryId);
 
 
         }
@@ -449,4 +466,5 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE, newsListToShow);
     }
+
 }

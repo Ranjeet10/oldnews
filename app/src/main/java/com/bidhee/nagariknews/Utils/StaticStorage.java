@@ -75,7 +75,8 @@ public class StaticStorage {
         //republica
         switch (which) {
             case 0:
-                tabs.add(new TabModel("0", "Latest News"));
+                tabs.add(new TabModel("-1", "Latest News"));
+                tabs.add(new TabModel("0", "Mero Ruchi"));
                 tabs.add(new TabModel("23", "Politics"));
                 tabs.add(new TabModel("22", "Economy"));
                 tabs.add(new TabModel("24", "Society"));
@@ -87,7 +88,8 @@ public class StaticStorage {
                 break;
             //nagarik
             case 1:
-                tabs.add(new TabModel("0", "ताजा समाचार"));
+                tabs.add(new TabModel("-1", "ताजा समाचार"));
+                tabs.add(new TabModel("0", "मेरो रुची"));
                 tabs.add(new TabModel("21", "राजनीति"));
                 tabs.add(new TabModel("22", "आर्थीक्"));
                 tabs.add(new TabModel("24", "समाजिक्"));
@@ -103,7 +105,8 @@ public class StaticStorage {
                 break;
             //sukrabar
             case 2:
-                tabs.add(new TabModel("0", "ताजा समाचार"));
+                tabs.add(new TabModel("-1", "ताजा समाचार"));
+                tabs.add(new TabModel("0", "मेरो रुची"));
                 tabs.add(new TabModel("1", "कभर स्टोरी"));
                 tabs.add(new TabModel("2", "विविध"));
                 tabs.add(new TabModel("3", "मव सम्मत"));
@@ -116,7 +119,10 @@ public class StaticStorage {
         return tabs;
     }
 
-    public static int[] NEWS_LOGOS = new int[]{R.mipmap.republica, R.mipmap.nagarik, R.mipmap.sukrabar};
+    public static int[] NEWS_LOGOS = new int[]{
+            R.mipmap.republica,
+            R.mipmap.nagarik,
+            R.mipmap.sukrabar};
 
     // /////////////////  argument keys  //////////////////
 
