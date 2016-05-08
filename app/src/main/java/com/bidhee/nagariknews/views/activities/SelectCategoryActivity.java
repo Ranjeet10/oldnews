@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
@@ -38,7 +40,7 @@ import butterknife.OnClick;
 /**
  * Created by ronem on 4/19/16.
  */
-public class SelectCategoryActivity extends AppCompatActivity {
+public class SelectCategoryActivity extends BaseThemeActivity {
     private String TAG = getClass().getSimpleName();
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -61,7 +63,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.RepublicaTheme);
+
         setContentView(R.layout.select_category_layout);
         ButterKnife.bind(this);
 
@@ -104,7 +106,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
             String apiKey = sessionManager.getToken();
             Log.i(TAG, apiKey);
-//            hO5mvOYDz2S4opvEdmKXyZfTUNXfkfs1t-8cfu2dxe8
             String url = ServerConfig.getCategoryListSaveurl(sessionManager.getSwitchedNewsValue());
             Log.i(TAG, url);
 
@@ -154,6 +155,8 @@ public class SelectCategoryActivity extends AppCompatActivity {
     private void setUpToolBar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+
     }
 
     private void attachCheckBoxes() {
@@ -168,6 +171,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
         Log.i(TAG, sessionManager.getToken());
 
         WebService.getCategoryList(ServerConfig.getCategoryListUrl(sessionManager.getSwitchedNewsValue()), header, serverResponse, errorListener);
+        btnDone.setBackgroundResource(ALERT_BUTTON_THEME_STYLE);
 
     }
 
@@ -192,11 +196,16 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
                             listOfCheckedItem.add(new MyCheckBox(id, name, alias, isPreferred));
                         }
+
+                        //hide submit button if the list of checkboxes are equals to =0
+                        if (listOfCheckedItem.size() == 0) {
+                            btnDone.setVisibility(View.GONE);
+                        }
+
                         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         for (int i = 0; i < listOfCheckedItem.size(); i++) {
                             final MyCheckBox myCheckBox = listOfCheckedItem.get(i);
                             CheckBox checkBox = new CheckBox(SelectCategoryActivity.this);
-//            checkBox.setButtonDrawable(R.drawable.checkbox_selector_background);
                             checkBox.setChecked(myCheckBox.getIsPreferred());
                             checkBox.setText(myCheckBox.getName() + " " + myCheckBox.getAlias());
                             selectCategoryLayout.addView(checkBox, params);
@@ -211,6 +220,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    btnDone.setVisibility(View.GONE);
                 }
             }
         };
@@ -219,6 +229,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 dialog.dismiss();
+                btnDone.setVisibility(View.GONE);
             }
         };
     }

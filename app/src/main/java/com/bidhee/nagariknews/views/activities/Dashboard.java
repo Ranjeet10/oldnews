@@ -38,6 +38,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
@@ -70,7 +71,7 @@ import java.util.HashMap;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class Dashboard extends AppCompatActivity
+public class Dashboard extends BaseThemeActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener,
         GoogleApiClient.OnConnectionFailedListener, AlertDialogListener {
@@ -117,7 +118,7 @@ public class Dashboard extends AppCompatActivity
     private Boolean isProfileImageClicked = false;
     private AlertDialog alertDialog;
 
-    public static SessionManager sessionManager;
+//    public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
     public static String userName = "";
     public static String userEmail = "";
@@ -125,12 +126,12 @@ public class Dashboard extends AppCompatActivity
 
     private MyAnimation myAnimation;
     private String currentFragmentTag;
-    public static int currentTheme;
+//    public static int currentTheme;
     public static String currentTitle;
     public static String currentNewsType;
     public static int logoImage;
 
-    public static String baseUrl = "";
+//    public static String baseUrl = "";
 
 
     String navImageUrl = "https://s3.amazonaws.com/uploads.hipchat.com/509974/3391264/KWM6fpLrshlYjh0/profile.jpg";
@@ -145,26 +146,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /**
-         * setting the app theme according to the specific news type selected
-         */
-        sessionManager = new SessionManager(this);
-        switch (sessionManager.getSwitchedNewsValue()) {
-            case 1:
-                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
-                currentTheme = R.style.RepublicaTheme;
-                break;
-            case 2:
-                baseUrl = BuildConfig.BASE_URL_NAGARIK;
-                currentTheme = R.style.NagarikTheme;
-                break;
-            case 3:
-                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
-                currentTheme = R.style.SukrabarTheme;
-                break;
-        }
-
-        setTheme(currentTheme);
         instance = this;
 
         db = new SqliteDatabase(this);

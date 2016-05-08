@@ -109,6 +109,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 Log.i(TAG, response);
                 try {
@@ -144,18 +145,15 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             }
         };
 
-        errorListenerNewsTitle = new Response.ErrorListener()
-
-        {
+        errorListenerNewsTitle = new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 showContentNotFoundLayoutIfNeeded();
             }
-        }
-
-        ;
+        };
 
     }
 
@@ -163,6 +161,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 try {
@@ -186,6 +185,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         errorListenerNewsTitle = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
                 showContentNotFoundLayoutIfNeeded();
@@ -340,17 +340,18 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
         }
+        resetNewsAdapter();
+        loadMoreListener(linearLayoutManager);
 
+    }
+
+    private void resetNewsAdapter() {
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsListToShow);
         ScaleInAnimationAdapter bottomAnimationAdapter = new ScaleInAnimationAdapter(newsTitlesAdapter);
         bottomAnimationAdapter.setDuration(200);
         recyclerView.setAdapter(bottomAnimationAdapter);
 
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
-
-
-        loadMoreListener(linearLayoutManager);
-
     }
 
     private void loadMoreListener(LinearLayoutManager linearLayoutManager) {
@@ -376,19 +377,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                fetchData();
+                newsListToShow = new ArrayList<>();
+                resetNewsAdapter();
+                getNewsTitles(Dashboard.baseUrl, 1, categoryId);
             }
         });
-    }
-
-    private void fetchData() {
-        ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
-            }
-        }, 1000);
     }
 
 

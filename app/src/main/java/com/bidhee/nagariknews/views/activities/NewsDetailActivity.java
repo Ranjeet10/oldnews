@@ -38,6 +38,7 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
@@ -66,7 +67,7 @@ import butterknife.OnClick;
 
 //import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 
-public class NewsDetailActivity extends AppCompatActivity implements
+public class NewsDetailActivity extends BaseThemeActivity implements
         NewsTitlesAdapter.RecyclerPositionListener,
 
         RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener,
@@ -148,11 +149,6 @@ public class NewsDetailActivity extends AppCompatActivity implements
         initActivityTransitions();
         NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
 
-        /**
-         * set theme according to the selected {@value NEWS_TYPE}
-         */
-        setTheme(Dashboard.currentTheme);
-
         setContentView(R.layout.news_detail_layout);
         ButterKnife.bind(this);
 
@@ -210,7 +206,7 @@ public class NewsDetailActivity extends AppCompatActivity implements
                     MENU_COLOR = getResources().getColor(R.color.sukrabarColorPrimary);
                     selectedNewsType = getResources().getString(R.string.sukrabar);
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
-                    related = getResources().getString(R.string.related_news);
+                    related = getResources().getString(R.string.sambandhit_news);
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
                     alertTitle = getResources().getString(R.string.sukrabar_alert_title);
                     alertDescription = getResources().getString(R.string.nepali_alert_desc);

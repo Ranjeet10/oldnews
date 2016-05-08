@@ -7,57 +7,17 @@ import com.bidhee.nagariknews.BuildConfig;
  */
 public class ServerConfig {
 
-
-    //    private static String API_DIR = "api/news/";
-//    private static String LIST_PRE_PAGE = "list?_format=json&page=";
-//    private static String CATEGORY_ID = "&category_id=";
     public static String NAGARIK_VIDEO_CHANNEL_ID = "UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults";
-    public static String MYREPUBLICA_VIDEO_CHANNEL_ID = "UCkGUD1LtYhxNyY-XoE2wICQ";
 
     public static String getCategoryListUrl(int newsType) {
-        String baseUrl = "";
-        String media = "";
-        switch (newsType) {
-            case 0:
-            case 1:
-                media = "myrepublica";
-                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
-                break;
-            case 2:
-                media = "nagarik";
-                baseUrl = BuildConfig.BASE_URL_NAGARIK;
-                break;
-            case 3:
-                media = "sukrabar";
-                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
-                break;
-
-        }
-        String url = baseUrl + "/api/auth/categories?media=" + media;
+        String[] bm = getBaseUrlAndMedia(newsType);
+        String url = bm[0] + "/api/auth/categories?media=" + bm[1];
         return url;
     }
 
     public static String getCategoryListSaveurl(int newsType) {
-        String media = "";
-        String baseUrl = "";
-        switch (newsType) {
-            case 0:
-            case 1:
-                media = "myrepublica";
-                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
-
-                break;
-            case 2:
-                media = "nagarik";
-                baseUrl = BuildConfig.BASE_URL_NAGARIK;
-                break;
-            case 3:
-                media = "sukrabar";
-                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
-                break;
-
-        }
-        String url = baseUrl + "/api/auth/change-categories?media=" + media;
+        String[] bm = getBaseUrlAndMedia(newsType);
+        String url = bm[0] + "/api/auth/change-categories?media=" + bm[1];
         return url;
     }
 
@@ -77,26 +37,8 @@ public class ServerConfig {
     }
 
     public static String getMeroRuchiUrl(int newsType) {
-        String media = "";
-        String baseUrl = "";
-        switch (newsType) {
-            case 0:
-            case 1:
-                media = "myrepublica";
-                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
-
-                break;
-            case 2:
-                media = "nagarik";
-                baseUrl = BuildConfig.BASE_URL_NAGARIK;
-                break;
-            case 3:
-                media = "sukrabar";
-                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
-                break;
-
-        }
-        String url = baseUrl + "/api/auth/interested-news?media=" + media;
+        String[] bm = getBaseUrlAndMedia(newsType);
+        String url = bm[0] + "/api/auth/interested-news?media=" + bm[1];
         return url;
 
     }
@@ -116,5 +58,25 @@ public class ServerConfig {
     public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
     public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
     public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
+
+    private static String[] getBaseUrlAndMedia(int newsType) {
+        String[] bm = new String[2];
+        switch (newsType) {
+            case 0:
+            case 1:
+                bm[0] = BuildConfig.BASE_URL_REPUBLICA;
+                bm[1] = "myrepublica";
+                break;
+            case 2:
+                bm[0] = BuildConfig.BASE_URL_NAGARIK;
+                bm[1] = "nagarik";
+                break;
+            case 3:
+                bm[0] = BuildConfig.BASE_URL_SUKRABAR;
+                bm[1] = "sukrabar";
+                break;
+        }
+        return bm;
+    }
 
 }
