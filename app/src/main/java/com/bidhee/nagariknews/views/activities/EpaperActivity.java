@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
+import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.Page;
@@ -23,7 +24,7 @@ import butterknife.ButterKnife;
 /**
  * Created by ronem on 2/29/16.
  */
-public class EpaperActivity extends AppCompatActivity {
+public class EpaperActivity extends BaseThemeActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -39,10 +40,6 @@ public class EpaperActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /**
-         * Setting the current theme from the {@link Dashboard}
-         */
-        setTheme(Dashboard.currentTheme);
 
         /**
          * main content view for the {@link EpaperActivity}
