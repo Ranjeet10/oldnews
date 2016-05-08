@@ -76,10 +76,29 @@ public class ServerConfig {
         return url;
     }
 
-    public static String getMeroRuchiUrl(String baseUrl) {
-        String url = baseUrl + "/api/auth/interested-news?media=nagarik";
+    public static String getMeroRuchiUrl(int newsType) {
+        String media = "";
+        String baseUrl = "";
+        switch (newsType) {
+            case 0:
+            case 1:
+                media = "myrepublica";
+                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
 
+                break;
+            case 2:
+                media = "nagarik";
+                baseUrl = BuildConfig.BASE_URL_NAGARIK;
+                break;
+            case 3:
+                media = "sukrabar";
+                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
+                break;
+
+        }
+        String url = baseUrl + "/api/auth/interested-news?media=" + media;
         return url;
+
     }
 
     public static String getYoutubeChannelLinkUrl(String channelId, int count) {

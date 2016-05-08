@@ -197,7 +197,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     private void getNewsTitles(String baseUrl, int pageIndex, String categoryId) {
         loadingBar.setVisibility(View.VISIBLE);
-        handleServerResponseForBreakingAndLatestNews();
+
 
         /**
          * category id 0 means
@@ -205,9 +205,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
          */
         if (categoryId.equals("-1")) {
             Log.i(TAG, "categoryId was -1");
+            handleServerResponseForBreakingAndLatestNews();
             WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
         } else if (categoryId.equals("0")) {
-
+            handleServerResponseForNewsTitle();
+            WebService.getServerDataWithHeader(ServerConfig.getMeroRuchiUrl(Dashboard.sessionManager.getSwitchedNewsValue()), Dashboard.sessionManager.getToken(), serverResponseNewsTitle, errorListenerNewsTitle);
         } else {
             if (pageIndex == 1)
                 loadingBar.setVisibility(View.VISIBLE);
@@ -248,17 +250,20 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                 /**
                  * change the english categories to nepali
+                 * if the news type is not 1 that is
+                 * if the news type is not MyRepublica
                  */
-                if (newsArray.equalsIgnoreCase("importantNews")) {
-                    newsArray = "महत्वपुर्न समाचार";
-                } else if (newsArray.equalsIgnoreCase("breakingNews")) {
-                    newsArray = "मुख्य समाचार";
-                } else if (newsArray.equalsIgnoreCase("latestnews")) {
-                    newsArray = "ताजा समाचार";
-                } else if (newsArray.equalsIgnoreCase("featuredNews")) {
-                    newsArray = "फीचर न्युज ";
+                if (Dashboard.sessionManager.getSwitchedNewsValue() != 1) {
+                    if (newsArray.equalsIgnoreCase("importantNews")) {
+                        newsArray = "महत्वपुर्न समाचार";
+                    } else if (newsArray.equalsIgnoreCase("breakingNews")) {
+                        newsArray = "मुख्य समाचार";
+                    } else if (newsArray.equalsIgnoreCase("latestnews")) {
+                        newsArray = "ताजा समाचार";
+                    } else if (newsArray.equalsIgnoreCase("featuredNews")) {
+                        newsArray = "फीचर न्युज ";
+                    }
                 }
-
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, newsArray, img, newsTile, publishedBy, publishDate, introText, "", "");
 
                 //if the object is at first position make the title visible; for this we have to set the boolean value to the 0'th newsObj
@@ -349,7 +354,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     }
 
     private void loadMoreListener(LinearLayoutManager linearLayoutManager) {
-        if (Integer.parseInt(categoryId) != 0) {
+        if (Integer.parseInt(categoryId) != -1 && Integer.parseInt(categoryId) != 0) {
             recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
                 @Override
                 public void onLoadMore(int current_page) {
