@@ -29,6 +29,18 @@ public class WebService {
         AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
+    public static void getServerDataWithHeader(String url, final String apikey, Response.Listener<String> response, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("apikey", apikey);
+                return header;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
     public static void hitServerWithParams(String url, final HashMap<String, String> params, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
             @Override
@@ -57,8 +69,7 @@ public class WebService {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 //header
                 HashMap<String, String> header = new HashMap<>();
-//                header.put("apikey", apikey);
-                header.put("apikey", "6scWbK6F9k4aEv7NM_bXfIKbtEX7Xqdg-whbxuJ-8dk");
+                header.put("apikey", apikey);
                 header.put("Content-Type", "application/json; charset=utf-8");
                 return header;
             }
