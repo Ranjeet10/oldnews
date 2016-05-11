@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -23,12 +26,15 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
+import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
+import com.bidhee.nagariknews.views.customviews.AlertDialog;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 
@@ -95,6 +101,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "oncreate called");
+
         newsListToShow = new ArrayList<>();
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
@@ -145,7 +152,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             }
         };
 
-        errorListenerNewsTitle = new Response.ErrorListener(){
+        errorListenerNewsTitle = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
@@ -199,6 +206,9 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         loadingBar.setVisibility(View.VISIBLE);
 
 
+        if (!BasicUtilMethods.isNetworkOnline(getActivity())) {
+            MySnackbar.showSnackBar(getActivity(), loadingBar, StaticStorage.NO_NETWORK).show();
+        }
         /**
          * category id 0 means
          * the first index of tab is for Latest news
@@ -223,6 +233,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     private Collection<? extends NewsObj> getArrayList(JSONObject dataObject, String newsArray) {
         newsObjs = new ArrayList<>();
+        String arrayName;
         try {
             JSONArray jArray = dataObject.getJSONArray(newsArray);
             for (int i = 0; i < jArray.length(); i++) {
@@ -248,23 +259,28 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     img = StaticStorage.DEFAULT_IMAGE;
                 }
 
+                //its the category name
+                arrayName = categoryName;
                 /**
                  * change the english categories to nepali
                  * if the news type is not 1 that is
                  * if the news type is not MyRepublica
                  */
-                if (Dashboard.sessionManager.getSwitchedNewsValue() != 1) {
+                if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 3) {
                     if (newsArray.equalsIgnoreCase("importantNews")) {
-                        newsArray = "महत्वपुर्न समाचार";
+                        arrayName = "महत्वपुर्न समाचार";
                     } else if (newsArray.equalsIgnoreCase("breakingNews")) {
-                        newsArray = "मुख्य समाचार";
+                        arrayName = "मुख्य समाचार";
                     } else if (newsArray.equalsIgnoreCase("latestnews")) {
-                        newsArray = "ताजा समाचार";
+                        arrayName = "ताजा समाचार";
                     } else if (newsArray.equalsIgnoreCase("featuredNews")) {
-                        newsArray = "फीचर न्युज ";
+                        arrayName = "फीचर न्युज ";
                     }
+
+                } else {
+                    arrayName = newsArray;
                 }
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, newsArray, img, newsTile, publishedBy, publishDate, introText, "", "");
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "");
 
                 //if the object is at first position make the title visible; for this we have to set the boolean value to the 0'th newsObj
                 if (i == 0) {
@@ -409,7 +425,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
             NewsObj newsObj = newsListToShow.get(position);
-            newsObj.setNewsCategoryName(categoryName);
 
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);

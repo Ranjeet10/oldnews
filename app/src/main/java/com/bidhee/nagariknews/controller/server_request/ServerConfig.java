@@ -11,13 +11,13 @@ public class ServerConfig {
 
     public static String getCategoryListUrl(int newsType) {
         String[] bm = getBaseUrlAndMedia(newsType);
-        String url = bm[0] + "/api/auth/categories?media=" + bm[1];
+        String url = bm[0] + "/api/auth/categories";
         return url;
     }
 
     public static String getCategoryListSaveurl(int newsType) {
         String[] bm = getBaseUrlAndMedia(newsType);
-        String url = bm[0] + "/api/auth/change-categories?media=" + bm[1];
+        String url = bm[0] + "/api/auth/change-categories";
         return url;
     }
 

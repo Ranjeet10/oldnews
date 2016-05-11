@@ -119,6 +119,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     private int categoryId = 2; // setting categoryId = 2 so that it will inflate the news title layout in normal way
     private int SELECTED_NEWS_POSITION = 0;
     private ArrayList<NewsObj> newsObjs;
+//    private ArrayList<NewsObj> newsListToShow;
     private NewsObj selectedNews;
     String selectedNewsType = "";
     private int fabDrawable;
@@ -239,18 +240,14 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         serverResponseNewsDetail = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                Log.i(TAG, "newsdetail:" + response);
                 progressDialog.dismiss();
                 try {
                     JSONObject nodeObject = new JSONObject(response);
                     JSONObject newsDetailObject = nodeObject.getJSONObject("data");
-                    String id = newsDetailObject.getString("id");
-                    String title = newsDetailObject.getString("title");
                     String detail = newsDetailObject.getString("content");
                     Log.i("detail", detail);
-                    String featuredImage = newsDetailObject.getString("featuredImage");
-                    String publishDate = newsDetailObject.getString("publishOn");
                     String newsUrl = newsDetailObject.getString("url"); //semi url
-                    String authorName = newsDetailObject.getString("authorName");
 //                    newsDetail = new NewsDetail(id, title, detail, featuredImage, BuildConfig.BASE_URL + newsUrl, publishDate, authorName);
 //                    loadNewsDetail(newsDetail);
                     selectedNews.setDescription(detail);
@@ -450,8 +447,15 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
         try {
             newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
-
-            Log.i(TAG, newsObjs.size() + "");
+            // modified
+//            newsListToShow = new ArrayList<>();
+            String newsId = newsObjs.get(SELECTED_NEWS_POSITION).getNewsId();
+//            for (int i = 0; i < newsObjs.size(); i++) {
+//                if (!newsObjs.get(i).getNewsId().equals(newsId)) {
+//                    newsListToShow.add(newsObjs.get(i));
+//                }
+//            }
+//            Log.i(TAG, newsObjs.size() + "");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -537,7 +541,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     public void onChildItemPositionListen(int position, View view, Boolean isShown) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-
+        Log.i(TAG, "selected :" + selectedNews);
         getNewsDetailFromServer(selectedNews.getNewsId());
 
     }

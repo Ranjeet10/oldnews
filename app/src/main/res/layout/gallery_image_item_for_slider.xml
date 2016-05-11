@@ -10,6 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView
+        android:id="@+id/image_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:background="@color/transparent2"
+        android:gravity="center"
+        android:text="Title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/white" />
+
     <ProgressBar
         android:id="@+id/image_loading_progress"
         android:layout_width="@dimen/news_title_image_h"
@@ -31,11 +44,10 @@
         android:visibility="gone" />
 
     <ImageView
-        android:id="@+id/btn_save_image"
+        android:id="@+id/btn_gallery_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:padding="@dimen/screen_padding"
-        android:tint="@color/white"
-        android:src="@android:drawable/ic_menu_save" />
+        android:src="@mipmap/ic_more_vert_black_24dp"
+        android:tint="@color/white" />
 </RelativeLayout>

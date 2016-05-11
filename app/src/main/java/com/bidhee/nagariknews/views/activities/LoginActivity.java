@@ -27,6 +27,7 @@ import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -246,7 +247,11 @@ public class LoginActivity extends AppCompatActivity implements
 
     @OnClick(R.id.sign_in_button)
     void onSignINClicked() {
-        signIn();
+        if (BasicUtilMethods.isNetworkOnline(LoginActivity.this)) {
+            signIn();
+        } else {
+            MySnackbar.showSnackBar(LoginActivity.this, btnGooglePlusLogin, StaticStorage.NO_NETWORK).show();
+        }
     }
 
 

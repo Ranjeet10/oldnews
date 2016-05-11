@@ -24,10 +24,10 @@
             android:id="@+id/nav_saved"
             android:icon="@mipmap/ic_save_black_24dp"
             android:title="@string/saved_n" />
-        <item
-            android:id="@+id/nav_extras"
-            android:icon="@mipmap/ic_library_add_black_24dp"
-            android:title="@string/extra_n" />
+        <!--<item-->
+            <!--android:id="@+id/nav_extras"-->
+            <!--android:icon="@mipmap/ic_library_add_black_24dp"-->
+            <!--android:title="@string/extra_n" />-->
     </group>
 
     <item android:title="Communicate">

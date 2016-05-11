@@ -64,37 +64,25 @@
             android:paddingRight="@dimen/screen_padding_lr"
             android:paddingTop="@dimen/screen_padding">
 
-            <!--<TextView-->
-            <!--android:id="@+id/switch_republica"-->
-            <!--style="@style/switch_menu_style"-->
-            <!--android:text="Republica" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/switch_nagarik"-->
-            <!--style="@style/switch_menu_style"-->
-            <!--android:text="@string/nagarik" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/switch_sukrabar"-->
-            <!--style="@style/switch_menu_style"-->
-            <!--android:text="Sukrabar" />-->
-
             <ImageView
                 android:id="@+id/switch_republica"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/republica" />
 
             <ImageView
                 android:id="@+id/switch_nagarik"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/nagarik" />
 
             <ImageView
                 android:id="@+id/switch_sukrabar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:src="@mipmap/sukrabar" />
         </LinearLayout>
     </RelativeLayout>

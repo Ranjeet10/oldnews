@@ -26,13 +26,21 @@ public class StaticStorage {
     //getting height of each row of the news item in recyclerview
     public static int ROW_HEIGHT = 0;
 
+    public static String NO_NETWORK = "Please make sure your device has network access";
+    public static String ALERT_TITLE_LOGIN = "Login";
+    public static String ALERT_TITLE_LOGOUT = "Logout";
+    public static String LOGIN_INFO = "Application says you have to login to get extra features";
+    public static String LOGOUT_INFO = "Are you sure you want to log-out as ";
+
     //
     //files and folder
     //
     public static String FOLDER_ROOT = "Nagarik";
     public static String FOLDER_PHOTO = "Photos";
     public static String FOLDER_CARTOON = "Cartoons";
-    public static String FOLDER_VIDEOS = "Videos";
+    public static String FOLDER_EPAPER = "Epapers";
+
+    public static String FOLDER_TYPE = "folder_type";
 
 
     public static String VIDEO_THUMBNAIL_PREFIX = "http://img.youtube.com/vi/";
@@ -40,11 +48,12 @@ public class StaticStorage {
 
     public static int PHOTOS = 1;
     public static int CARTOONS = 2;
-    public static int VIDEOS = 3;
+    public static int EPAPER = 3;
+    public static int VIDEOS = 4;
 
-    public static int E_PAPER_REPUBLICA = 4;
-    public static int E_PAPER_NAGARIK = 5;
-    public static int E_PAPER_SUKRABAR = 6;
+    public static int E_PAPER_REPUBLICA = 31;
+    public static int E_PAPER_NAGARIK = 32;
+    public static int E_PAPER_SUKRABAR = 33;
 
 
     /////////////////  tabs in array  /////////////////////////
@@ -139,9 +148,12 @@ public class StaticStorage {
     public static String KEY_GALLERY_TYPE = "galery_type";
     public static String KEY_VIDEO_BUNDLE = "video_bundle";
     public static String KEY_EPAPER_TYPE = "epaper_type";
-    public static String KEY_EPAPER = "epaper";
     public static String KEY_EPAPER_PAGE = "epaper_page";
     public static String KEY_IS_FROM_FAV = "favourite";
+    public static String KEY_PHOTOS_CARTOON_POSITION = "position";
+
+    public static String KEY_PHOTO_CARTOON = "photos_cartoons";
+    public static String KEY_EPAPER = "epaper";
 
     /////////////////// login type ///////////////////
     public static int LOGIN_TYPE_FORM = 1;

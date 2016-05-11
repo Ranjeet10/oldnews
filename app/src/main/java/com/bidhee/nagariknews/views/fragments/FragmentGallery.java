@@ -4,12 +4,9 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,8 +14,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -29,14 +24,12 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
-import com.bidhee.nagariknews.controller.AppbarListener;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.activities.Dashboard;
-import com.bidhee.nagariknews.views.activities.YoutubePlayerActivity;
+import com.bidhee.nagariknews.views.activities.GalleryViewActivity;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
-import com.bidhee.nagariknews.views.customviews.ImageSliderDialog;
 import com.bidhee.nagariknews.widget.GalleryAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -44,10 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,7 +60,6 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
 
     ArrayList<Multimedias> multimediaList;
     GalleryAdapter galleryAdapter;
-    ImageSliderDialog imageSliderDialog;
 
     private Response.Listener<String> serverResponse;
     private Response.ErrorListener errorListener;
@@ -101,9 +90,6 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         {
             TYPE = args.getInt(StaticStorage.KEY_GALLERY_TYPE);
         }
-
-
-        imageSliderDialog = new ImageSliderDialog();
 
     }
 
@@ -311,7 +297,16 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
                 startActivity(i);
             }
         } else {
-            imageSliderDialog.showDialog(getActivity(), multimediaList, position, TYPE);
+//            imageSliderDialog.showDialog(getActivity(), multimediaList, position, TYPE);
+            Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
+
+            epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_PHOTO_CARTOON);
+            epaperIntent.putExtra(StaticStorage.KEY_PHOTOS_CARTOON_POSITION, position);
+            epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, TYPE);
+            epaperIntent.putParcelableArrayListExtra(StaticStorage.KEY_PHOTO_CARTOON, multimediaList);
+
+            startActivity(epaperIntent);
+            Log.i("info", "clicked");
         }
     }
 
