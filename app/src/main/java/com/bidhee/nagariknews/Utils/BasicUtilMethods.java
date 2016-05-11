@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
@@ -34,6 +36,14 @@ import java.util.Date;
  * Created by ronem on 2/4/16.
  */
 public class BasicUtilMethods {
+
+    public static boolean isNetworkOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+
+    }
 
     public static String getImageNameFromImagepath(String imagePath) {
         return imagePath.substring(imagePath.lastIndexOf("/"));

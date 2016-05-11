@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_dialog_parent_"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/screen_padding_lr"
+    android:background="@drawable/corner_white_bg"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/saveLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height">
+
+        <ImageView
+            android:id="@+id/share_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_save_black_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:layout_toRightOf="@id/share_image"
+            android:text="Save" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_red_grey" />
+
+    <RelativeLayout
+        android:id="@+id/shareLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height">
+
+        <ImageView
+            android:id="@+id/save_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/ic_share_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/screen_padding"
+            android:layout_toRightOf="@id/save_image"
+            android:text="Share" />
+    </RelativeLayout>
+</LinearLayout>

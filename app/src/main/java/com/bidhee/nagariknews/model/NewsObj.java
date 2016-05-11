@@ -234,4 +234,9 @@ public class NewsObj implements Parcelable {
     };
 
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[categoryName=" + newsCategoryName + "]";
+    }
+
 }

@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -33,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
@@ -46,7 +44,6 @@ import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
 import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
-import com.bidhee.nagariknews.views.fragments.FragmentExtra;
 import com.bidhee.nagariknews.views.fragments.FragmentGallery;
 import com.bidhee.nagariknews.views.fragments.FragmentSaved;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
@@ -118,7 +115,7 @@ public class Dashboard extends BaseThemeActivity
     private Boolean isProfileImageClicked = false;
     private AlertDialog alertDialog;
 
-//    public static SessionManager sessionManager;
+    //    public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
     public static String userName = "";
     public static String userEmail = "";
@@ -126,9 +123,10 @@ public class Dashboard extends BaseThemeActivity
 
     private MyAnimation myAnimation;
     private String currentFragmentTag;
-//    public static int currentTheme;
+    //    public static int currentTheme;
     public static String currentTitle;
     public static String currentNewsType;
+    private Boolean collapseToolbar = false;
     public static int logoImage;
 
 //    public static String baseUrl = "";
@@ -349,29 +347,30 @@ public class Dashboard extends BaseThemeActivity
         getSupportActionBar().setTitle("");
 
 
-//        appBarLayout.setOnStateChangeListener(new ControllableAppBarLayout.OnStateChangeListener() {
-//            @Override
-//            public void onStateChange(ControllableAppBarLayout.State toolbarChange) {
-//                switch (toolbarChange) {
-//
-//                    case COLLAPSED:
-////                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
-//                        myAnimation.expand(newsTypeImageLogo);
-//                        break;
-//
-//                    case EXPANDED:
-////                        collapsingToolbarLayout.setTitle("");
-//                        myAnimation.collapse(newsTypeImageLogo);
-//                        break;
-//
-//                    case IDLE:
-////                        collapsingToolbarLayout.setTitle(currentNewsType + " : " + currentTitle);
-//                        myAnimation.collapse(newsTypeImageLogo);
-//
-//                        break;
-//                }
-//            }
-//        });
+        appBarLayout.setOnStateChangeListener(new ControllableAppBarLayout.OnStateChangeListener() {
+            @Override
+            public void onStateChange(ControllableAppBarLayout.State toolbarChange) {
+                switch (toolbarChange) {
+
+                    case COLLAPSED:
+                        break;
+
+                    case EXPANDED:
+                        if (collapseToolbar)
+                            BasicUtilMethods.collapseAppbar(appBarLayout, null);
+                        break;
+
+                    case IDLE:
+                        /**
+                         * IDLE is listened when collapsing toolbar is on motion
+                         */
+                        if (collapseToolbar)
+                            BasicUtilMethods.collapseAppbar(appBarLayout, null);
+
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -497,9 +496,9 @@ public class Dashboard extends BaseThemeActivity
                         isProfileImageClicked = true;
                         drawerLayout.closeDrawer(GravityCompat.START);
                         if (sessionManager.isLoggedIn()) {
-                            alertDialog = new AlertDialog(getInstance(), "Logout", "Taping on OK take you to the login page. Would you like to log-out ?");
+                            alertDialog = new AlertDialog(getInstance(), StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
                         } else {
-                            alertDialog = new AlertDialog(getInstance(), "Login", "Taping on OK take you to the login page. Would you like to login ?");
+                            alertDialog = new AlertDialog(getInstance(), StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
                         }
                         alertDialog.setOnAlertDialogListener(getInstance());
                         alertDialog.show();
@@ -541,7 +540,7 @@ public class Dashboard extends BaseThemeActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (fragmentManager.getBackStackEntryCount() > 0) {
-
+            collapseToolbar = false;
             fragmentManager.popBackStack();
             navigationView.setCheckedItem(R.id.nav_all_news);
         } else {
@@ -621,8 +620,8 @@ public class Dashboard extends BaseThemeActivity
 
         //// Expand the collapsing toolbar with animation if it is all news fragment else Collapse it ///
         if (id == R.id.nav_all_news) {
+            collapseToolbar = false;
             BasicUtilMethods.expandAppbar(appBarLayout, this.menu);
-
             /**
              * if the selected item is all news, set the following attributes to the {@link collapsingToolbarLayout}
              * set scroll flag {@link collapsingToolbarLayout} as
@@ -634,6 +633,7 @@ public class Dashboard extends BaseThemeActivity
             params.setScrollFlags(ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
 
         } else {
+            collapseToolbar = true;
             BasicUtilMethods.collapseAppbar(appBarLayout, this.menu);
             /**
              * if the selected item is all news, set the following attributes to the {@link collapsingToolbarLayout}
@@ -689,10 +689,10 @@ public class Dashboard extends BaseThemeActivity
                 break;
 
 
-            case R.id.nav_extras:
-                replaceableFragment = FragmentExtra.createNewInstance();
-                shouldReplaceFragment = true;
-                break;
+//            case R.id.nav_extras:
+//                replaceableFragment = FragmentExtra.createNewInstance();
+//                shouldReplaceFragment = true;
+//                break;
 
             case R.id.nav_select_categorylist:
                 shouldReplaceFragment = false;
@@ -703,11 +703,13 @@ public class Dashboard extends BaseThemeActivity
             case R.id.nav_login:
                 startActivity(new Intent(Dashboard.this, LoginActivity.class));
                 shouldReplaceFragment = false;
+
                 break;
 
             case R.id.nav_settings:
                 startActivity(new Intent(Dashboard.this, SettingActivity.class));
                 shouldReplaceFragment = false;
+
                 break;
 
         }
@@ -773,9 +775,9 @@ public class Dashboard extends BaseThemeActivity
     @Override
     public void alertPositiveButtonClicked() {
         alertDialog.dismiss();
-        if(sessionManager.isLoggedIn()){
+        if (sessionManager.isLoggedIn()) {
             logout();
-        }else{
+        } else {
             Intent loginIntent = new Intent(getInstance(), LoginActivity.class);
             startActivity(loginIntent);
         }

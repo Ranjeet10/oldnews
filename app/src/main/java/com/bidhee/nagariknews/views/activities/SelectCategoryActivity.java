@@ -2,10 +2,15 @@ package com.bidhee.nagariknews.views.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,11 +24,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.BasicUtilMethods;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.MyCheckBox;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -162,17 +170,24 @@ public class SelectCategoryActivity extends BaseThemeActivity {
     private void attachCheckBoxes() {
 
         listOfCheckedItem = new ArrayList<>();
-
         handleServerResponse();
-        dialog.show();
+        fetchCategoryFromServer();
 
-        HashMap<String, String> header = new HashMap<>();
-        header.put("apikey", sessionManager.getToken());
-        Log.i(TAG, sessionManager.getToken());
+    }
 
-        WebService.getCategoryList(ServerConfig.getCategoryListUrl(sessionManager.getSwitchedNewsValue()), header, serverResponse, errorListener);
-        btnDone.setBackgroundResource(ALERT_BUTTON_THEME_STYLE);
+    private void fetchCategoryFromServer() {
+        if (BasicUtilMethods.isNetworkOnline(this)) {
+            HashMap<String, String> header = new HashMap<>();
+            header.put("apikey", sessionManager.getToken());
+            Log.i(TAG, sessionManager.getToken());
 
+            dialog.show();
+            WebService.getCategoryList(ServerConfig.getCategoryListUrl(sessionManager.getSwitchedNewsValue()), header, serverResponse, errorListener);
+            btnDone.setBackgroundResource(ALERT_BUTTON_THEME_STYLE);
+        } else {
+            btnDone.setVisibility(View.GONE);
+            MySnackbar.showSnackBar(this, selectCategoryLayout, StaticStorage.NO_NETWORK).show();
+        }
     }
 
     private void handleServerResponse() {
@@ -232,6 +247,28 @@ public class SelectCategoryActivity extends BaseThemeActivity {
                 btnDone.setVisibility(View.GONE);
             }
         };
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.select_category_menu, menu);
+
+        final Drawable drawable = menu.getItem(0).getIcon();
+        if (drawable != null) {
+            final Drawable wrapped = DrawableCompat.wrap(drawable);
+            drawable.mutate();
+            DrawableCompat.setTint(wrapped, Color.WHITE);
+            menu.getItem(0).setIcon(drawable);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.refresh) {
+            fetchCategoryFromServer();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

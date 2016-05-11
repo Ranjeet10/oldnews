@@ -3,12 +3,17 @@ package com.bidhee.nagariknews.views.customviews;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Layout;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
+import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 
@@ -34,12 +39,21 @@ public class AlertDialog extends Dialog {
     public AlertDialog(Context context, String title, String message) {
         super(context, R.style.SlideAnimation);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setCancelable(false);
         getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         setContentView(R.layout.alert_dialog_layout);
         ButterKnife.bind(this);
 
         titleView.setText(title);
         descView.setText(message);
+
+        if (title.equals(StaticStorage.ALERT_TITLE_LOGIN)) {
+            btnPositive.setText("Login");
+            btnNegative.setText("Not now");
+        } else if (title.equals(StaticStorage.ALERT_TITLE_LOGOUT)) {
+            btnPositive.setText("Logout");
+            btnNegative.setText("Not now");
+        }
 
         if (Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
             renderAlertButton(R.drawable.alert_button_republica);

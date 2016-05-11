@@ -50,7 +50,7 @@
             android:name=".views.activities.NewsDetailActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".views.activities.YoutubePlayerActivity" />
-        <activity android:name=".views.activities.EpaperActivity" />
+        <activity android:name=".views.activities.GalleryViewActivity" />
         <activity
             android:label="@string/preference_toolbar_title"
             android:name=".views.activities.SettingActivity"

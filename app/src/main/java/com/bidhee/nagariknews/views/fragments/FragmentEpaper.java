@@ -2,11 +2,8 @@ package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
@@ -18,20 +15,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
-import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
-import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.EpaperBundle;
 import com.bidhee.nagariknews.views.activities.Dashboard;
-import com.bidhee.nagariknews.views.activities.EpaperActivity;
+import com.bidhee.nagariknews.views.activities.GalleryViewActivity;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
-import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.EpapersListAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -57,7 +50,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     SearchView searchView;
 
 
-    private int TYPE = 0;
+    //    private int TYPE = 0;
     private EpaperBundle epaperBundle;
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
@@ -79,9 +72,9 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        if (args != null) {
-            TYPE = args.getInt(StaticStorage.KEY_EPAPER_TYPE);
-        }
+//        if (args != null) {
+//            TYPE = args.getInt(StaticStorage.KEY_EPAPER_TYPE);
+//        }
 
         epaperBundle = StaticStorage.getEpaperBundle(1);
 
@@ -154,9 +147,11 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onItemClick(View view, int parentPosition, int position) {
-        Intent epaperIntent = new Intent(getActivity(), EpaperActivity.class);
+        Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
 
+        epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
         epaperIntent.putExtra(StaticStorage.KEY_EPAPER, epapersSearched.get(position));
+        epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
 
         startActivity(epaperIntent);
         Log.i("info", "clicked");

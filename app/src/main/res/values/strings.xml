@@ -93,11 +93,11 @@
 
     <!-- nagarik-->
     <string name="all_news_n">सबै समाचार</string>
-    <string name="videos_n">भिडियोज्</string>
-    <string name="photos_n">फोटोज्</string>
-    <string name="cartoon_n">कारटून्</string>
+    <string name="videos_n">भिडियोज </string>
+    <string name="photos_n">फोटोज</string>
+    <string name="cartoon_n">कर्टून</string>
     <string name="e_paper_n">ई-पेपर</string>
-    <string name="saved_n">सेव्ड्</string>
+    <string name="saved_n">सेव्ड</string>
     <string name="extra_n">अन्य</string>
 
     <string name="login_n">लग - इन</string>

@@ -2,7 +2,6 @@ package com.bidhee.nagariknews.views.activities;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,10 +10,11 @@ import android.widget.RelativeLayout;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.BaseThemeActivity;
-import com.bidhee.nagariknews.controller.SessionManager;
+import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.Page;
 import com.bidhee.nagariknews.widget.EpaperPagerAdapter;
+import com.bidhee.nagariknews.widget.PhotosCartoonPagerAdapter;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 /**
  * Created by ronem on 2/29/16.
  */
-public class EpaperActivity extends BaseThemeActivity {
+public class GalleryViewActivity extends BaseThemeActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -34,7 +34,13 @@ public class EpaperActivity extends BaseThemeActivity {
     ViewPager epaperViewpager;
 
     Epaper epaper;
+    ArrayList<Multimedias> multimedias;
     EpaperPagerAdapter epaperPagerAdapter;
+    PhotosCartoonPagerAdapter photosCartoonPagerAdapter;
+    private int POSITION;
+
+    String galleryType;
+    int TYPE;
 
 
     @Override
@@ -42,16 +48,25 @@ public class EpaperActivity extends BaseThemeActivity {
         super.onCreate(savedInstanceState);
 
         /**
-         * main content view for the {@link EpaperActivity}
+         * main content view for the {@link GalleryViewActivity}
          */
         setContentView(R.layout.epaper_activity_layout);
         ButterKnife.bind(this);
 
-        epaper = getIntent().getExtras().getParcelable(StaticStorage.KEY_EPAPER);
+        galleryType = getIntent().getStringExtra(StaticStorage.KEY_GALLERY_TYPE);
 
-        if (epaper == null) {
-            setPageTitle(Dashboard.currentNewsType, 0);
+        TYPE = getIntent().getIntExtra(StaticStorage.FOLDER_TYPE, 1);
+        if (galleryType.equals(StaticStorage.KEY_PHOTO_CARTOON)) {
+            multimedias = getIntent().getExtras().getParcelableArrayList(StaticStorage.KEY_PHOTO_CARTOON);
+            POSITION = getIntent().getIntExtra(StaticStorage.KEY_PHOTOS_CARTOON_POSITION, 0);
+
+        } else if (galleryType.equals(StaticStorage.KEY_EPAPER)) {
+            epaper = getIntent().getExtras().getParcelable(StaticStorage.KEY_EPAPER);
+            if (epaper == null) {
+                setPageTitle(Dashboard.currentNewsType, 0);
+            }
         }
+
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -61,12 +76,17 @@ public class EpaperActivity extends BaseThemeActivity {
     }
 
     private void setViewPagerData() {
-        epaperPagerAdapter = new EpaperPagerAdapter(getSupportFragmentManager(), (ArrayList<Page>) epaper.getPages());
-        epaperViewpager.setAdapter(epaperPagerAdapter);
+        if (galleryType.equals(StaticStorage.KEY_EPAPER)) {
+            epaperPagerAdapter = new EpaperPagerAdapter(getSupportFragmentManager(), (ArrayList<Page>) epaper.getPages());
+            epaperViewpager.setAdapter(epaperPagerAdapter);
+        } else {
+            photosCartoonPagerAdapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), multimedias, TYPE);
+            epaperViewpager.setAdapter(photosCartoonPagerAdapter);
+            epaperViewpager.setCurrentItem(POSITION);
+        }
         epaperViewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
                 setPageTitle(Dashboard.currentNewsType, position + 1);
             }
 
@@ -83,7 +103,9 @@ public class EpaperActivity extends BaseThemeActivity {
     }
 
     private void setPageTitle(String currentNewsType, int currentPageNumber) {
-        getSupportActionBar().setTitle(currentNewsType + " (" + epaper.getDate() + ") " + currentPageNumber + "/" + epaper.getPages().size());
+        if (galleryType.equals(StaticStorage.KEY_EPAPER)) {
+            getSupportActionBar().setTitle(currentNewsType + " (" + epaper.getDate() + ") " + currentPageNumber + "/" + epaper.getPages().size());
+        }
     }
 
 

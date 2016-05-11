@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/screen_padding_lr"
     android:layout_marginRight="@dimen/screen_padding_lr"
-    android:background="@drawable/shape_corners_white_corner_top_lr"
+    android:background="@drawable/corner_white_bg"
     android:orientation="vertical"
     android:padding="@dimen/screen_padding_lr">
 
@@ -33,6 +33,7 @@
         android:layout_below="@+id/horizontal_line"
         android:layout_marginBottom="@dimen/tab_bar_menu_margin"
         android:text=""
+        android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="@color/light_grey" />
 
@@ -41,6 +42,7 @@
         android:id="@+id/btn_negative"
         style="@style/alert_button_style"
         android:layout_alignParentRight="true"
+
         android:layout_below="@id/alert_desc"
         android:text="NO" />
 

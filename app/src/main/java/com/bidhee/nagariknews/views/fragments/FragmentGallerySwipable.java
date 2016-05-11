@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.interfaces.ListPositionListener;
+import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.customviews.LisDialog;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -28,29 +30,44 @@ import butterknife.OnClick;
 /**
  * Created by ronem on 2/29/16.
  */
-public class FragmentEpaperSwipable extends Fragment {
+public class FragmentGallerySwipable extends Fragment {
+    @Bind(R.id.image_title)
+    TextView imageTitleTextView;
     @Bind(R.id.gallery_item_image_view)
     ImageView imageView;
     @Bind(R.id.image_loading_progress)
     ProgressBar progressBar;
     @Bind(R.id.reload_image_view)
     ImageView reloadImage;
-
     @Bind(R.id.btn_gallery_option)
     ImageView btnOption;
 
+    private String imageTitle;
     LisDialog optionDialog;
+    private String imagePath;
     private String imageName;
     private int TYPE;
-    private String pageUrl = "";
 
-    public static FragmentEpaperSwipable createNewInstance(String pageUrl) {
-        FragmentEpaperSwipable fragmentEpaperSwipable = new FragmentEpaperSwipable();
+    public static FragmentGallerySwipable createNewInstance(Multimedias multimedias, int type) {
+        FragmentGallerySwipable fragmentGallerySwipable = new FragmentGallerySwipable();
         Bundle box = new Bundle();
-        box.putString(StaticStorage.KEY_EPAPER_PAGE, pageUrl);
-        fragmentEpaperSwipable.setArguments(box);
+        box.putString("title", multimedias.getTitle());
+        box.putString("image_path", multimedias.getMultimediaPath());
+        box.putInt("type", type);
+        fragmentGallerySwipable.setArguments(box);
 
-        return fragmentEpaperSwipable;
+        return fragmentGallerySwipable;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            imageTitle = args.getString("title");
+            imagePath = args.getString("image_path");
+            TYPE = args.getInt("type");
+        }
     }
 
     @OnClick(R.id.btn_gallery_option)
@@ -66,27 +83,21 @@ public class FragmentEpaperSwipable extends Fragment {
             public void tappedPosition(int position) {
                 switch (position) {
                     case 1:
-                        imageName = BasicUtilMethods.getImageNameFromImagepath(pageUrl);
-                        String dir = StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
+                        imageName = BasicUtilMethods.getImageNameFromImagepath(imagePath);
+                        String dir = TYPE == StaticStorage.PHOTOS ?
+                                StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_PHOTO :
+                                StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_CARTOON;
+
 
                         BasicUtilMethods.saveFileToGalery(getActivity(), dir, imageName, imageView);
                         break;
                     case 2:
-                        BasicUtilMethods.shareLink(getActivity(), pageUrl);
+                        BasicUtilMethods.shareLink(getActivity(), imagePath);
                         break;
                 }
             }
         });
         optionDialog.show();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null) {
-            pageUrl = args.getString(StaticStorage.KEY_EPAPER_PAGE);
-        }
     }
 
     @Nullable
@@ -100,38 +111,15 @@ public class FragmentEpaperSwipable extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadImage(pageUrl);
+        try {
+            BasicUtilMethods.loadImage(getActivity(), imagePath, imageView);
+            imageTitleTextView.setVisibility(View.VISIBLE);
+            imageTitleTextView.setText(imageTitle);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadImage(final String pageUrl) {
-        progressBar.setVisibility(View.VISIBLE);
-        Picasso.with(getActivity())
-                .load(pageUrl)
-                .error(R.drawable.nagariknews)
-                .placeholder(R.drawable.nagariknews)
-                .into(imageView, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        try {
-                            progressBar.setVisibility(View.GONE);
-                            reloadImage.setVisibility(View.GONE);
-                        } catch (NullPointerException ne) {
-                            ne.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onError() {
-                        progressBar.setVisibility(View.GONE);
-                        reloadImage.setVisibility(View.VISIBLE);
-                    }
-                });
-    }
-
-    @OnClick(R.id.reload_image_view)
-    public void reloadImageOnClick() {
-        loadImage(pageUrl);
-    }
 
     @Override
     public void onDestroyView() {
