@@ -6,6 +6,9 @@ package com.bidhee.nagariknews.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import java.util.HashMap;
@@ -34,6 +37,16 @@ public class SessionManager {
     public static final String KEY_USER_IMAGE = "userImage";
     public static final String KEY_USER_EMAIL = "userEmail";
     public static final String KEY_USER_TOKEN = "userToken";
+
+    //gcm keys
+    public static final String KEY_SENT_TOKEN_TO_SERVER = "sentToken";
+    public static final String REGISTRATION_ID_GCM="registrationId";
+    public static final String PROPERTY_APP_VERSION = "appVersion";
+
+    //notification keys
+    public static final String NOTIFICATION_TITLE="notificationTitle";
+    public static final String NOTIFICATION_DESCRIPTION="notificationDescription";
+
 
     public static final String KEY_NEWS_SWITCHED_TO = "newsSwitchedTo";
 
@@ -132,4 +145,31 @@ public class SessionManager {
         int currentFontSize = FONT_CONTROLLER_PREFERENCE.getInt(KEY_NEWS_FONT_SIZE, 1);
         return currentFontSize;
     }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    /**
+     *
+     * @return
+     * true if app on device was registered for gcm
+     * false if app on device was not registered
+     */
+    public static boolean isRegisterd(Context context) {
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return pref.getBoolean(SessionManager.KEY_SENT_TOKEN_TO_SERVER, false);
+    }
+
 }

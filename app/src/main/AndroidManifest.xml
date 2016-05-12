@@ -52,13 +52,9 @@
         <activity android:name=".views.activities.YoutubePlayerActivity" />
         <activity android:name=".views.activities.GalleryViewActivity" />
         <activity
-            android:label="@string/preference_toolbar_title"
             android:name=".views.activities.SettingActivity"
+            android:label="@string/preference_toolbar_title"
             android:screenOrientation="portrait" />
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
 
         <!-- for google plus-->
         <meta-data
@@ -78,6 +74,45 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="6bd1fed2cffc21ac28734354a1a5692971de6a65" />
+
+        <!-- for gcm-->
+        <!-- [START gcm_receiver] -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="gcm.play.android.samples.com.gcmquickstart" />
+            </intent-filter>
+        </receiver>
+        <!-- [END gcm_receiver] -->
+        <!-- [START gcm_listener] -->
+        <service
+            android:name=".gcm.MyGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <!-- [END gcm_listener] -->
+        <!-- [START instanceId_listener] -->
+        <service
+            android:name=".gcm.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        <!-- [END instanceId_listener] -->
+        <service
+            android:name=".gcm.RegistrationIntentService"
+            android:exported="false" />
+        <activity
+            android:name=".views.activities.NotificationActivity"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

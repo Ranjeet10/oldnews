@@ -58,6 +58,7 @@ public class ServerConfig {
     public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
     public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
     public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
+    public static String GCM_RREGISTRATION_URL = "";
 
     private static String[] getBaseUrlAndMedia(int newsType) {
         String[] bm = new String[2];

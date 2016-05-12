@@ -3,11 +3,13 @@ package com.bidhee.nagariknews.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.design.internal.NavigationMenuView;
 import android.support.design.widget.NavigationView;
 import android.util.Log;
@@ -20,6 +22,8 @@ import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -36,6 +40,7 @@ import java.util.Date;
  * Created by ronem on 2/4/16.
  */
 public class BasicUtilMethods {
+
 
     public static boolean isNetworkOnline(Context context) {
         ConnectivityManager cm =
@@ -269,5 +274,23 @@ public class BasicUtilMethods {
         return dir.delete();
     }
 
+    public static String getRegistrationId(Context context) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String registrationId = prefs.getString(SessionManager.REGISTRATION_ID_GCM, "");
+        if (registrationId.isEmpty()) {
+            Log.i("GCMRegistration", "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing registration ID is not guaranteed to work with
+        // the new app version.
+        int registeredVersion = prefs.getInt(SessionManager.PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = SessionManager.getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i("AppVersion", "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
 
 }
