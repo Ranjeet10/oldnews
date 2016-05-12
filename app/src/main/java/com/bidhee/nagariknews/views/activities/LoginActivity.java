@@ -181,6 +181,8 @@ public class LoginActivity extends AppCompatActivity implements
 
         configuringGooglePlus();
         trackFacebookToken();
+
+
     }
 
     private void trackFacebookToken() {

@@ -5,7 +5,8 @@
     <!-- ===============================================================================================-->
     <!-- google api key-->
     <string name="apikey">AIzaSyARzDSEGAMscF5wy-fJ2eS_Z36UzXOJM-0</string>
-    <string name="sender_id">424391978066</string>
+    <!--<string name="sender_id">424391978066</string>-->
+    <string name="sender_id">329117814887</string>
 
     <!-- facebook api key-->
     <string name="facebook_app_id">1035290163212506</string>

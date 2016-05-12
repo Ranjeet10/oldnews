@@ -1,11 +1,15 @@
 package com.bidhee.nagariknews.views.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
@@ -40,6 +44,7 @@ import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
+import com.bidhee.nagariknews.gcm.RegistrationIntentService;
 import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
@@ -55,6 +60,7 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -80,6 +86,8 @@ public class Dashboard extends BaseThemeActivity
     }
 
     private String TAG = getClass().getSimpleName();
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     Menu menu;
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
@@ -249,8 +257,45 @@ public class Dashboard extends BaseThemeActivity
             attachFragment(replaceableFragment, currentFragmentTag, currentNewsType, currentTitle, false);
         }
 
-
+        startGcmCheck();
     }
+
+    //=================== methods for the gcm and play===================
+    private void startGcmCheck() {
+
+        if (checkPlayServices()) {
+            String regId = BasicUtilMethods.getRegistrationId(this);
+            if (regId.isEmpty() || !SessionManager.isRegisterd(this)) {
+
+                Log.i(TAG, "USER NOT REGISTERED TO SERVER");
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            } else {
+                Log.i(TAG, "USER REGISTERED ALREADY");
+            }
+
+        } else {
+            Log.i(TAG, "NO PLAY SERVICES");
+        }
+    }
+
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+    //[gcm methods ended]
 
     private void googleClientConfigure() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
