@@ -8,13 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            layout="@layout/content_not_found_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
-
         <ProgressBar
             android:id="@+id/progess"
             android:layout_width="30dp"
@@ -30,7 +23,12 @@
             android:layout_above="@+id/progess"
             android:paddingLeft="@dimen/screen_padding_lr"
             android:paddingRight="@dimen/screen_padding_lr" />
-
+        <include
+            layout="@layout/content_not_found_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
         <ProgressBar
             android:id="@+id/loading_bar"
             android:layout_width="@dimen/news_title_image_h"

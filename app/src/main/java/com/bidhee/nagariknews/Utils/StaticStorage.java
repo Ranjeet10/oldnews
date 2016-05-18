@@ -26,11 +26,11 @@ public class StaticStorage {
     //getting height of each row of the news item in recyclerview
     public static int ROW_HEIGHT = 0;
 
-    public static String NO_NETWORK = "Please make sure your device has network access";
     public static String ALERT_TITLE_LOGIN = "Login";
     public static String ALERT_TITLE_LOGOUT = "Logout";
     public static String LOGIN_INFO = "Application says you have to login to get extra features";
     public static String LOGOUT_INFO = "Are you sure you want to log-out as ";
+    public static String SOMETHING_WENT_WRONG = "something went wrong";
 
     //
     //files and folder
@@ -192,81 +192,14 @@ public class StaticStorage {
     //////////////////    gallery methods   /////////////
     public static ArrayList<Multimedias> getGalleryList(int type) {
         ArrayList<Multimedias> multimediaList = new ArrayList<>();
-        if (type == PHOTOS) {
-            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcQ3W9nImucyhYWc0mh3c9_YNmSwYPJ96IyCAEUylrRyX6RTOr", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTYm3vnXWhmTxNrra_jtqvqZBjnFZNxi8PTtkBkTTFQLSHKwX93", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQQ31ZjpY-62o-Buk7kIdLHqRft9Bv71tnMI2cPqMhVgKTk3nKNAg", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFyveauO6PNwN1wAMdTjkxUvUC3hTK5uaG7wgXoInPZLymWyFx", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcR_uvGQvbqhAUfsqpzowejAb-fD_C6swvo3FSDIUFAf6QKa-Vn6", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQg8Anx_UrtCibPNGVqVhRVmv0DIIVthNCr9ClHt0XtRE3CSUwE", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://nagariknews.com/media/k2/items/cache/xaafbf109d9cc513c903b1a05e07fc919_L.jpg.pagespeed.ic.T8f9vg-kZj.webp", "", ""));
-            multimediaList.add(new Multimedias("id", "title", "http://thumbs.dreamstime.com/t/cartoon-dump-truck-29199727.jpg", "", ""));
-        } else if (type == CARTOONS) {
+        if (type == CARTOONS) {
 
             multimediaList.add(new Multimedias("id", "मूहुर्त", "http://nagarik.bidheegroup.com/uploads/media//cartoon/274da0858cfef8a4aea36fceeb569c2f_L.jpg", "", ""));
             multimediaList.add(new Multimedias("id", "मूहुर्त", "http://nagarik.bidheegroup.com/uploads/media//2016/may/1-10/cartoon.jpg", "", ""));
 
-        } else if (type == VIDEOS) {
-            multimediaList.add(new Multimedias("id", "Video shows terrified tourists as the temple collapses - BBC News", "Yyhh98NDLNs", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "New Nepali Movie PARDESHI Song Kura Khatti Ho || Official Full Video HD", "77LB0TP57JA", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Nagariknews Video: World's shortest man Chandra Bahadur Dangi", "RnfiL5JZ5io", "241views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Interview With Miss Nepal 2016", "K9UejuHHgto", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "IBelly dance by Miss Nepal contestant Namrata Shrestha", "8jyMJDiIaNk", "124views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Group fight on Holi", "oahhDybedIc", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Naya Shakti - Clean Kathmandu-Green Kathmandu", "Ojpwxx_4Aqk", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Holi Special Program 2072 with Rampyari and K Ma Timro Hoina Ra Film Unit - RED STUDIO HD", "f1cgzpgW_Zs", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "Football Team's Grand Welcome in Jhapa-2", "BG5rW6eoJZ8", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "PM Narendramodi and PM KP Oli inaugurate Dhalkebar Muzaffarpur transmission line", "tEcc9RO6Ehg", "24views", "2012-10-11"));
-            multimediaList.add(new Multimedias("id", "PM Kp Sharma Oli", "MNp1e0kqt4w", "24views", ""));
-            multimediaList.add(new Multimedias("id", "Nepali Cricket supporter In Bangladesh", "vjIYurEgkvU", "24views", ""));
-
         }
 
         return multimediaList;
-    }
-
-    /////////////////////   epaper   ///////////////////////
-    public static EpaperBundle getEpaperBundle(int type) {
-        ArrayList<Page> pages = new ArrayList<>();
-        pages.add(new Page("1", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_01.jpg"));
-        pages.add(new Page("2", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_02.jpg"));
-        pages.add(new Page("3", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg"));
-        pages.add(new Page("4", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_04.jpg"));
-        pages.add(new Page("4", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_05.jpg"));
-        pages.add(new Page("4", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_06.jpg"));
-        pages.add(new Page("4", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_07.jpg"));
-
-
-        Epaper epaper1 = new Epaper("2016-12-22", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_01.jpg", pages);
-        Epaper epaper2 = new Epaper("2016-12-23", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_02.jpg", pages);
-        Epaper epaper3 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper4 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper5 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper6 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper7 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper8 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper9 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-        Epaper epaper10 = new Epaper("2016-12-24", "http://nagarikplus.nagariknews.com/images/flippingbook/2016_feb_29/nagarik/ng_zoom_03.jpg", pages);
-
-        List<Epaper> epapers = new ArrayList<>();
-        epapers.add(epaper1);
-        epapers.add(epaper2);
-        epapers.add(epaper3);
-        epapers.add(epaper4);
-        epapers.add(epaper5);
-        epapers.add(epaper6);
-        epapers.add(epaper7);
-        epapers.add(epaper8);
-        epapers.add(epaper9);
-        epapers.add(epaper10);
-
-        EpaperBundle epaperBundle = new EpaperBundle("1", epapers);
-
-        return epaperBundle;
-
-
     }
 
 

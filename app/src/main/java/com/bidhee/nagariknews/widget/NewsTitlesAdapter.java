@@ -4,13 +4,10 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,15 +16,12 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.activities.Dashboard;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static com.bidhee.nagariknews.R.anim.row_item_animation;
 
 /**
  * Created by ronem on 2/9/16.
@@ -75,30 +69,8 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         final NewsObj no = newsObjs.get(position);
 
-        //categoryId == -1 means it is from breaking and latest news
-        //categoryId == 0 means it is from Mero Ruchi
-        if (categoryId == -1) {
-            if (no.isToShow()) {
-                holder.categoryTextView.setVisibility(View.VISIBLE);
-                switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
-                    case 1:
-//                        holder.categoryTextView.setBackgroundColor(context.getResources().getColor(R.color.republicaColorPrimary));
-                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_republica_background);
-                        break;
-                    case 2:
-                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
-                        break;
-                    case 3:
-                        holder.categoryTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
-                        break;
-                }
-            } else {
-                holder.categoryTextView.setVisibility(View.GONE);
-            }
+        holder.categoryTextView.setVisibility(View.GONE);
 
-        } else {
-            holder.categoryTextView.setVisibility(View.GONE);
-        }
 
         //setting margin to the cardview since cardview doesnot show shadow above 21
         //so we set margin to get shadow
@@ -155,8 +127,6 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
         TextView newsSourceTv;
         @Bind(R.id.news_date_text_view)
         TextView newsDateTv;
-        @Bind(R.id.news_semi_detail_text_view)
-        TextView newsSemiDetailTv;
         @Bind(R.id.news_share_text_view)
         TextView newsShareTv;
         @Bind(R.id.news_show_detail_text_view)

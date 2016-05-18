@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.fragments.FragmentBreakingAndLatestNews;
+import com.bidhee.nagariknews.views.fragments.FragmentMeroRuchi;
+import com.bidhee.nagariknews.views.fragments.FragmentTest;
 import com.bidhee.nagariknews.views.fragments.SwipableFragment;
 
 import java.util.ArrayList;
@@ -30,7 +32,6 @@ public class NewsPagerAdapter extends FragmentStatePagerAdapter {
         //never make fragment list as arguments of the adapter constructor
         //it helps to prevent the memory leakage
         Log.i("returned", tabs.get(position).cat_name);
-
         return SwipableFragment.createNewInstance(tabs.get(position));
 
 

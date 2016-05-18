@@ -5,7 +5,6 @@
     android:layout_marginLeft="@dimen/screen_padding_lr"
     android:layout_marginRight="@dimen/screen_padding_lr"
     android:layout_marginTop="@dimen/screen_padding_lr"
-    android:elevation="2dp"
     android:foreground="?selectableItemBackground">
 
     <RelativeLayout
@@ -20,42 +19,33 @@
             android:scaleType="fitXY"
             android:src="@drawable/andyrubin" />
 
-
-        <TextView
-            android:layout_marginTop="@dimen/screen_padding_lr"
+        <LinearLayout
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
             android:layout_toRightOf="@id/gallery_thumbnail"
-            android:layout_marginLeft="@dimen/screen_padding_lr"
-            android:id="@+id/gallery_item_title"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/grey"
-            android:textStyle="bold" />
-
-        <TextView
-
-            android:layout_toRightOf="@id/gallery_thumbnail"
             android:layout_marginLeft="@dimen/screen_padding_lr"
-            android:id="@+id/gallery_item_no_of_views"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/gallery_item_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_lr"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="This is title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="@color/grey"
+                android:textStyle="bold" />
 
-        <TextView
-            android:layout_marginBottom="@dimen/screen_padding_lr"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/gallery_thumbnail"
-            android:layout_marginLeft="@dimen/screen_padding_lr"
-            android:id="@+id/gallery_item_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
+            <TextView
+                android:id="@+id/gallery_item_date"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_lr"
+                android:layout_height="wrap_content"
+                android:text="2012-12-12"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

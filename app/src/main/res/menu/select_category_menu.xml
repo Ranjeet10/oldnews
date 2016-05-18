@@ -7,5 +7,10 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="100"
         android:title="refresh" />
-
+    <item
+        android:id="@+id/menu_skip"
+        android:icon="@mipmap/ic_arrow_forward_black_24dp"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="101"
+        android:title="skip" />
 </menu>

@@ -44,12 +44,13 @@
 
         <activity
             android:name=".views.activities.SelectCategoryActivity"
-            android:label="@string/select_category"
             android:screenOrientation="portrait" />
         <activity
             android:name=".views.activities.NewsDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".views.activities.YoutubePlayerActivity" />
+        <activity android:name=".views.activities.YoutubePlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
         <activity android:name=".views.activities.GalleryViewActivity" />
         <activity
             android:name=".views.activities.SettingActivity"

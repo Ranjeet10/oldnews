@@ -20,7 +20,7 @@
         <item name="colorPrimary">@color/republicaColorPrimary</item> 
         <item name="colorPrimaryDark">@color/republicaColorPrimaryDark</item> 
         <item name="colorControlHighlight">@color/light_red_grey</item> 
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/republicaColorPrimary</item>
         <item name="android:windowBackground">@color/light_red_grey</item>
     </style>
 
@@ -29,7 +29,7 @@
         <!--<style name="BaseTheme" parent="android:Theme.Material.NoActionBar">-->
         <item name="colorPrimary">@color/nagarikColorPrimary</item> 
         <item name="colorPrimaryDark">@color/nagarikColorPrimaryDark</item> 
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/nagarikColorPrimary</item>
         <item name="android:windowBackground">@color/light_red_grey</item>
     </style>
 
@@ -39,9 +39,11 @@
         <item name="colorPrimary">@color/sukrabarColorPrimary</item> 
         <item name="colorPrimaryDark">@color/sukrabarColorPrimaryDark</item> 
         <item name="colorControlHighlight">@color/light_red_grey</item> 
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/sukrabarColorPrimary</item>
         <item name="android:windowBackground">@color/light_red_grey</item>
     </style>
+
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -210,6 +212,13 @@
     </style>
 
 
+    <!-- description text style-->
+    <style name="description_text_style" parent="wrap_wrap">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_marginLeft">@dimen/screen_padding_lr</item>
+        <item name="android:ellipsize">end</item>
+    </style>
     <!-- input text attributes style-->
     <style name="TextLabel">
         <!-- Hint color and label color in FALSE state -->

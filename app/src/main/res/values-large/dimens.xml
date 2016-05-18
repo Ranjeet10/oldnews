@@ -3,6 +3,7 @@
     <dimen name="selector_radius">14dp</dimen>
     <dimen name="screen_padding">15dp</dimen>
 
+    <dimen name="nav_header_height">200dp</dimen>
     <dimen name="news_title_image_h">150dp</dimen>
     <dimen name="news_title_image_w">120dp</dimen>
 

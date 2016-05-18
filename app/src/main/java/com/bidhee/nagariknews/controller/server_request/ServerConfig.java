@@ -8,6 +8,18 @@ import com.bidhee.nagariknews.BuildConfig;
 public class ServerConfig {
 
     public static String NAGARIK_VIDEO_CHANNEL_ID = "UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults";
+    //i found it
+    public static String playlisturl = "https://www.googleapis.com/youtube/v3/search?part=id%2C+snippet&channelId=UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults=50&order=date&type=video%2C+playlist&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+
+    public static String numberOfPlayList = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UCxxx4M3jP9HcKLHJ0dFLe7g&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+    public static String playlistviedeos = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs&playlistId=PLaRFwT957MFvo17MscoVGTDMc9_J85zWB";
+
+    //with video count
+    public static String withvieoCount = "http://gdata.youtube.com/feeds/api/playlists/PLaRFwT957MFvo17MscoVGTDMc9_J85zWB?v=2&alt=jsonc&start-index=0";
+
+    //single video view count
+
+//    https://www.googleapis.com/youtube/v3/videos?part=statistics&id=dc5lTQWorVw&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs
 
     public static String getCategoryListUrl(int newsType) {
         String[] bm = getBaseUrlAndMedia(newsType);
@@ -48,9 +60,24 @@ public class ServerConfig {
         return url;
     }
 
+    public static String getVideoInfoUrl(String videoId) {
+        String url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + videoId + "&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+        return url;
+    }
+
     public static String getGalleryUrl(String baseUrl, int galleryType) {
 
         String url = baseUrl + "/api/news/list/photo?_format=json&page=1";
+        return url;
+    }
+
+    public static String getEpaperListUrl(String media) {
+        String url = "http://www.epaper.bidheegroup.com/api/news/list?_format=json&media=" + media;
+        return url;
+    }
+
+    public static String getEpaperPages(int id) {
+        String url = "http://www.epaper.bidheegroup.com/api/news/1/detail?_format=json";
         return url;
     }
 

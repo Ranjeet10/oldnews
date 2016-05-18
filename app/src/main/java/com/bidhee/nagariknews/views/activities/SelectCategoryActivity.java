@@ -2,17 +2,22 @@ package com.bidhee.nagariknews.views.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -22,11 +27,9 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.bidhee.nagariknews.BuildConfig;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
@@ -38,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import butterknife.Bind;
@@ -56,8 +58,8 @@ public class SelectCategoryActivity extends BaseThemeActivity {
     LinearLayout selectCategoryLayout;
     @Bind(R.id.btn_done)
     Button btnDone;
-    @Bind(R.id.result)
-    TextView resultView;
+    @Bind(R.id.title_textview)
+    TextView titleTextView;
 
     ArrayList<MyCheckBox> listOfCheckedItem;
 
@@ -81,6 +83,10 @@ public class SelectCategoryActivity extends BaseThemeActivity {
         dialog.setCancelable(false);
 
         setUpToolBar();
+
+
+        titleTextView.setText(BaseThemeActivity.SELECT_CATEGORY_TITLE);
+        titleTextView.setTextColor(BaseThemeActivity.COLOR_PRIMARY_DARK);
         attachCheckBoxes();
     }
 
@@ -140,10 +146,7 @@ public class SelectCategoryActivity extends BaseThemeActivity {
                     String status = nodeObject.getString("status");
                     if (status.equals("success")) {
 
-                        Intent intent = new Intent(SelectCategoryActivity.this, Dashboard.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
+                        launchDashboard();
 
                     }
                 } catch (JSONException e) {
@@ -160,16 +163,22 @@ public class SelectCategoryActivity extends BaseThemeActivity {
         };
     }
 
+    private void launchDashboard() {
+        Intent intent = new Intent(SelectCategoryActivity.this, Dashboard.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     private void setUpToolBar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setTitle(BaseThemeActivity.CURRENT_NEWS_TITLE);
 
 
     }
 
     private void attachCheckBoxes() {
-
-        listOfCheckedItem = new ArrayList<>();
         handleServerResponse();
         fetchCategoryFromServer();
 
@@ -186,7 +195,7 @@ public class SelectCategoryActivity extends BaseThemeActivity {
             btnDone.setBackgroundResource(ALERT_BUTTON_THEME_STYLE);
         } else {
             btnDone.setVisibility(View.GONE);
-            MySnackbar.showSnackBar(this, selectCategoryLayout, StaticStorage.NO_NETWORK).show();
+            MySnackbar.showSnackBar(this, selectCategoryLayout, BaseThemeActivity.NO_NETWORK).show();
         }
     }
 
@@ -195,6 +204,8 @@ public class SelectCategoryActivity extends BaseThemeActivity {
             @Override
             public void onResponse(String response) {
                 dialog.dismiss();
+                selectCategoryLayout.removeAllViews();
+                listOfCheckedItem = new ArrayList<>();
                 try {
                     JSONObject nodeObject = new JSONObject(response);
                     Log.i(TAG, response);
@@ -213,16 +224,23 @@ public class SelectCategoryActivity extends BaseThemeActivity {
                         }
 
                         //hide submit button if the list of checkboxes are equals to =0
-                        if (listOfCheckedItem.size() == 0) {
-                            btnDone.setVisibility(View.GONE);
+                        if (listOfCheckedItem.size() > 0) {
+                            btnDone.setVisibility(View.VISIBLE);
+                            titleTextView.setVisibility(View.VISIBLE);
                         }
 
                         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         for (int i = 0; i < listOfCheckedItem.size(); i++) {
                             final MyCheckBox myCheckBox = listOfCheckedItem.get(i);
                             CheckBox checkBox = new CheckBox(SelectCategoryActivity.this);
+                            checkBox.setPadding(20, 0, 0, 0);
                             checkBox.setChecked(myCheckBox.getIsPreferred());
-                            checkBox.setText(myCheckBox.getName() + " " + myCheckBox.getAlias());
+                            if (BaseThemeActivity.sessionManager.getSwitchedNewsValue() == 1) {
+                                checkBox.setText(myCheckBox.getAlias());
+                            } else {
+                                checkBox.setText(myCheckBox.getName());
+                            }
+
                             selectCategoryLayout.addView(checkBox, params);
                             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                 @Override
@@ -253,21 +271,30 @@ public class SelectCategoryActivity extends BaseThemeActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.select_category_menu, menu);
 
-        final Drawable drawable = menu.getItem(0).getIcon();
-        if (drawable != null) {
-            final Drawable wrapped = DrawableCompat.wrap(drawable);
-            drawable.mutate();
-            DrawableCompat.setTint(wrapped, Color.WHITE);
-            menu.getItem(0).setIcon(drawable);
+        for (int i = 0; i < 2; i++) {
+            final Drawable drawable = menu.getItem(i).getIcon();
+            if (drawable != null) {
+                final Drawable wrapped = DrawableCompat.wrap(drawable);
+                drawable.mutate();
+                DrawableCompat.setTint(wrapped, Color.WHITE);
+                menu.getItem(i).setIcon(drawable);
+            }
         }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.refresh) {
-            fetchCategoryFromServer();
+
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                fetchCategoryFromServer();
+                break;
+            case R.id.menu_skip:
+                onBackPressed();
+                break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -279,6 +306,12 @@ public class SelectCategoryActivity extends BaseThemeActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (Dashboard.getInstance() != null) {
+            finish();
+            Log.i(TAG, "not null");
+        } else {
+            launchDashboard();
+            Log.i(TAG, "was null");
+        }
     }
 }

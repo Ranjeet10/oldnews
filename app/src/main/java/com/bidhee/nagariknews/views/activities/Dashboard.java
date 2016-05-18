@@ -1,15 +1,13 @@
 package com.bidhee.nagariknews.views.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
@@ -22,9 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
@@ -40,7 +40,6 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
-import com.bidhee.nagariknews.controller.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
@@ -56,6 +55,7 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -136,6 +136,7 @@ public class Dashboard extends BaseThemeActivity
     public static String currentNewsType;
     private Boolean collapseToolbar = false;
     public static int logoImage;
+    public static int COLOR_PRIMARY_DARK;
 
 //    public static String baseUrl = "";
 
@@ -153,7 +154,6 @@ public class Dashboard extends BaseThemeActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-
         db = new SqliteDatabase(this);
         db.open();
 
@@ -168,8 +168,8 @@ public class Dashboard extends BaseThemeActivity
         myAnimation = new MyAnimation();
         printHashKey();
         settingToolbar();
+
         setUpImageSlider();
-//        setUpVIewFlipper();
 
 
         userDetail = sessionManager.getLoginDetail();
@@ -192,6 +192,7 @@ public class Dashboard extends BaseThemeActivity
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
+
             finish();
             return;
 
@@ -314,11 +315,6 @@ public class Dashboard extends BaseThemeActivity
                 .build();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        viewFlipper.startFlipping();
-//    }
 
 
     private void printHashKey() {
@@ -359,8 +355,6 @@ public class Dashboard extends BaseThemeActivity
     private void setUpImageSlider() {
         HashMap<String, String> url_maps = new HashMap<String, String>();
         url_maps.put("पुनरागमनमा विश्वस्त अस्ट्रेलिया", "http://nagariknews.com/media/k2/items/cache/x22779b96550ec2f4cb77a363acfed28d_L.jpg.pagespeed.ic.sURn1ZmJlg.jpg");
-//        url_maps.put("अझै पाइएन ग्यास", "http://nagariknews.com/media/k2/items/cache/xdf2a5a6447c772e5d774c787f3f38111_L.jpg.pagespeed.ic.BFrcFCn6QJ.jpg");
-//        url_maps.put("मन्त्रीज्यू, पैसा उठाइदिनुस्", "http://nagariknews.com/media/k2/items/cache/xb61ba0575ba650b6e2b511023b28b46c_L.jpg.pagespeed.ic.Oa9Qkcelap.jpg");
 
 
         for (String name : url_maps.keySet()) {
@@ -595,7 +589,7 @@ public class Dashboard extends BaseThemeActivity
             }
 
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Tap back again to exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, BaseThemeActivity.BACK_PRESSED_MESSAGE, Toast.LENGTH_LONG).show();
 
             new Handler().postDelayed(new Runnable() {
 
@@ -742,13 +736,6 @@ public class Dashboard extends BaseThemeActivity
             case R.id.nav_select_categorylist:
                 shouldReplaceFragment = false;
                 startActivity(new Intent(this, SelectCategoryActivity.class));
-
-                break;
-
-            case R.id.nav_login:
-                startActivity(new Intent(Dashboard.this, LoginActivity.class));
-                shouldReplaceFragment = false;
-
                 break;
 
             case R.id.nav_settings:
@@ -838,7 +825,11 @@ public class Dashboard extends BaseThemeActivity
                 break;
             case 2:
                 //login type is facebook
-                LoginManager.getInstance().logOut();
+                AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                if (accessToken != null) {
+                    LoginManager.getInstance().logOut();
+                }
+
                 wasFrom = "facebook";
                 break;
             case 3:
@@ -866,7 +857,6 @@ public class Dashboard extends BaseThemeActivity
         sessionManager.clearSession();
         db.deleteAllNews();
         startActivity(new Intent(Dashboard.this, Dashboard.class));
-//                shouldReplaceFragment = false;
         finish();
     }
 
@@ -874,4 +864,6 @@ public class Dashboard extends BaseThemeActivity
     public void alertNegativeButtonClicked() {
         alertDialog.dismiss();
     }
+
+
 }

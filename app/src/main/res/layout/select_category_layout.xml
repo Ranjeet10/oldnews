@@ -16,32 +16,47 @@
         app:layout_collapseMode="pin"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <Button
-        android:id="@+id/btn_done"
-        style="@style/button_style"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/screen_padding_lr"
-        android:text="Submit" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/btn_done"
         android:layout_below="@+id/toolbar"
         android:padding="@dimen/screen_padding_lr">
 
         <LinearLayout
-            android:id="@+id/select_category_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/result"
+                android:id="@+id/title_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ff9900" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/screen_padding"
+                android:layout_marginTop="@dimen/screen_padding"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/grey"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/select_category_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/btn_done"
+                style="@style/button_style"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/screen_padding_lr"
+                android:paddingLeft="@dimen/text_input_height"
+                android:paddingRight="@dimen/text_input_height"
+                android:text="Submit"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

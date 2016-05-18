@@ -26,7 +26,6 @@
     <string name="action_small_font">Decrease font</string>
     <string name="action_large_font">Increase font</string>
     <string name="action_add">Add</string>
-    <string name="select_category">Select Interested Category</string>
 
     <string name="login_text">Login</string>
     <string name="skip_text">Skip</string>
@@ -83,7 +82,7 @@
     <string name="photos_r">Photos</string>
     <string name="cartoon_r">Cartoons</string>
     <string name="e_paper_r">e-Paper</string>
-    <string name="saved_r">Saved</string>
+    <string name="saved_r">Saved news</string>
     <string name="extra_r">Extra</string>
 
     <string name="login_r">Login</string>
@@ -94,17 +93,17 @@
 
     <!-- nagarik-->
     <string name="all_news_n">सबै समाचार</string>
-    <string name="videos_n">भिडियोज </string>
-    <string name="photos_n">फोटोज</string>
-    <string name="cartoon_n">कर्टून</string>
+    <string name="videos_n">भिडियो </string>
+    <string name="photos_n">फोटो </string>
+    <string name="cartoon_n">कार्टून</string>
     <string name="e_paper_n">ई-पेपर</string>
-    <string name="saved_n">सेव्ड</string>
+    <string name="saved_n">सेभ सामाग्री </string>
     <string name="extra_n">अन्य</string>
 
     <string name="login_n">लग - इन</string>
     <string name="logout_n">लग - आउट</string>
     <string name="settings_n">सेटिङ्स</string>
-    <string name="catlist_n">क्याटेगोरिज बदल्नुहोस </string>
+    <string name="catlist_n">समाचार बिधा बदल्नुहोस </string>
 
     <!-- Breaking and latest-->
     <string name="breaking_news">BREAKING NEWS</string>
@@ -115,13 +114,17 @@
     <string name="taja_samachar">ताजा समाचार </string>
 
     <!-- switched news-->
-    <string name="republica">Republica</string>
+    <string name="republica">My Republica</string>
     <string name="nagarik">नागरिक</string>
-    <string name="sukrabar">Sukrabar</string>
+    <string name="sukrabar">शुक्रबार</string>
+
+
 
     <!-- miscellaneous-->
     <string name="sambandhit_news">सम्बन्धित समाचार </string>
     <string name="related_news">Related News</string>
+    <string name="preferences_nep">प्रीफेरेन्सेस </string>
+    <string name="preferences_eng">Preferences</string>
 
     <string name="bla">
         I really want to see how its like inside black hole
@@ -136,7 +139,7 @@
     <string name="myrepublica_alert_title">My Republica</string>
     <string name="sukrabar_alert_title">शुक्रबार समाचार</string>
 
-    <string name="nepali_alert_desc">माफ गर्नुहोला ! तपाइलाई यो समाचार मन परेको क्याटेगोरिमा राख्ने अनुमती छैन । यो सुविधा लाई सक्षम गर्नलाई लग-इन गर्नुहोस ।</string>
-    <string name="eng_alert_desc">Sorry you are not allowed to save this news as favourite.You must login to enable this feature</string>
+    <string name="nepali_alert_desc">कृपया तपाइको रुचिअनुसारको समाचार पाउन लग इन गर्नुहोस ।</string>
+    <string name="eng_alert_desc">Please login to get your interested news</string>
 
 </resources>
