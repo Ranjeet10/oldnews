@@ -77,7 +77,7 @@ public class FragmentGallerySwipable extends Fragment {
 
         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
         wmlp.x = 30;   //x position
-        wmlp.y = 30;   //y position
+        wmlp.y = 100;   //y position
         optionDialog.setListPositionListener(new ListPositionListener() {
             @Override
             public void tappedPosition(int position) {

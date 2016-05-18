@@ -10,45 +10,49 @@ import java.util.List;
  * Created by ronem on 2/29/16.
  */
 public class Epaper implements Parcelable {
+    private int id;
+    private String media;
     private String date;
-    private String mainPageUrl;
-    private List<Page> pages;
+    private String coverImage;
+    private int noOfpages;
+
 
     public Epaper(Parcel parcel) {
+        id = parcel.readInt();
         date = parcel.readString();
-        mainPageUrl = parcel.readString();
-        pages = new ArrayList<>();
-        parcel.readTypedList(pages, Page.CREATOR);
+        coverImage = parcel.readString();
+        noOfpages = parcel.readInt();
     }
 
-    public Epaper(String date, String mainPageUrl, List<Page> pages) {
+    public Epaper(int id, String media, String date, String coverImage, int noOfpages) {
+        this.id = id;
+        this.media = media;
         this.date = date;
-        this.mainPageUrl = mainPageUrl;
-        this.pages = pages;
+        this.coverImage = coverImage;
+        this.noOfpages = noOfpages;
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getMedia() {
+        return media;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+
+    public String getCoverImage() {
+        return coverImage;
     }
 
-    public String getMainPageUrl() {
-        return mainPageUrl;
-    }
 
-    public void setMainPageUrl(String mainPageUrl) {
-        this.mainPageUrl = mainPageUrl;
-    }
-
-    public List<Page> getPages() {
-        return pages;
-    }
-
-    public void setPages(List<Page> pages) {
-        this.pages = pages;
+    public int getNoOfpages() {
+        return noOfpages;
     }
 
     @Override
@@ -58,9 +62,11 @@ public class Epaper implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(media);
         dest.writeString(date);
-        dest.writeString(mainPageUrl);
-        dest.writeTypedList(pages);
+        dest.writeString(coverImage);
+        dest.writeInt(noOfpages);
     }
 
     public static Creator<Epaper> CREATOR = new Creator<Epaper>() {

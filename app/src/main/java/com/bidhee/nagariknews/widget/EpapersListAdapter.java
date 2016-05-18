@@ -44,7 +44,7 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
         holder.galleryThumbnail.setVisibility(View.GONE);
         holder.epaperThumbnail.setVisibility(View.VISIBLE);
         Picasso.with(context)
-                .load(epapers.get(position).getMainPageUrl())
+                .load(epapers.get(position).getCoverImage())
                 .error(R.drawable.nagariknews)
                 .placeholder(R.drawable.nagariknews)
                 .resize(200, 280)

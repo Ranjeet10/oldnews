@@ -59,7 +59,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         String url;
         if (TYPE == StaticStorage.VIDEOS) {
             url = StaticStorage.VIDEO_THUMBNAIL_PREFIX + multimedias.getMultimediaPath() + StaticStorage.VIDEO_THUMBNAIL_POSTFIX;
-            holder.galleryItemNoOfViews.setText(multimedias.getNoOfViews());
             holder.galleryItempublishDate.setText(multimedias.getDate());
         } else {
             url = multimedias.getMultimediaPath();
@@ -86,9 +85,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         ImageView galleryThumbnail;
         @Bind(R.id.gallery_item_title)
         TextView galleryItemTitleTextView;
-
-        @Bind(R.id.gallery_item_no_of_views)
-        TextView galleryItemNoOfViews;
         @Bind(R.id.gallery_item_date)
         TextView galleryItempublishDate;
 

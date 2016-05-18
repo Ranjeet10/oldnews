@@ -2,10 +2,8 @@ package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +11,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,12 +28,15 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
+import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.model.TabModel;
 import com.bidhee.nagariknews.views.activities.Dashboard;
+import com.bidhee.nagariknews.views.activities.LoginActivity;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
+import com.bidhee.nagariknews.views.activities.SelectCategoryActivity;
 import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
@@ -48,6 +52,7 @@ import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 /**
@@ -70,6 +75,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     @Bind(R.id.content_not_found_parent_layout)
     LinearLayout contentNotFoundLayout;
+    @Bind(R.id.content_not_found_textview)
+    TextView contentNotFoundTextView;
+    @Bind(R.id.warning_image)
+    ImageView warningImage;
 
     ArrayList<NewsObj> newsObjs;
     ArrayList<NewsObj> newsListToShow;
@@ -105,65 +114,11 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         newsListToShow = new ArrayList<>();
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
         categoryName = getArguments().getString(StaticStorage.NEWS_CATEGORY);
-
     }
 
     //========================================================================
     //========================== HANDLE RESPONSES ============================
     //========================================================================
-    private void handleServerResponseForBreakingAndLatestNews() {
-
-        serverResponseNewsTitle = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
-                loadingBar.setVisibility(View.GONE);
-                Log.i(TAG, response);
-                try {
-                    JSONObject nodeObject = new JSONObject(response);
-                    if (nodeObject.has("success")) {
-                        JSONObject dataObject = nodeObject.getJSONObject("data");
-
-                        /**
-                         * listing all the keys for JSONArray from the JSONObject {@link nodeObject}
-                         */
-                        Iterator keys = dataObject.keys();
-                        while (keys.hasNext()) {
-
-                            /**
-                             * looping through out the no. of keys
-                             * to get the list of {@link newsObjs} and adding to the {@link newsListToShow}
-                             */
-                            newsListToShow.addAll(getArrayList(dataObject, (String) keys.next()));
-                        }
-
-                        /**
-                         * Method to notify the inserted data item to the adapter{@link newsTitlesAdapter}
-                         */
-                        notifyDataSetChanged(newsListToShow);
-
-
-                    } else {
-                        //To do if its error
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        errorListenerNewsTitle = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
-                loadingBar.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
-                showContentNotFoundLayoutIfNeeded();
-            }
-        };
-
-    }
-
     private void handleServerResponseForNewsTitle() {
         serverResponseNewsTitle = new Response.Listener<String>() {
             @Override
@@ -207,24 +162,23 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
         if (!BasicUtilMethods.isNetworkOnline(getActivity())) {
-            MySnackbar.showSnackBar(getActivity(), loadingBar, StaticStorage.NO_NETWORK).show();
+            MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
         }
         /**
-         * category id 0 means
+         * category id -1 means
          * the first index of tab is for Latest news
          */
+        handleServerResponseForNewsTitle();
         if (categoryId.equals("-1")) {
             Log.i(TAG, "categoryId was -1");
-            handleServerResponseForBreakingAndLatestNews();
             WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
+
         } else if (categoryId.equals("0")) {
-            handleServerResponseForNewsTitle();
             WebService.getServerDataWithHeader(ServerConfig.getMeroRuchiUrl(Dashboard.sessionManager.getSwitchedNewsValue()), Dashboard.sessionManager.getToken(), serverResponseNewsTitle, errorListenerNewsTitle);
+
         } else {
             if (pageIndex == 1)
                 loadingBar.setVisibility(View.VISIBLE);
-            handleServerResponseForNewsTitle();
-            //load news titles
             WebService.getServerData(ServerConfig.getNewsTitleUrl(baseUrl, pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
         }
 
@@ -261,33 +215,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
                 //its the category name
                 arrayName = categoryName;
-                /**
-                 * change the english categories to nepali
-                 * if the news type is not 1 that is
-                 * if the news type is not MyRepublica
-                 */
-                if (Dashboard.sessionManager.getSwitchedNewsValue() == 2 || Dashboard.sessionManager.getSwitchedNewsValue() == 3) {
-                    if (newsArray.equalsIgnoreCase("importantNews")) {
-                        arrayName = "महत्वपुर्न समाचार";
-                    } else if (newsArray.equalsIgnoreCase("breakingNews")) {
-                        arrayName = "मुख्य समाचार";
-                    } else if (newsArray.equalsIgnoreCase("latestnews")) {
-                        arrayName = "ताजा समाचार";
-                    } else if (newsArray.equalsIgnoreCase("featuredNews")) {
-                        arrayName = "फीचर न्युज ";
-                    }
 
-                } else {
-                    arrayName = newsArray;
-                }
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "");
-
-                //if the object is at first position make the title visible; for this we have to set the boolean value to the 0'th newsObj
-                if (i == 0) {
-                    newsObj.setIsTOShow(true);
-                } else {
-                    newsObj.setIsTOShow(false);
-                }
                 newsObjs.add(newsObj);
             }
 
@@ -318,9 +247,51 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
          * make it invisible
          */
         if (newsListToShow.size() > 0) {
-            contentNotFoundLayout.setVisibility(View.INVISIBLE);
+            contentNotFoundLayout.setVisibility(View.GONE);
         } else {
+            if (categoryId.equals("0")) {
+                if (Dashboard.sessionManager.isLoggedIn()) {
+                    contentNotFoundTextView.setText(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NO_CATEGORY_SELECTED);
+                } else {
+                    contentNotFoundTextView.setText(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NOT_LOGGED_IN);
+                }
+
+            } else {
+                contentNotFoundTextView.setText(BaseThemeActivity.EMPTY_NEWS);
+            }
+            warningImage.setImageResource(R.mipmap.ic_warning_white_48dp);
             contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    @OnClick(R.id.content_not_found_parent_layout)
+    void onContentNotFoundTextViewClicked() {
+        String cnft = contentNotFoundTextView.getText().toString();
+        if (cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NO_CATEGORY_SELECTED) ||
+                cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NOT_LOGGED_IN)) {
+
+            if (Dashboard.sessionManager.isLoggedIn()) {
+                startActivity(new Intent(getActivity(), SelectCategoryActivity.class));
+            } else {
+                final AlertDialog alertDialog = new AlertDialog(getActivity(), StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
+                alertDialog.setOnAlertDialogListener(new AlertDialogListener() {
+                    @Override
+                    public void alertPositiveButtonClicked() {
+                        alertDialog.dismiss();
+                        Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(loginIntent);
+
+                    }
+
+                    @Override
+                    public void alertNegativeButtonClicked() {
+                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.show();
+
+            }
         }
     }
 
@@ -329,6 +300,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_swipable, container, false);
         ButterKnife.bind(this, view);
+
         return view;
     }
 
@@ -424,7 +396,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         } else {
 
             Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-            NewsObj newsObj = newsListToShow.get(position);
 
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);

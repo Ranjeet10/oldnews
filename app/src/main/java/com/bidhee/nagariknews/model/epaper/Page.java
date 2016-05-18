@@ -7,38 +7,32 @@ import android.os.Parcelable;
  * Created by ronem on 2/29/16.
  */
 public class Page implements Parcelable {
-    private String pageNo;
+    private int pageId;
     private String pageUrl;
 
     public Page() {
     }
 
 
-    public Page(String pageNo, String pageUrl) {
-        this.pageNo = pageNo;
+    public Page(int pageId, String pageUrl) {
+        this.pageId = pageId;
         this.pageUrl = pageUrl;
     }
 
     public Page(Parcel source) {
-        pageNo = source.readString();
+        pageId = source.readInt();
         pageUrl = source.readString();
     }
 
-    public String getPageNo() {
-        return pageNo;
+    public int getPageId() {
+        return pageId;
     }
 
-    public void setPageNo(String pageNo) {
-        this.pageNo = pageNo;
-    }
 
     public String getPageUrl() {
         return pageUrl;
     }
 
-    public void setPageUrl(String pageUrl) {
-        this.pageUrl = pageUrl;
-    }
 
     @Override
     public int describeContents() {
@@ -48,13 +42,11 @@ public class Page implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         applyDefault();
-        dest.writeString(pageNo);
+        dest.writeInt(pageId);
         dest.writeString(pageUrl);
     }
 
     private void applyDefault() {
-        if (pageNo == null)
-            pageNo = "";
 
         if (pageUrl == null)
             pageUrl = "";

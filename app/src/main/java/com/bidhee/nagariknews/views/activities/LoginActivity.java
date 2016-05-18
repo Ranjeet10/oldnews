@@ -34,6 +34,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.GoogleAuthException;
@@ -252,7 +253,8 @@ public class LoginActivity extends AppCompatActivity implements
         if (BasicUtilMethods.isNetworkOnline(LoginActivity.this)) {
             signIn();
         } else {
-            MySnackbar.showSnackBar(LoginActivity.this, btnGooglePlusLogin, StaticStorage.NO_NETWORK).show();
+            MySnackbar.showSnackBar(LoginActivity.this, btnGooglePlusLogin, BaseThemeActivity
+                    .NO_NETWORK).show();
         }
     }
 
@@ -368,7 +370,6 @@ public class LoginActivity extends AppCompatActivity implements
      */
     @OnClick(R.id.btn_login)
     void onLoginClick() {
-
         attemptLogin(loginEmailField.getText().toString(), loginPasswordField.getText().toString());
 
     }
@@ -418,6 +419,7 @@ public class LoginActivity extends AppCompatActivity implements
          */
         if (Dashboard.getInstance() != null) {
             Dashboard.getInstance().finish();
+            Dashboard.instance = null;
         }
         sessionManager.createLoginSession(loginType, userName, userEmail, avatarImage, token);
         launchActivity(SelectCategoryActivity.class);
@@ -623,8 +625,13 @@ public class LoginActivity extends AppCompatActivity implements
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
-            new RetrieveTokenTask(result).execute();
+            Log.i(TAG, "google login result");
+            if (mGoogleApiClient.isConnected()) {
+                Log.i(TAG, "was connected");
+                new RetrieveTokenTask(result).execute();
+            } else {
+                Log.i(TAG, "not connected");
+            }
 
         } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri filePath = data.getData();
@@ -657,15 +664,17 @@ public class LoginActivity extends AppCompatActivity implements
     // [START handleSignInResult]
     private void handleSignInResult(GoogleSignInResult result, String token) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
+        if (result.isSuccess() && !TextUtils.isEmpty(token)) {
             // Signed in successfully, show authenticated UI.
             Log.i(TAG, "login was success");
+
             dialog.show();
             String jsonBody = getJsonBody(StaticStorage.LOGIN_TYPE_GOOGLE, token, null).toString();
             Log.i(TAG, jsonBody);
             WebService.authRequest(ServerConfig.AUTH_URL, jsonBody, signUpResponse, errorListener);
-        } else {
 
+        } else {
+            MySnackbar.showSnackBar(this,btnGooglePlusLogin,StaticStorage.SOMETHING_WENT_WRONG+" \nPlease try again").show();
         }
     }
     // [END handleSignInResult]
@@ -715,13 +724,16 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        mGoogleApiClient.connect();
         accessTokenTracker.startTracking();
+        LoginManager.getInstance().logOut();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         accessTokenTracker.stopTracking();
+        mGoogleApiClient.disconnect();
 
     }
 

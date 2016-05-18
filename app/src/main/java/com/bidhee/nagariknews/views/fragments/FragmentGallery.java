@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -27,9 +28,12 @@ import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
 import com.bidhee.nagariknews.model.Multimedias;
+import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.GalleryViewActivity;
+import com.bidhee.nagariknews.views.activities.YoutubePlayerActivity;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.GalleryAdapter;
 import com.bidhee.nagariknews.widget.RecyclerItemClickListener;
 
@@ -56,9 +60,12 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     @Bind(R.id.content_not_found_parent_layout)
     LinearLayout contentNotFoundLayout;
 
+    @Bind(R.id.content_not_found_textview)
+    TextView contentNotFoundTextView;
+
     ControllableAppBarLayout appBarLayout;
 
-    ArrayList<Multimedias> multimediaList;
+    ArrayList<Multimedias> multimediaList = new ArrayList<>();
     GalleryAdapter galleryAdapter;
 
     private Response.Listener<String> serverResponse;
@@ -178,18 +185,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
 
     private void loadAdapter(ArrayList<Multimedias> multimediaList) {
 
-        /**
-         * toggle the {@value contentNotFoundLayout}
-         * if the {@value multimediaList} is empty make it visible else,
-         * make it invisible
-         */
-
-        if (multimediaList.size() > 0) {
-            contentNotFoundLayout.setVisibility(View.INVISIBLE);
-
-        } else {
-            contentNotFoundLayout.setVisibility(View.VISIBLE);
-        }
+        toggleContentNotFoundLayout();
 
 
         galleryAdapter = new GalleryAdapter(multimediaList, TYPE);
@@ -198,10 +194,30 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         galleryRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), 0, this));
     }
 
+    private void toggleContentNotFoundLayout() {
+        /**
+         * toggle the {@value contentNotFoundLayout}
+         * if the {@value multimediaList} is empty make it visible else,
+         * make it invisible
+         */
+
+        if (multimediaList.size() > 0) {
+            contentNotFoundLayout.setVisibility(View.GONE);
+
+        } else {
+            contentNotFoundTextView.setText(BaseThemeActivity.EMPTY_YOUTUBE_VIDEOS);
+            Log.i(TAG, BaseThemeActivity.EMPTY_YOUTUBE_VIDEOS);
+            contentNotFoundLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void fetchYoutubeChannelData(String channelId, int count) {
         dialog.show();
         handleServerResponse();
+        if (!BasicUtilMethods.isNetworkOnline(getActivity()))
+            MySnackbar.showSnackBar(getActivity(), galleryRecyclerView, BaseThemeActivity.NO_NETWORK).show();
         WebService.getServerData(ServerConfig.getYoutubeChannelLinkUrl(channelId, count), serverResponse, errorListener);
+
     }
 
     private void handleServerResponse() {
@@ -211,7 +227,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             public void onResponse(String response) {
                 dialog.dismiss();
                 Log.i(TAG, response);
-                multimediaList = new ArrayList<>();
+//                multimediaList = new ArrayList<>();
                 try {
                     JSONObject nodeObject = new JSONObject(response);
                     if (TYPE == StaticStorage.VIDEOS) {
@@ -261,6 +277,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (dialog.isShowing()) dialog.dismiss();
+                toggleContentNotFoundLayout();
             }
         };
     }
@@ -277,27 +294,29 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     public void onItemClick(View view, int parentPosition, int position) {
         if (TYPE == StaticStorage.VIDEOS) {
 
-//            Intent playerIntent = new Intent(getActivity(), YoutubePlayerActivity.class);
-//
-//            playerIntent.putExtra(StaticStorage.KEY_VIDEO_BUNDLE, multimediaList.get(position));
-//            startActivity(playerIntent);
+            Intent playerIntent = new Intent(getActivity(), YoutubePlayerActivity.class);
+            playerIntent.putExtra("position", position);
+            playerIntent.putParcelableArrayListExtra(StaticStorage.KEY_VIDEO_BUNDLE, multimediaList);
+            startActivity(playerIntent);
+
+/**
+ try {
+ Log.i(TAG,multimediaList.get(position).getMultimediaPath());
+ //                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + multimediaList.get(position).getMultimediaPath()+"&list=UUxxx4M3jP9HcKLHJ0dFLe7g"));
+ //                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://fu6r67rmZao&list=UUxxx4M3jP9HcKLHJ0dFLe7g"));
+ //                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+ //                startActivity(intent);
 
 
-            try {
+ } catch (ActivityNotFoundException e) {
 
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + multimediaList.get(position).getMultimediaPath()));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+ // youtube is not installed.Will be opened in other available apps
 
-            } catch (ActivityNotFoundException e) {
-
-                // youtube is not installed.Will be opened in other available apps
-
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + multimediaList.get(position).getMultimediaPath()));
-                startActivity(i);
-            }
+ Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + multimediaList.get(position).getMultimediaPath()));
+ startActivity(i);
+ }
+ **/
         } else {
-//            imageSliderDialog.showDialog(getActivity(), multimediaList, position, TYPE);
             Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
 
             epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_PHOTO_CARTOON);

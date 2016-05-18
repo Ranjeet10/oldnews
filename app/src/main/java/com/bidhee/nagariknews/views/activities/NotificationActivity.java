@@ -3,7 +3,6 @@ package com.bidhee.nagariknews.views.activities;
 import android.os.Bundle;
 
 import com.bidhee.nagariknews.R;
-import com.bidhee.nagariknews.controller.BaseThemeActivity;
 
 /**
  * Created by ronem on 5/12/16.

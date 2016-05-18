@@ -11,8 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
@@ -21,6 +23,7 @@ import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
+import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.activities.NewsDetailActivity;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
@@ -43,6 +46,10 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.content_not_found_parent_layout)
     LinearLayout contentNotFoundLayout;
+    @Bind(R.id.content_not_found_textview)
+    TextView contentNotFoundTextView;
+    @Bind(R.id.warning_image)
+    ImageView warningImage;
 
     private ControllableAppBarLayout appBarLayout;
 
@@ -93,6 +100,8 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
             contentNotFoundLayout.setVisibility(View.INVISIBLE);
         } else {
             contentNotFoundLayout.setVisibility(View.VISIBLE);
+            warningImage.setImageResource(R.mipmap.ic_warning_white_48dp);
+            contentNotFoundTextView.setText(BaseThemeActivity.EMPTY_SAVED_NEWS);
         }
         newsTitlesAdapter = new NewsTitlesAdapter(false, 2, newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);

@@ -60,22 +60,10 @@
             android:text="5m ago"
             android:textColor="@color/light_grey" />
 
-
-        <TextView
-            android:id="@+id/news_semi_detail_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/news_title_thumbnail"
-            android:ellipsize="end"
-            android:maxLines="4"
-            android:text="@string/news_description_republica"
-            android:visibility="gone" />
-
         <TextView
             android:id="@+id/news_share_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/news_semi_detail_text_view"
             android:layout_marginTop="@dimen/selector_radius"
             android:drawableRight="@mipmap/ic_share_black"
             android:drawableTint="@color/light_grey"
@@ -90,7 +78,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/news_semi_detail_text_view"
             android:layout_marginTop="@dimen/selector_radius"
             android:background="@drawable/corner_border_transparent_primary_selector"
             android:padding="2dp"

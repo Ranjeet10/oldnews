@@ -45,11 +45,6 @@
             android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/gallery_item_no_of_views"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
             android:id="@+id/gallery_item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

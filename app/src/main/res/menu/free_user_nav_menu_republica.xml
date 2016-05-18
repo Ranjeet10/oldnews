@@ -33,14 +33,6 @@
             <!--android:title="@string/extra_r" />-->
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_login"
-                android:icon="@mipmap/ic_lock_open_black_24dp"
-                android:title="@string/login_r" />
 
-        </menu>
-    </item>
 
 </menu>
