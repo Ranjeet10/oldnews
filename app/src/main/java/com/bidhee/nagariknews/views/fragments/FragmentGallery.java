@@ -151,6 +151,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
                 fetchGalleryFromOwnServer("photo");
 
             } else if (TYPE == StaticStorage.CARTOONS) {
+
                 fetchGalleryFromOwnServer("cartoon");
             }
         }
