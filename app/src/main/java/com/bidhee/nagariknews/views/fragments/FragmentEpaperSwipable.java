@@ -16,6 +16,7 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.interfaces.ListPositionListener;
 import com.bidhee.nagariknews.views.customviews.LisDialog;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -41,6 +42,7 @@ public class FragmentEpaperSwipable extends Fragment {
 
     LisDialog optionDialog;
     private String imageName;
+    private Boolean isImageLoaded = false;
     private int TYPE;
     private String pageUrl = "";
 
@@ -55,29 +57,33 @@ public class FragmentEpaperSwipable extends Fragment {
 
     @OnClick(R.id.btn_gallery_option)
     public void onOptionMenuClicked() {
-        optionDialog = new LisDialog(getActivity());
-        WindowManager.LayoutParams wmlp = optionDialog.getWindow().getAttributes();
+        if (isImageLoaded) {
+            optionDialog = new LisDialog(getActivity());
+            WindowManager.LayoutParams wmlp = optionDialog.getWindow().getAttributes();
 
-        wmlp.gravity = Gravity.TOP | Gravity.LEFT;
-        wmlp.x = 30;   //x position
-        wmlp.y = 100;   //y position
-        optionDialog.setListPositionListener(new ListPositionListener() {
-            @Override
-            public void tappedPosition(int position) {
-                switch (position) {
-                    case 1:
-                        imageName = BasicUtilMethods.getImageNameFromImagepath(pageUrl);
-                        String dir = StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
+            wmlp.gravity = Gravity.TOP | Gravity.LEFT;
+            wmlp.x = 30;   //x position
+            wmlp.y = 100;   //y position
+            optionDialog.setListPositionListener(new ListPositionListener() {
+                @Override
+                public void tappedPosition(int position) {
+                    switch (position) {
+                        case 1:
+                            imageName = BasicUtilMethods.getImageNameFromImagepath(pageUrl);
+                            String dir = StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
 
-                        BasicUtilMethods.saveFileToGalery(getActivity(), dir, imageName, imageView);
-                        break;
-                    case 2:
-                        BasicUtilMethods.shareLink(getActivity(), pageUrl);
-                        break;
+                            BasicUtilMethods.saveFileToGalery(getActivity(), dir, imageName, imageView);
+                            break;
+                        case 2:
+                            BasicUtilMethods.shareLink(getActivity(), pageUrl);
+                            break;
+                    }
                 }
-            }
-        });
-        optionDialog.show();
+            });
+            optionDialog.show();
+        }else{
+            MySnackbar.showSnackBar(getActivity(),imageView,"Image not loaded").show();
+        }
     }
 
     @Override

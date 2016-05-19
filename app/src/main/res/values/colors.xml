@@ -10,13 +10,20 @@
     <color name="republicaColorAccent">#ffffff</color>
 
     <!-- Nagarik Theme color-->
-    <color name="nagarikColorPrimary">#F28202</color>
-    <color name="nagarikColorPrimaryDark">#BC6502</color>
+    <!--<color name="nagarikColorPrimary">#F28202</color>-->
+    <!--<color name="nagarikColorPrimaryDark">#BC6502</color>-->
+    <!--<color name="nagarikColorAccent">#ffffff</color>-->
+    <color name="nagarikColorPrimary">#0689D0</color>
+    <color name="nagarikColorPrimaryDark">#006FA8</color>
     <color name="nagarikColorAccent">#ffffff</color>
 
     <!-- Sukrabar Theme color-->
-    <color name="sukrabarColorPrimary">#06AEc5</color>
-    <color name="sukrabarColorPrimaryDark">#0599AC</color>
+    <!--<color name="sukrabarColorPrimary">#06AEc5</color>-->
+    <!--<color name="sukrabarColorPrimaryDark">#0599AC</color>-->
+    <!--<color name="sukrabarColorAccent">#ffffff</color>-->
+
+    <color name="sukrabarColorPrimary">#0689D0</color>
+    <color name="sukrabarColorPrimaryDark">#006FA8</color>
     <color name="sukrabarColorAccent">#ffffff</color>
 
 
