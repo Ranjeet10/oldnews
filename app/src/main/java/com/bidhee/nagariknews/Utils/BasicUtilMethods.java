@@ -174,11 +174,11 @@ public class BasicUtilMethods {
         String resultTimeAgo = "";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         try {
-            Date videoDate = sdf.parse(publishDagte);
-            Log.i("videoDate", videoDate + "");
+            Date parsedDate = sdf.parse(publishDagte);
+            Log.i("parsedDate", parsedDate + "");
             Date systemDate = new Date();
 
-            long vDateMilli = videoDate.getTime();
+            long vDateMilli = parsedDate.getTime();
             Log.i("videoDMilli", vDateMilli + "");
             long systemDateMilli = systemDate.getTime();
 

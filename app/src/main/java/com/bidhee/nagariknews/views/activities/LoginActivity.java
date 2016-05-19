@@ -384,10 +384,11 @@ public class LoginActivity extends AppCompatActivity implements
         if (TextUtils.isEmpty(password)) {
             loginPasswordField.setError("password required");
             requestFocusView(false, loginPasswordField);
-        } else if (!BasicUtilMethods.isValidPassword(password)) {
-            loginPasswordField.setError("password must be greater than 5 character");
-            requestFocusView(false, loginPasswordField);
         }
+//        else if (!BasicUtilMethods.isValidPassword(password)) {
+//            loginPasswordField.setError("password must be greater than 5 character");
+//            requestFocusView(false, loginPasswordField);
+//        }
 
         if (TextUtils.isEmpty(email)) {
             loginEmailField.setError("Email required");
@@ -545,22 +546,22 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.i(TAG, response);
                 try {
                     JSONObject sObject = new JSONObject(response);
-//                    String status = sObject.getString("status");
-//                    if (status.equals("success")) {
-                    JSONObject dataObject = sObject.getJSONObject("data");
-                    String username = dataObject.getString("username");
-                    String email = dataObject.getString("email");
-                    String name = dataObject.getString("name");
-                    String token = dataObject.getString("token");
-                    String profile_pic = dataObject.getString("profile_picture");
+                    if (!sObject.has("status")) {
+                        JSONObject dataObject = sObject.getJSONObject("data");
+                        String username = dataObject.getString("username");
+                        String email = dataObject.getString("email");
+                        String name = dataObject.getString("name");
+                        String token = dataObject.getString("token");
+                        String profile_pic = dataObject.getString("profile_picture");
 
-                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
-//                    } else if (status.equals("error")) {
-//                        if (sObject.has("message")) {
-//                            String message = sObject.getString("message");
-//                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
+                        createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                    } else if (sObject.has("status")) {
+                        if (sObject.getString("status").equals("error"))
+                            if (sObject.has("message")) {
+                                String message = sObject.getString("message");
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            }
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -674,7 +675,7 @@ public class LoginActivity extends AppCompatActivity implements
             WebService.authRequest(ServerConfig.AUTH_URL, jsonBody, signUpResponse, errorListener);
 
         } else {
-            MySnackbar.showSnackBar(this,btnGooglePlusLogin,StaticStorage.SOMETHING_WENT_WRONG+" \nPlease try again").show();
+            MySnackbar.showSnackBar(this, btnGooglePlusLogin, StaticStorage.SOMETHING_WENT_WRONG + " \nPlease try again").show();
         }
     }
     // [END handleSignInResult]
