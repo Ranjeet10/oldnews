@@ -65,9 +65,9 @@ public class ServerConfig {
         return url;
     }
 
-    public static String getGalleryUrl(String baseUrl, int galleryType) {
+    public static String getGalleryUrl(String baseUrl, String galleryType) {
 
-        String url = baseUrl + "/api/news/list/photo?_format=json&page=1";
+        String url = baseUrl + "/api/news/list/"+galleryType+"?_format=json&page=1";
         return url;
     }
 

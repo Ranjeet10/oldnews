@@ -148,20 +148,11 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
 
             } else if (TYPE == StaticStorage.PHOTOS) {
 
-                fetchGalleryFromOwnServer(TYPE);
+                fetchGalleryFromOwnServer("photo");
 
             } else if (TYPE == StaticStorage.CARTOONS) {
 
-                if (Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-                    multimediaList = StaticStorage.getGalleryList(TYPE);
-                    loadAdapter(multimediaList);
-                } else if (Dashboard.sessionManager.getSwitchedNewsValue() == 2) {
-                    multimediaList = StaticStorage.getGalleryList(TYPE);
-                    loadAdapter(multimediaList);
-                } else {
-                    multimediaList = StaticStorage.getGalleryList(TYPE);
-                    loadAdapter(multimediaList);
-                }
+                fetchGalleryFromOwnServer("cartoon");
             }
         }
 
@@ -177,7 +168,7 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         );
     }
 
-    private void fetchGalleryFromOwnServer(int galleryType) {
+    private void fetchGalleryFromOwnServer(String galleryType) {
         dialog.show();
         handleServerResponse();
         WebService.getServerData(ServerConfig.getGalleryUrl(Dashboard.baseUrl, galleryType), serverResponse, errorListener);
