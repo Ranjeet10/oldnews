@@ -117,7 +117,6 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
          * accessing the views of the parent activity {@link Dashboard}
          */
         appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
-        (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.GONE);
         GridLayoutManager gridLayoutManager = null;
 
         if (TYPE == StaticStorage.VIDEOS) {

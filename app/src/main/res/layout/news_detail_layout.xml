@@ -46,6 +46,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/news_description_and_related_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/screen_padding_lr"
@@ -56,12 +57,20 @@
 
             <TextView
                 android:id="@+id/related_news_badge"
-                style="@style/badge_style" />
+                style="@style/badge_style"
+                android:visibility="gone" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/related_recycler_view"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/tab_bar_menu_margin"
+                app:cardElevation="@dimen/elevation">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/related_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -78,8 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:padding="@dimen/screen_padding"
             android:layout_margin="@dimen/screen_padding_lr"
+            android:padding="@dimen/screen_padding"
             rfab:rfab_color_normal="@color/colorAccent"
             rfab:rfab_color_pressed="@color/colorPrimaryDark"
             rfab:rfab_shadow_color="@color/grey"

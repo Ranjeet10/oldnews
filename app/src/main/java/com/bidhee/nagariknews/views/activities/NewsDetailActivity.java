@@ -19,6 +19,7 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Menu;
@@ -28,13 +29,13 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
-import com.bidhee.nagariknews.Utils.NewsData;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
@@ -43,8 +44,10 @@ import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.NewsObj;
 import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
+import com.bidhee.nagariknews.widget.RelatedNewsTitleAdapter;
 import com.wangjie.androidbucket.utils.ABTextUtil;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -52,6 +55,7 @@ import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
 import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,7 +69,7 @@ import butterknife.OnClick;
 //import com.bidhee.nagariknews.controller.Dashboard.sessionManager;
 
 public class NewsDetailActivity extends BaseThemeActivity implements
-        NewsTitlesAdapter.RecyclerPositionListener,
+        RelatedNewsTitleAdapter.RecyclerPositionListener,
 
         RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener,
         AlertDialogListener {
@@ -77,6 +81,8 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     Toolbar toolbar;
     @Bind(R.id.app_bar_layout)
     ControllableAppBarLayout appBarLayout;
+    @Bind(R.id.news_description_and_related_layout)
+    LinearLayout mainLayout;
     @Bind(R.id.image)
     ImageView image;
     @Bind(R.id.activity_main_rfal)
@@ -106,17 +112,17 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     @Bind(R.id.vertical_line_separator)
     View verticalLineSeparator;
 
-    NewsTitlesAdapter newsTitlesAdapter;
+    RelatedNewsTitleAdapter newsTitlesAdapter;
     WebSettings webSettings;
 
 
     private String TAG = getClass().getSimpleName();
 
-    //    public static String NEWS_TITLE_EXTRA_STRING = "newsobject";
+    private String newsType;
+    private String categoryName;
     private int categoryId = 2; // setting categoryId = 2 so that it will inflate the news title layout in normal way
     private int SELECTED_NEWS_POSITION = 0;
     private ArrayList<NewsObj> newsObjs;
-//    private ArrayList<NewsObj> newsListToShow;
     private NewsObj selectedNews;
     String selectedNewsType = "";
     private int fabDrawable;
@@ -132,7 +138,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
     private AlertDialog alertDialog;
     private String alertTitle;
-    private String alertDescription;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -157,6 +162,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
+        mainLayout.setVisibility(View.GONE);
 
 
         gettingBundle();
@@ -167,16 +173,20 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         if (newsObjs.size() > 0) {
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
             isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-
+//
             if (isNewsInFavouite) {
-                loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+                if (BasicUtilMethods.isNetworkOnline(NewsDetailActivity.this)) {
+                    getNewsDetailFromServer(selectedNews.getNewsId());
+                } else {
+                    MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+                    loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+                }
             } else {
                 getNewsDetailFromServer(selectedNews.getNewsId());
             }
 
-            loadRelatedContent();
 
-            relatedNewsTextView.setVisibility(View.VISIBLE);
+//            relatedNewsTextView.setVisibility(View.VISIBLE);
             String related = "";
             switch (NEWS_TYPE) {
                 case 1:
@@ -187,7 +197,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_republica_background);
                     alertTitle = getResources().getString(R.string.myrepublica_alert_title);
-                    alertDescription = getResources().getString(R.string.eng_alert_desc);
                     break;
                 case 2:
                     fabDrawable = R.drawable.menu_nagarik_corner_fab;
@@ -197,7 +206,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                     newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
                     alertTitle = getResources().getString(R.string.nagarik_alert_title);
-                    alertDescription = getResources().getString(R.string.nepali_alert_desc);
                     break;
                 case 3:
                     fabDrawable = R.drawable.menu_sukrabar_corner_fab;
@@ -207,12 +215,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                     related = getResources().getString(R.string.sambandhit_news);
                     relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
                     alertTitle = getResources().getString(R.string.sukrabar_alert_title);
-                    alertDescription = getResources().getString(R.string.nepali_alert_desc);
                     break;
             }
 
             relatedNewsTextView.setText(related);
-
+//            newsObjs.clear();
+            loadRelatedContent();
             setCallbackListenerToFabDial();
         }
 
@@ -244,14 +252,53 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                     JSONObject newsDetailObject = nodeObject.getJSONObject("data");
                     String detail = newsDetailObject.getString("content");
                     Log.i("detail", detail);
-                    String newsUrl = newsDetailObject.getString("url"); //semi url
-//                    newsDetail = new NewsDetail(id, title, detail, featuredImage, BuildConfig.BASE_URL + newsUrl, publishDate, authorName);
-//                    loadNewsDetail(newsDetail);
+                    String newsUrl = newsDetailObject.getString("url");
                     selectedNews.setDescription(detail);
                     selectedNews.setNewsUrl(Dashboard.baseUrl + newsUrl);
 
-                    isNewsInFavouite = false;
+//                    isNewsInFavouite = false;
+                    isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
                     loadingDetail(selectedNews);
+
+                    if (nodeObject.has("relatedCatNews")) {
+                        try {
+                            JSONArray jArray = nodeObject.getJSONArray("relatedCatNews");
+                            newsObjs.clear();
+                            for (int i = 0; i < jArray.length(); i++) {
+                                JSONObject obj = jArray.getJSONObject(i);
+                                String newsId = obj.getString("id");
+                                String newsTile = obj.getString("title");
+                                String introText = obj.getString("introText");
+
+                                String publishDate = obj.getString("publishOn");
+                                try {
+                                    publishDate = publishDate.substring(0, publishDate.lastIndexOf("+"));
+                                    publishDate = publishDate.replace("T", " ");
+                                    publishDate = BasicUtilMethods.getTimeAgo(publishDate);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+                                String publishedBy = "";
+                                String img = obj.getString("featuredImage");
+
+                                if (TextUtils.isEmpty(img)) {
+                                    img = StaticStorage.DEFAULT_IMAGE;
+                                }
+
+
+                                Log.i(TAG, "list cleared");
+                                NewsObj newsObj = new NewsObj(newsType, String.valueOf(categoryId), newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "", 1);
+                                newsObjs.add(newsObj);
+                                loadAdapter();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -296,7 +343,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                 Log.i(TAG, "news was not present");
             }
         } else {
-            alertDialog = new AlertDialog(this, alertTitle, alertDescription);
+            alertDialog = new AlertDialog(this, alertTitle, BaseThemeActivity.ALERT_LOGIN_TO_SAVE);
             alertDialog.setOnAlertDialogListener(this);
             alertDialog.show();
         }
@@ -354,17 +401,20 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         recyclerVIew.setLayoutManager(linearLayoutManager);
         recyclerVIew.setHasFixedSize(true);
         recyclerVIew.setItemAnimator(new DefaultItemAnimator());
+        recyclerVIew.invalidate();
+        loadAdapter();
 
+    }
 
-        newsTitlesAdapter = new NewsTitlesAdapter(true, categoryId, newsObjs);
+    private void loadAdapter() {
+        if (newsObjs.size() > 1)
+            relatedNewsTextView.setVisibility(View.VISIBLE);
+        newsTitlesAdapter = new RelatedNewsTitleAdapter(true, categoryId, newsObjs);
         newsTitlesAdapter.setOnRecyclerPositionListener(this);
         recyclerVIew.setAdapter(newsTitlesAdapter);
 
         //setting newstedscrollingEnabled to false so that app bar collapse only when recyclerview is scrolled
         recyclerVIew.setNestedScrollingEnabled(false);
-
-        NewsObj no = newsObjs.get(0);
-        NewsData.getTrendingNews(this, NEWS_TYPE, no.getNewsCategoryId(), no.getNewsCategoryName());
 
     }
 
@@ -372,6 +422,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         if (news.getImg().length() > 0)
             BasicUtilMethods.loadImage(this, news.getImg(), image);
 
+        mainLayout.setVisibility(View.VISIBLE);
         titleTextView.setText(news.getTitle());
         newsCategoryTextView.setText(news.getNewsCategoryName());
         newsTimeTextView.setText(news.getDate());
@@ -381,7 +432,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
 
-        scrollUp();
+//        scrollUp();
         /**
          * toggle the favourite icon color for saved/empty respectively
          */
@@ -396,8 +447,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         //and versa
         if (isNewsInFavouite) {
             newsAddToFav.setColorFilter(getResources().getColor(R.color.grid_3));
+            Log.i(TAG, "was in fav");
         } else {
             newsAddToFav.setColorFilter(getResources().getColor(R.color.light_grey));
+            Log.i(TAG, "was not in fav");
         }
     }
 
@@ -442,19 +495,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
     private void gettingBundle() {
         SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
-        try {
-            newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
-            // modified
-//            newsListToShow = new ArrayList<>();
-            String newsId = newsObjs.get(SELECTED_NEWS_POSITION).getNewsId();
-//            for (int i = 0; i < newsObjs.size(); i++) {
-//                if (!newsObjs.get(i).getNewsId().equals(newsId)) {
-//                    newsListToShow.add(newsObjs.get(i));
-//                }
-//            }
-//            Log.i(TAG, newsObjs.size() + "");
-        } catch (Exception e) {
-            e.printStackTrace();
+        newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
+        newsType = newsObjs.get(0).getNewsType();
+        categoryName = newsObjs.get(0).getNewsCategoryName();
+        categoryId = Integer.parseInt(newsObjs.get(0).getNewsCategoryId());
+        for (int i = 0; i < newsObjs.size(); i++) {
+            Log.i("ischecked", newsObjs.get(i).getIsTOShow() + "");
         }
     }
 
@@ -535,12 +581,28 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     }
 
     @Override
-    public void onChildItemPositionListen(int position, View view, Boolean isShown) {
+    public void onChildItemPositionListen(int position, View view) {
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-        Log.i(TAG, "selected :" + selectedNews);
-        getNewsDetailFromServer(selectedNews.getNewsId());
-
+        Log.i(TAG, "selected :" + selectedNews.toString());
+        for (int i = 0; i < newsObjs.size(); i++) {
+            newsObjs.get(i).setIsTOShow(1);
+        }
+        newsObjs.get(position).setIsTOShow(0);
+//        getNewsDetailFromServer(selectedNews.getNewsId());
+        isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+//
+        if (isNewsInFavouite) {
+            if (BasicUtilMethods.isNetworkOnline(NewsDetailActivity.this)) {
+                getNewsDetailFromServer(selectedNews.getNewsId());
+            } else {
+                MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+                loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+            }
+        } else {
+            getNewsDetailFromServer(selectedNews.getNewsId());
+        }
+        scrollUp();
     }
 
     private void scrollUp() {

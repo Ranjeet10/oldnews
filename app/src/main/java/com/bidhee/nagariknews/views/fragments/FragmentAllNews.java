@@ -75,8 +75,6 @@ public class FragmentAllNews extends Fragment {
         setViewPager(tabs);
         setTabLayout();
 
-        (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.VISIBLE);
-
     }
 
     @Override

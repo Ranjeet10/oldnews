@@ -35,6 +35,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
     public static String SELECT_CATEGORY_TITLE;
     public static String BACK_PRESSED_MESSAGE;
     public static String EMPTY_SAVED_NEWS;
+    public static String ALERT_LOGIN_TO_SAVE;
 
     public static String NO_NETWORK;
 
@@ -64,6 +65,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
                 BACK_PRESSED_MESSAGE = "Press back again to close application";
                 MERO_RUCHI_EMPTY_BECAUSE_OF_NOT_LOGGED_IN = "Please select the your interested news category";
                 NO_NETWORK = "Please make sure your device has network access";
+                ALERT_LOGIN_TO_SAVE="You need to login first to save this news.";
                 break;
             case 2:
                 CURRENT_MEDIA = "nagarik";
@@ -79,6 +81,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
                 SELECT_CATEGORY_TITLE = "कृपया तपाईको रूचिको समाचार विधा छनोट गर्नुहोस ।";
                 BACK_PRESSED_MESSAGE = "कृपया एप्स बन्द गर्न ब्याक बटन पुन: थिच्नुहोस ";
                 NO_NETWORK = "कृपया तपाइको दिभाइस्मा इन्टरनेट कनेक्ट गर्नुहोस ।";
+                ALERT_LOGIN_TO_SAVE="यो सुबिधा शक्षम गर्न लग-इन गर्नुहोस । ";
                 break;
             case 3:
                 CURRENT_MEDIA = "sukrabar";
@@ -94,6 +97,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
                 SELECT_CATEGORY_TITLE = "कृपया तपाईको रूचिको समाचार विधा छनोट गर्नुहोस ।";
                 BACK_PRESSED_MESSAGE = "कृपया एप्स बन्द गर्न ब्याक बटन पुन: थिच्नुहोस ";
                 NO_NETWORK = "कृपया तपाइको दिभाइस्मा इन्टरनेट कनेक्ट गर्नुहोस ।";
+                ALERT_LOGIN_TO_SAVE="यो सुबिधा शक्षम गर्न लग-इन गर्नुहोस । ";
                 break;
 
         }

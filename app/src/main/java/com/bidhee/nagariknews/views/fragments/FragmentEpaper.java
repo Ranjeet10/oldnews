@@ -107,7 +107,6 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
          * accessing the views of the parent activity {@link Dashboard}
          */
         appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
-        (getActivity().findViewById(R.id.slide_image_view)).setVisibility(View.GONE);
 
         searchCardView.setVisibility(View.VISIBLE);
 
