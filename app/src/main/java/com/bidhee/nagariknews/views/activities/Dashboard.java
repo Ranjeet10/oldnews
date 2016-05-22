@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -14,19 +12,16 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.FrameLayout;
@@ -34,27 +29,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
-import com.bidhee.nagariknews.Utils.MyAnimation;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.gcm.RegistrationIntentService;
+import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
 import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
 import com.bidhee.nagariknews.views.fragments.FragmentGallery;
 import com.bidhee.nagariknews.views.fragments.FragmentSaved;
-import com.daimajia.slider.library.Animations.DescriptionAnimation;
-import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
-import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.bidhee.nagariknews.widget.PhotosCartoonPagerAdapter;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -69,14 +59,17 @@ import com.twitter.sdk.android.Twitter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.relex.circleindicator.CircleIndicator;
 
 public class Dashboard extends BaseThemeActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener,
         GoogleApiClient.OnConnectionFailedListener, AlertDialogListener {
 
     public static Dashboard instance = null;
@@ -91,14 +84,14 @@ public class Dashboard extends BaseThemeActivity
     Menu menu;
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
-    @Bind(R.id.slider)
-    SliderLayout imageSlider;
+    @Bind(R.id.banner_viewpager)
+    ViewPager bannerViewpager;
+    @Bind(R.id.indicator)
+    CircleIndicator indicator;
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.app_bar_layout)
     ControllableAppBarLayout appBarLayout;
-    @Bind(R.id.view_flipper)
-    ViewFlipper viewFlipper;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.drawer_layout)
@@ -115,28 +108,27 @@ public class Dashboard extends BaseThemeActivity
     ImageView navImageView, userImageView;
     TextView userNameTextView, userEmailTextView;
     ImageView switchNagarik, switchRepublica, switchSukrabar;
-    Handler handler;
-    Runnable runnable;
+    Handler handler, viewpagerHandler;
+    Runnable runnable, viewpagerRunnable;
+    int NUM_PAGES = 0;
+    int currentPage = 0;
+    Timer swipeTimer;
 
     private Boolean isUser;
     private Boolean shouldReplaceFragment = false;
     private Boolean isProfileImageClicked = false;
     private AlertDialog alertDialog;
 
-    //    public static SessionManager sessionManager;
     HashMap<String, String> userDetail;
     public static String userName = "";
     public static String userEmail = "";
     public static String userImage = "";
 
-    private MyAnimation myAnimation;
     private String currentFragmentTag;
-    //    public static int currentTheme;
     public static String currentTitle;
     public static String currentNewsType;
     private Boolean collapseToolbar = false;
     public static int logoImage;
-    public static int COLOR_PRIMARY_DARK;
 
 //    public static String baseUrl = "";
 
@@ -165,11 +157,8 @@ public class Dashboard extends BaseThemeActivity
         ButterKnife.bind(this);
         fragmentManager = getSupportFragmentManager();
         handler = new Handler();
-        myAnimation = new MyAnimation();
         printHashKey();
         settingToolbar();
-
-        setUpImageSlider();
 
 
         userDetail = sessionManager.getLoginDetail();
@@ -184,9 +173,12 @@ public class Dashboard extends BaseThemeActivity
             sessionManager.setTheFontSize(2);
 
             /**
-             * argument 1 is the value for Republica News type
+             * {@link SessionManager#switchNewsTo(int)}
+             * argument 1 is the value for Republica
+             * argument 2 is the value for Nagarik
+             * argument 3 is the value for Sukrabar
              */
-            sessionManager.switchNewsTo(1);
+            sessionManager.switchNewsTo(2);
             //starting loginIntent
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -205,7 +197,7 @@ public class Dashboard extends BaseThemeActivity
             }
 
             googleClientConfigure();
-
+//            loadViewPager();
         }
 
 
@@ -260,6 +252,7 @@ public class Dashboard extends BaseThemeActivity
 
         startGcmCheck();
     }
+
 
     //=================== methods for the gcm and play===================
     private void startGcmCheck() {
@@ -316,6 +309,38 @@ public class Dashboard extends BaseThemeActivity
     }
 
 
+    public void setBannerViewpager(ArrayList<Multimedias> list) {
+        PhotosCartoonPagerAdapter adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
+        bannerViewpager.setAdapter(adapter);
+        indicator.setViewPager(bannerViewpager);
+        NUM_PAGES = list.size();
+        swipePager();
+    }
+
+    private void swipePager() {
+
+        viewpagerHandler = new Handler();
+        viewpagerRunnable = new Runnable() {
+            public void run() {
+                if (currentPage == NUM_PAGES) {
+                    currentPage = 0;
+                }
+                try {
+                    bannerViewpager.setCurrentItem(currentPage++, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        swipeTimer = new Timer();
+        swipeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(viewpagerRunnable);
+            }
+        }, 500, 3000);
+    }
 
     private void printHashKey() {
         // Add code to print out the key hash
@@ -335,50 +360,6 @@ public class Dashboard extends BaseThemeActivity
         }
     }
 
-    private void setUpVIewFlipper() {
-        Animation slideInAnim = AnimationUtils.loadAnimation(this, R.anim.slide_in);
-        Animation slideOutAnim = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
-        viewFlipper.setInAnimation(slideInAnim);
-        viewFlipper.setOutAnimation(slideOutAnim);
-
-
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(this, 4000);
-                viewFlipper.showNext();
-            }
-        };
-        handler.post(runnable);
-    }
-
-    private void setUpImageSlider() {
-        HashMap<String, String> url_maps = new HashMap<String, String>();
-        url_maps.put("पुनरागमनमा विश्वस्त अस्ट्रेलिया", "http://nagariknews.com/media/k2/items/cache/x22779b96550ec2f4cb77a363acfed28d_L.jpg.pagespeed.ic.sURn1ZmJlg.jpg");
-
-
-        for (String name : url_maps.keySet()) {
-            TextSliderView textSliderView = new TextSliderView(this);
-            // initialize a SliderLayout
-            textSliderView
-                    .description(name)
-                    .image(url_maps.get(name))
-                    .setScaleType(BaseSliderView.ScaleType.Fit)
-                    .setOnSliderClickListener(this);
-
-            //add your extra information
-            textSliderView.bundle(new Bundle());
-            textSliderView.getBundle()
-                    .putString("extra", name);
-
-            imageSlider.addSlider(textSliderView);
-        }
-        imageSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
-        imageSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        imageSlider.setCustomAnimation(new DescriptionAnimation());
-        imageSlider.setDuration(4000);
-        imageSlider.addOnPageChangeListener(this);
-    }
 
     private void settingCollapsingToolBarListener() {
 
@@ -774,28 +755,15 @@ public class Dashboard extends BaseThemeActivity
     @Override
     protected void onStop() {
         super.onStop();
-        handler.removeCallbacks(runnable);
-        imageSlider.stopAutoCycle();
+        try {
+            if (runnable != null)
+                handler.removeCallbacks(runnable);
+            if (viewpagerRunnable != null)
+                viewpagerHandler.removeCallbacks(viewpagerRunnable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Log.i("onstop", "called");
-    }
-
-
-    @Override
-    public void onSliderClick(BaseSliderView slider) {
-        Toast.makeText(this, slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        Log.e("Slider Demo", "Page Changed: " + position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
     }
 
 

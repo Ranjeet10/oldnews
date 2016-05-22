@@ -61,6 +61,7 @@ public class SqliteDatabase {
         contentValues.put(DBConstant.NEWS_DATE, newsObj.getDate());
         contentValues.put(DBConstant.NEWS_IMAGE, newsObj.getImg());
         contentValues.put(DBConstant.NEWS_REPORTED_BY, newsObj.getReportedBy());
+        contentValues.put(DBConstant.NEWS_TOSHOW, newsObj.getIsTOShow());
 
         db.insert(DBConstant.TABLE_NEWS, null, contentValues);
     }
@@ -113,7 +114,8 @@ public class SqliteDatabase {
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DATE)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_INTRO)),
                                 cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DESCRIPTION)),
-                                cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)))
+                                cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)),
+                                1)
                 );
                 cursor.moveToNext();
             }
@@ -144,7 +146,8 @@ public class SqliteDatabase {
                     cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DATE)),
                     cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_INTRO)),
                     cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_DESCRIPTION)),
-                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)));
+                    cursor.getString(cursor.getColumnIndex(DBConstant.NEWS_URL)),
+                    cursor.getInt(cursor.getColumnIndex(DBConstant.NEWS_TOSHOW)));
             return newsObj;
         }
         return null;

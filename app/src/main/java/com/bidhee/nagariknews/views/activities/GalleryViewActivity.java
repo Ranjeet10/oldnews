@@ -98,7 +98,7 @@ public class GalleryViewActivity extends BaseThemeActivity {
             handleServerResponse();
             fetchEpapers();
         } else {
-            photosCartoonPagerAdapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), multimedias, TYPE);
+            photosCartoonPagerAdapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), multimedias, TYPE,false);
             epaperViewpager.setAdapter(photosCartoonPagerAdapter);
             epaperViewpager.setCurrentItem(POSITION);
         }
@@ -163,7 +163,7 @@ public class GalleryViewActivity extends BaseThemeActivity {
         errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-            dialog.dismiss();
+                dialog.dismiss();
             }
         };
     }
@@ -171,6 +171,8 @@ public class GalleryViewActivity extends BaseThemeActivity {
     private void setPageTitle(int currentPageNumber) {
         if (galleryType.equals(StaticStorage.KEY_EPAPER)) {
             getSupportActionBar().setTitle(Dashboard.currentNewsType + " (" + date + ") " + currentPageNumber + "/" + epaperPages.size());
+        } else {
+            getSupportActionBar().setTitle(Dashboard.currentNewsType);
         }
     }
 

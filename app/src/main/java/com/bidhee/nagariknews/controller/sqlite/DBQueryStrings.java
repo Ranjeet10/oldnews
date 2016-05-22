@@ -33,6 +33,7 @@ public class DBQueryStrings {
             DBConstant.NEWS_URL + text +
             DBConstant.NEWS_DATE + text +
             DBConstant.NEWS_IMAGE + text +
-            DBConstant.NEWS_REPORTED_BY + " text" +
+            DBConstant.NEWS_REPORTED_BY + text +
+            DBConstant.NEWS_TOSHOW + " integer" +
             close_brac;
 }

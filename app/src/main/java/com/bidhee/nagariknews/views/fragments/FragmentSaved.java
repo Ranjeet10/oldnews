@@ -117,19 +117,19 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     }
 
     @Override
-    public void onChildItemPositionListen(int position, View view, Boolean isShown) {
+    public void onChildItemPositionListen(int position, View view) {
 
         View v = ((ViewGroup) view).getChildAt(0);
 
         //calulate the exact height of the row which is used to
         //set params in newsdetails related news recyclerview
-        if (isShown) {                      //if badge is shown calculate the height of badge too
-            StaticStorage.ROW_HEIGHT = (view.getHeight() - v.getHeight() - 2 * (int) getActivity().getResources().getDimension(R.dimen.screen_padding_lr));
+//        if (isShown) {                      //if badge is shown calculate the height of badge too
+//            StaticStorage.ROW_HEIGHT = (view.getHeight() - v.getHeight() - 2 * (int) getActivity().getResources().getDimension(R.dimen.screen_padding_lr));
+//
+//        } else {                            //else get only height of the cardview
 
-        } else {                            //else get only height of the cardview
-
-            StaticStorage.ROW_HEIGHT = view.getHeight();
-        }
+        StaticStorage.ROW_HEIGHT = view.getHeight();
+//        }
 
 
         if (view.getId() == R.id.news_share_text_view) {
@@ -141,6 +141,10 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
 //            NewsObj newsObj = newsObjs.get(position);
 
 //            newsDetailIntent.putExtra(NewsDetailActivity.NEWS_TITLE_EXTRA_STRING, newsObj);
+            for (int i = 0; i < newsObjs.size(); i++) {
+                newsObjs.get(i).setIsTOShow(1);
+            }
+            newsObjs.get(position).setIsTOShow(0);
             newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
             newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
             startActivity(newsDetailIntent);

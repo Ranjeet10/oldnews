@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
+import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
@@ -41,6 +43,7 @@ import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.EndlessScrollListener;
 import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
+import com.bidhee.nagariknews.widget.PhotosCartoonPagerAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,6 +141,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     newsListToShow.addAll(getArrayList(nodeObject, "data"));
                     notifyDataSetChanged(newsListToShow);
 
+                    loadBannerViewPager(newsListToShow);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -157,9 +162,25 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         ;
     }
 
+    private void loadBannerViewPager(ArrayList<NewsObj> newsListToShow) {
+        if (categoryId.equals("-1")) {
+            ArrayList<Multimedias> list = new ArrayList<>();
+            for (int i = 0; i < newsListToShow.size(); i++) {
+                Log.i(TAG, "size: " + newsListToShow.get(i).getImg());
+                if (!newsListToShow.get(i).getImg().equals(StaticStorage.DEFAULT_IMAGE))
+                    list.add(new Multimedias("", "", newsListToShow.get(i).getImg(), "", ""));
+            }
+            try {
+                ((Dashboard) getActivity()).setBannerViewpager(list);
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+
+        }
+    }
+
     private void getNewsTitles(String baseUrl, int pageIndex, String categoryId) {
         loadingBar.setVisibility(View.VISIBLE);
-
 
         if (!BasicUtilMethods.isNetworkOnline(getActivity())) {
             MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
@@ -181,7 +202,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 loadingBar.setVisibility(View.VISIBLE);
             WebService.getServerData(ServerConfig.getNewsTitleUrl(baseUrl, pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
         }
-
 
     }
 
@@ -216,7 +236,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 //its the category name
                 arrayName = categoryName;
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "");
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1);
                 newsObjs.add(newsObj);
             }
 
@@ -374,20 +394,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
 
     @Override
-    public void onChildItemPositionListen(int position, View view, Boolean isShown) {
-
-        View v = ((ViewGroup) view).getChildAt(0);
-
-        //calulate the exact height of the row which is used to
-        //set params in newsdetails related news recyclerview
-        if (isShown) {                      //if badge is shown calculate the height of badge too
-            StaticStorage.ROW_HEIGHT = (view.getHeight() - v.getHeight() - 2 * (int) getActivity().getResources().getDimension(R.dimen.screen_padding_lr));
-
-        } else {                            //else get only height of the cardview
-
-            StaticStorage.ROW_HEIGHT = view.getHeight();
-        }
-
+    public void onChildItemPositionListen(int position, View view) {
 
         if (view.getId() == R.id.news_share_text_view) {
 
@@ -395,12 +402,20 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
         } else {
 
-            Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
+            if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+                Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
+                newsListToShow.get(position).setIsTOShow(0);
+                for (int i = 0; i < newsListToShow.size(); i++) {
+                    newsListToShow.get(i).setIsTOShow(1);
+                }
+                newsListToShow.get(position).setIsTOShow(0);
+                newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
 
-            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
-            newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
-            startActivity(newsDetailIntent);
-
+                newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
+                startActivity(newsDetailIntent);
+            } else {
+                MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK);
+            }
 
 //            /**
 //             * send only five relatedNews to the {@link NewsDetailActivity}
