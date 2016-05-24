@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.bidhee.nagariknews.model.NewsObj;
 
@@ -95,10 +97,17 @@ public class SqliteDatabase {
      * @param newsType
      * @return
      */
-    public List<NewsObj> getNewsList(String newsType) {
+    public List<NewsObj> getNewsList(String newsType, String categoryId) {
         ArrayList<NewsObj> list = new ArrayList<>();
-        Cursor cursor = db.query(true, DBConstant.TABLE_NEWS, null,
+        Cursor cursor;
+        if(TextUtils.isEmpty(categoryId)){
+        cursor = db.query(true, DBConstant.TABLE_NEWS, null,
                 DBConstant.NEWS_TYPE + "='" + newsType + "'", null, null, null, null, null);
+
+        }else{
+             cursor = db.query(true, DBConstant.TABLE_NEWS, null,
+                    DBConstant.NEWS_TYPE + "='" + newsType + "' AND " + DBConstant.NEWS_CATEGORY_ID + "='" + categoryId + "'", null, null, null, null, null);
+        }
 
         try {
             int rowCOunt = cursor.getCount();
@@ -119,6 +128,7 @@ public class SqliteDatabase {
                 );
                 cursor.moveToNext();
             }
+            Log.i("Sqlite", list.size() + "");
         } catch (Exception e) {
             e.printStackTrace();
         }

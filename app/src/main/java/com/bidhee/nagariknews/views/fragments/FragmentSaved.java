@@ -72,7 +72,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
         /**
          * get all news related to the newstype from the SQLite
          */
-        newsObjs = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(Dashboard.sessionManager.getSwitchedNewsValue()));
+        newsObjs = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(Dashboard.sessionManager.getSwitchedNewsValue()), null);
 
     }
 
