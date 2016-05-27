@@ -29,6 +29,7 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
@@ -91,6 +92,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     private int newsType;
     private String categoryId;
     private String categoryName;
+    SqliteDatabase db;
 
     /**
      * response for the {@link com.android.volley.toolbox.Volley Request}
@@ -113,6 +115,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "oncreate called");
+
+        /**
+         * construct and open database
+         */
+        db = new SqliteDatabase(getActivity());
+        db.open();
 
         newsListToShow = new ArrayList<>();
         categoryId = getArguments().getString(StaticStorage.NEWS_CATEGORY_ID);
@@ -139,10 +147,38 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                      * to get the list of newsObjs
                      */
                     newsListToShow.addAll(getArrayList(nodeObject, "data"));
-                    notifyDataSetChanged(newsListToShow);
 
-                    loadBannerViewPager(newsListToShow);
+                    Log.i(TAG, "server response");
+                    loadDatas(newsListToShow);
 
+                    /**
+                     * Adding to cache
+                     */
+                    if (newsListToShow != null) {
+                        /**
+                         * Deleting the news from sqlite if present
+                         */
+
+                        ArrayList<NewsObj> fromCache = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                        for (int i = 0; i < fromCache.size(); i++) {
+                            try {
+                                db.deleteRowFromNews(fromCache.get(i).getNewsType(), fromCache.get(i).getNewsCategoryId(), fromCache.get(i).getNewsId());
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            }
+                        }
+
+                        /**
+                         * Adding the news fetched from the remote server to sqlite db
+                         */
+                        for (int i = 0; i < newsListToShow.size(); i++) {
+                            try {
+                                db.saveNews(newsListToShow.get(i));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -152,6 +188,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         errorListenerNewsTitle = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                try {
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                    loadDatas(newsListToShow);
+                    loadBannerViewPager(newsListToShow);
+                } catch (NullPointerException npe) {
+                    npe.printStackTrace();
+                }
+
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
@@ -162,11 +206,18 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         ;
     }
 
+    private void loadDatas(ArrayList<NewsObj> newsListToShow) {
+        if (newsListToShow != null) {
+            notifyNewsDataSetChanged(newsListToShow);
+            loadBannerViewPager(newsListToShow);
+        }
+    }
+
     private void loadBannerViewPager(ArrayList<NewsObj> newsListToShow) {
         if (categoryId.equals("-1")) {
             ArrayList<Multimedias> list = new ArrayList<>();
             for (int i = 0; i < newsListToShow.size(); i++) {
-                Log.i(TAG, "size: " + newsListToShow.get(i).getImg());
+                Log.i(TAG, "banner_size: " + newsListToShow.get(i).getImg());
                 if (!newsListToShow.get(i).getImg().equals(StaticStorage.DEFAULT_IMAGE))
                     list.add(new Multimedias("", "", newsListToShow.get(i).getImg(), "", ""));
             }
@@ -180,16 +231,13 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     }
 
     private void getNewsTitles(String baseUrl, int pageIndex, String categoryId) {
-        loadingBar.setVisibility(View.VISIBLE);
 
-        if (!BasicUtilMethods.isNetworkOnline(getActivity())) {
-            MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
-        }
         /**
          * category id -1 means
          * the first index of tab is for Latest news
          */
         handleServerResponseForNewsTitle();
+        loadingBar.setVisibility(View.VISIBLE);
         if (categoryId.equals("-1")) {
             Log.i(TAG, "categoryId was -1");
             WebService.getServerData(ServerConfig.getLatestBreakingNewsUrl(baseUrl), serverResponseNewsTitle, errorListenerNewsTitle);
@@ -202,7 +250,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 loadingBar.setVisibility(View.VISIBLE);
             WebService.getServerData(ServerConfig.getNewsTitleUrl(baseUrl, pageIndex, categoryId), serverResponseNewsTitle, errorListenerNewsTitle);
         }
-
     }
 
     private Collection<? extends NewsObj> getArrayList(JSONObject dataObject, String newsArray) {
@@ -215,16 +262,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 String newsId = obj.getString("id");
                 String newsTile = obj.getString("title");
                 String introText = obj.getString("introText");
-
-                String publishDate = obj.getString("publishOn");
-                try {
-                    publishDate = publishDate.substring(0, publishDate.lastIndexOf("+"));
-                    publishDate = publishDate.replace("T", " ");
-                    publishDate = BasicUtilMethods.getTimeAgo(publishDate);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String publishDate;
+                if (obj.has("nepaliDate")) {
+                    publishDate = obj.getString("nepaliDate");
+                } else {
+                    publishDate = obj.getString("publishOnDate");
                 }
-
 
                 String publishedBy = "";
                 String img = obj.getString("featuredImage");
@@ -236,7 +279,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 //its the category name
                 arrayName = categoryName;
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1);
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1,0);
                 newsObjs.add(newsObj);
             }
 
@@ -247,7 +290,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         return newsObjs;
     }
 
-    private void notifyDataSetChanged(ArrayList<NewsObj> newsListToShow) {
+    private void notifyNewsDataSetChanged(ArrayList<NewsObj> newsListToShow) {
         /**
          * get the previous items count and append the new items after the item which matches the curSize
          */
@@ -287,31 +330,35 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     @OnClick(R.id.content_not_found_parent_layout)
     void onContentNotFoundTextViewClicked() {
-        String cnft = contentNotFoundTextView.getText().toString();
-        if (cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NO_CATEGORY_SELECTED) ||
-                cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NOT_LOGGED_IN)) {
+        if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+            String cnft = contentNotFoundTextView.getText().toString();
+            if (cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NO_CATEGORY_SELECTED) ||
+                    cnft.equals(BaseThemeActivity.MERO_RUCHI_EMPTY_BECAUSE_OF_NOT_LOGGED_IN)) {
 
-            if (Dashboard.sessionManager.isLoggedIn()) {
-                startActivity(new Intent(getActivity(), SelectCategoryActivity.class));
-            } else {
-                final AlertDialog alertDialog = new AlertDialog(getActivity(), StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
-                alertDialog.setOnAlertDialogListener(new AlertDialogListener() {
-                    @Override
-                    public void alertPositiveButtonClicked() {
-                        alertDialog.dismiss();
-                        Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
-                        startActivity(loginIntent);
+                if (Dashboard.sessionManager.isLoggedIn()) {
+                    startActivity(new Intent(getActivity(), SelectCategoryActivity.class));
+                } else {
+                    final AlertDialog alertDialog = new AlertDialog(getActivity(), StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
+                    alertDialog.setOnAlertDialogListener(new AlertDialogListener() {
+                        @Override
+                        public void alertPositiveButtonClicked() {
+                            alertDialog.dismiss();
+                            Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+                            startActivity(loginIntent);
 
-                    }
+                        }
 
-                    @Override
-                    public void alertNegativeButtonClicked() {
-                        alertDialog.dismiss();
-                    }
-                });
-                alertDialog.show();
+                        @Override
+                        public void alertNegativeButtonClicked() {
+                            alertDialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
 
+                }
             }
+        } else {
+            MySnackbar.showSnackBar(getActivity(), contentNotFoundTextView, BaseThemeActivity.NO_NETWORK).show();
         }
     }
 
@@ -327,7 +374,6 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Log.i("category", categoryId + " " + categoryName);
         addingSwipeRefreshListener();
 
@@ -335,22 +381,29 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
 
-
         if (savedInstanceState != null) {
-            Log.i(TAG, "saved instance state");
+            /**
+             * called when screens orientation is changed and
+             * when the fragment is re-created during viewpager swipe
+             */
             newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
-
+            showContentNotFoundLayoutIfNeeded();
         } else {
             newsType = Dashboard.sessionManager.getSwitchedNewsValue();
-            Log.i(TAG, "not saved instance state");
-            if (newsListToShow.size() <= 0)
-                getNewsTitles(Dashboard.baseUrl, 1, categoryId);
-
+            if (newsListToShow.size() <= 0) {
+                if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+                } else {
+                    MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                    loadBannerViewPager(newsListToShow);
+                    showContentNotFoundLayoutIfNeeded();
+                }
+            }
 
         }
         resetNewsAdapter();
         loadMoreListener(linearLayoutManager);
-
     }
 
     private void resetNewsAdapter() {
@@ -386,8 +439,13 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             @Override
             public void onRefresh() {
                 newsListToShow = new ArrayList<>();
-                resetNewsAdapter();
-                getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+                if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+                    resetNewsAdapter();
+                    getNewsTitles(Dashboard.baseUrl, 1, categoryId);
+                } else {
+                    ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                    MySnackbar.showSnackBar(getContext(), swipeRefreshLayout, BaseThemeActivity.NO_NETWORK).show();
+                }
             }
         });
     }
@@ -395,14 +453,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     @Override
     public void onChildItemPositionListen(int position, View view) {
-
+        NewsObj newsObj = newsListToShow.get(position);
         if (view.getId() == R.id.news_share_text_view) {
 
         } else if (view.getId() == R.id.news_show_detail_text_view) {
 
         } else {
 
-            if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+            if (BasicUtilMethods.isNetworkOnline(getActivity()) || db.isNewsDetailPresent(newsObj.getNewsType(), newsObj.getNewsCategoryId(), newsObj.getNewsId())) {
                 Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
                 newsListToShow.get(position).setIsTOShow(0);
                 for (int i = 0; i < newsListToShow.size(); i++) {
@@ -414,47 +472,9 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
                 startActivity(newsDetailIntent);
             } else {
-                MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK);
+                MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK).show();
+
             }
-
-//            /**
-//             * send only five relatedNews to the {@link NewsDetailActivity}
-//             */
-//            ArrayList<NewsObj> relatedNewsList = new ArrayList<>();
-//
-//            /**
-//             * First add five {@value newsObj} to the {@value relatedNewsList} and after that
-//             *
-//             */
-//            for (int i = 0; i < 5; i++) {
-//                relatedNewsList.add(newsObjs.get(i));
-//            }
-//
-//            /**
-//             * check if the selected {@value newsObj} lies in relatedNewsList,
-//             * if selected {@value newsObj} not present in {@value relatedNewsList} remove the last index of {@value relatedNewsList} and
-//             * add the selected {@value newsObj} to {@value relatedNewsList},
-//             * if present leave as it is
-//             */
-//            Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-//            NewsObj newsObj = newsObjs.get(position);
-//            newsObj.setNewsCategoryName(categoryName);
-//
-//
-//            if (!relatedNewsList.contains(newsObj)) {
-//                relatedNewsList.remove(4);
-//                relatedNewsList.add(newsObj);
-//
-//                /**
-//                 *change the position to 4, as we added the selected {@value newsObj} at index 4
-//                 *if not done this we will get {@link ArrayIndexOutOfBoundsException}
-//                 **/
-//                position = 4;
-//            }
-//            newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, relatedNewsList);
-//            newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
-//            startActivity(newsDetailIntent);
-
 
         }
     }
@@ -466,4 +486,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         outState.putParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE, newsListToShow);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }

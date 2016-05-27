@@ -81,8 +81,8 @@ public class FragmentEpaperSwipable extends Fragment {
                 }
             });
             optionDialog.show();
-        }else{
-            MySnackbar.showSnackBar(getActivity(),imageView,"Image not loaded").show();
+        } else {
+            MySnackbar.showSnackBar(getActivity(), imageView, "Image not loaded").show();
         }
     }
 
@@ -119,6 +119,7 @@ public class FragmentEpaperSwipable extends Fragment {
                     @Override
                     public void onSuccess() {
                         try {
+                            isImageLoaded = true;
                             progressBar.setVisibility(View.GONE);
                             reloadImage.setVisibility(View.GONE);
                         } catch (NullPointerException ne) {
@@ -128,8 +129,12 @@ public class FragmentEpaperSwipable extends Fragment {
 
                     @Override
                     public void onError() {
-                        progressBar.setVisibility(View.GONE);
-                        reloadImage.setVisibility(View.VISIBLE);
+                        try {
+                            progressBar.setVisibility(View.GONE);
+                            reloadImage.setVisibility(View.VISIBLE);
+                        } catch (NullPointerException npe) {
+                            npe.printStackTrace();
+                        }
                     }
                 });
     }

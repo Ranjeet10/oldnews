@@ -44,7 +44,6 @@
     </style>
 
 
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -152,6 +151,12 @@
     </style>
 
     <!-- animation-->
+    <!-- Animation for dialog box -->
+    <style name="SlideAnimation" parent="@android:style/Theme.Dialog">
+        <item name="android:windowAnimationStyle">@style/PopupAnimation</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <!--For location popupmenu-->
     <style name="PopupAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_right</item>
@@ -164,16 +169,20 @@
         <item name="android:windowExitAnimation">@anim/zoom_out_fade_out</item>
     </style>
 
-
-    <!-- Animation for dialog box -->
-    <style name="SlideAnimation" parent="@android:style/Theme.Dialog">
-        <item name="android:windowAnimationStyle">@style/PopupAnimation</item>
-        <item name="android:textColor">@color/black</item>
+    <style name="dropFromRight">
+        <item name="android:windowEnterAnimation">@anim/zoom_in_from_top_right</item>
+        <item name="android:windowExitAnimation">@anim/zoom_out_from_left_bottom</item>
     </style>
+
 
     <!-- style for option menu-->
     <style name="slideDownAnimation" parent="@android:style/Theme.Dialog">
         <item name="android:windowAnimationStyle">@style/optionAnimation</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="right_top_corner_menu" parent="@android:style/Theme.Dialog">
+        <item name="android:windowAnimationStyle">@style/dropFromRight</item>
         <item name="android:textColor">@color/black</item>
     </style>
 

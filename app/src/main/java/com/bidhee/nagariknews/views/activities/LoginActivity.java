@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -167,6 +169,12 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
         setContentView(R.layout.login_layout);
 
         sessionManager = new SessionManager(this);
@@ -271,36 +279,6 @@ public class LoginActivity extends AppCompatActivity implements
 
                 dialog.show();
                 WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_TWITTER, token, secret), signUpResponse, errorListener);
-
-//                session = result.data;
-//                final String username = session.getUserName();
-//                Long userid = session.getUserId();
-//
-//
-//                TwitterSession session = Twitter.getSessionManager().getActiveSession();
-//                Twitter.getApiClient(session).getAccountService()
-//                        .verifyCredentials(true, false, new Callback<User>() {
-//
-//
-//                            @Override
-//                            public void success(Result<User> userResult) {
-//                                User user = userResult.data;
-//                                String imageUrl = user.profileImageUrl;
-//                                imageUrl = imageUrl.replace("_normal", "");
-//                                String email = user.email;
-//                                Log.i("imageurl", imageUrl + ":" + email);
-//
-//                                createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_TWITTER, username, email, imageUrl, "");
-//
-//                            }
-//
-//                            @Override
-//                            public void failure(TwitterException e) {
-//
-//                            }
-//
-//                        });
-
             }
 
             @Override
@@ -386,10 +364,6 @@ public class LoginActivity extends AppCompatActivity implements
             loginPasswordField.setError("password required");
             requestFocusView(false, loginPasswordField);
         }
-//        else if (!BasicUtilMethods.isValidPassword(password)) {
-//            loginPasswordField.setError("password must be greater than 5 character");
-//            requestFocusView(false, loginPasswordField);
-//        }
 
         if (TextUtils.isEmpty(email)) {
             loginEmailField.setError("Email required");
@@ -689,38 +663,6 @@ public class LoginActivity extends AppCompatActivity implements
     }
     // [END signIn]
 
-    /*
-    // [START signOut]
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END signOut]
-
-    */
-    /*
-    // [START revokeAccess]
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        // [START_EXCLUDE]
-                        updateUI(false);
-                        // [END_EXCLUDE]
-                    }
-                });
-    }
-    // [END revokeAccess]
-
-*/
 
 
     @Override

@@ -19,13 +19,14 @@ public class NewsObj implements Parcelable {
     private String date;
     private String img;
     private String reportedBy;
+    private int isSaved;
 
 //    public NewsObj() {
 //    }
 
 
     public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title,
-                   String reportedBy, String date, String introText, String description, String newsUrl,int isTOShow) {
+                   String reportedBy, String date, String introText, String description, String newsUrl, int isTOShow, int isSaved) {
         this.newsType = newsType;
         this.newsCategoryId = newsCategoryId;
         this.newsId = newsId;
@@ -38,6 +39,7 @@ public class NewsObj implements Parcelable {
         this.img = img;
         this.reportedBy = reportedBy;
         this.isTOShow = isTOShow;
+        this.isSaved = isSaved;
     }
 
     public NewsObj(Parcel source) {
@@ -52,7 +54,8 @@ public class NewsObj implements Parcelable {
         date = source.readString();
         img = source.readString();
         reportedBy = source.readString();
-        isTOShow=source.readInt();
+        isTOShow = source.readInt();
+        isSaved = source.readInt();
     }
 
 
@@ -160,6 +163,13 @@ public class NewsObj implements Parcelable {
         this.isTOShow = isTOShow;
     }
 
+    public void setIsSaved(int isSaved) {
+        this.isSaved = isSaved;
+    }
+
+    public int getIsSaved() {
+        return isSaved;
+    }
 
     @Override
 
@@ -185,6 +195,7 @@ public class NewsObj implements Parcelable {
         dest.writeString(img);
         dest.writeString(reportedBy);
         dest.writeInt(isTOShow);
+        dest.writeInt(isSaved);
     }
 
     private void applyDefault() {
@@ -251,6 +262,7 @@ public class NewsObj implements Parcelable {
                 ", date='" + date + '\'' +
                 ", img='" + img + '\'' +
                 ", reportedBy='" + reportedBy + '\'' +
+                ", isSaved=" + isSaved +
                 '}';
     }
 }

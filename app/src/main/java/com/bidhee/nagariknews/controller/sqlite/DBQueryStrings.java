@@ -34,6 +34,41 @@ public class DBQueryStrings {
             DBConstant.NEWS_DATE + text +
             DBConstant.NEWS_IMAGE + text +
             DBConstant.NEWS_REPORTED_BY + text +
-            DBConstant.NEWS_TOSHOW + " integer" +
+            DBConstant.NEWS_TOSHOW + integer +
+            DBConstant.NEWS_ISSAVED + " integer" +
+            close_brac;
+
+    public static final String CREATE_TABLE_SAVED_NEWS = create_table +
+            DBConstant.TABLE_SAVED_NEWS +
+            open_brac +
+            DBConstant.NEWS_TYPE + text +
+            DBConstant.NEWS_CATEGORY_ID + text +
+            DBConstant.NEWS_ID + text +
+            DBConstant.NEWS_CATEGORY_NAME + text +
+            DBConstant.NEWS_TITLE + text +
+            DBConstant.NEWS_INTRO + text +
+            DBConstant.NEWS_DESCRIPTION + text +
+            DBConstant.NEWS_URL + text +
+            DBConstant.NEWS_DATE + text +
+            DBConstant.NEWS_IMAGE + text +
+            DBConstant.NEWS_REPORTED_BY + text +
+            DBConstant.NEWS_TOSHOW + integer +
+            DBConstant.NEWS_ISSAVED + " integer" +
+            close_brac;
+
+    public static final String CREATE_TABLE_GALLERY = create_table +
+            DBConstant.TABLE_GALLERY +
+            open_brac +
+            DBConstant.NEWS_TYPE + text +
+            DBConstant.GALLERY_TYPE + text +
+            DBConstant.GALLERY_RESPONSE + " text" +
+            close_brac;
+
+    public static final String CREATE_TABLE_EPAPER_PAGE = create_table +
+            DBConstant.TABLE_EPAPER_PAGE +
+            open_brac +
+            DBConstant.NEWS_TYPE + text +
+            DBConstant.EPAPER_ID + text +
+            DBConstant.EPAPER_PAGE_RESPONSE + " text" +
             close_brac;
 }

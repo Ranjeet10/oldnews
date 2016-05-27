@@ -1,7 +1,5 @@
 package com.bidhee.nagariknews.controller.server_request;
 
-import android.util.Log;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -89,10 +87,6 @@ public class WebService {
 
     public static void authRequest(String url, final String body, Response.Listener<String> response, Response.ErrorListener errorListener) {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, response, errorListener) {
-//            @Override
-//            public String getBodyContentType() {
-//                return "application/json";
-//            }
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -111,6 +105,36 @@ public class WebService {
                 }
                 return byteBody;
             }
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public static void hitServerWithHeaderAndParams(String url, final String apikey, final HashMap<String, String> params, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, listener, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("apikey", apikey);
+                return header;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return params;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public static void deleteNewsFromFavourite(String url, final String apikey, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, url, listener, errorListener) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> header = new HashMap<>();
+                header.put("apikey", apikey);
+                return header;
+            }
+
         };
         AppController.getInstance().addToRequestQueue(stringRequest);
     }

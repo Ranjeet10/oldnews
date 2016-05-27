@@ -19,9 +19,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.FrameLayout;
@@ -35,11 +38,13 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.SessionManager;
 import com.bidhee.nagariknews.controller.interfaces.AlertDialogListener;
+import com.bidhee.nagariknews.controller.interfaces.ListPositionListener;
 import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.gcm.RegistrationIntentService;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
+import com.bidhee.nagariknews.views.customviews.EpaperOptionMenu;
 import com.bidhee.nagariknews.views.fragments.FragmentAllNews;
 import com.bidhee.nagariknews.views.fragments.FragmentEpaper;
 import com.bidhee.nagariknews.views.fragments.FragmentGallery;
@@ -66,11 +71,12 @@ import java.util.TimerTask;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.relex.circleindicator.CircleIndicator;
 
 public class Dashboard extends BaseThemeActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener {
+        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener, ListPositionListener {
 
     public static Dashboard instance = null;
 
@@ -84,6 +90,8 @@ public class Dashboard extends BaseThemeActivity
     Menu menu;
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
+    @Bind(R.id.btn_epaper_option)
+    ImageView epaperOptionMenu;
     @Bind(R.id.banner_viewpager)
     ViewPager bannerViewpager;
     @Bind(R.id.indicator)
@@ -118,6 +126,7 @@ public class Dashboard extends BaseThemeActivity
     private Boolean shouldReplaceFragment = false;
     private Boolean isProfileImageClicked = false;
     private AlertDialog alertDialog;
+    private EpaperOptionMenu epaperOptionMenuDialog;
 
     HashMap<String, String> userDetail;
     public static String userName = "";
@@ -194,10 +203,10 @@ public class Dashboard extends BaseThemeActivity
                 userName = userDetail.get(SessionManager.KEY_USER_NAME);
                 userImage = userDetail.get(SessionManager.KEY_USER_IMAGE);
                 userEmail = userDetail.get(SessionManager.KEY_USER_EMAIL);
+                Log.i(TAG, "AccessToken:" + sessionManager.getToken());
             }
 
             googleClientConfigure();
-//            loadViewPager();
         }
 
 
@@ -230,16 +239,13 @@ public class Dashboard extends BaseThemeActivity
 
             switch (sessionManager.getSwitchedNewsValue()) {
                 case 1:
-//                    currentTitle = getResources().getString(R.string.all_news_r);
                     logoImage = StaticStorage.NEWS_LOGOS[0];
 
                     break;
                 case 2:
-//                    currentTitle = getResources().getString(R.string.all_news_n);
                     logoImage = StaticStorage.NEWS_LOGOS[1];
                     break;
                 case 3:
-//                    currentTitle = getResources().getString(R.string.all_news_r);
                     logoImage = StaticStorage.NEWS_LOGOS[2];
                     break;
             }
@@ -315,6 +321,23 @@ public class Dashboard extends BaseThemeActivity
         indicator.setViewPager(bannerViewpager);
         NUM_PAGES = list.size();
         swipePager();
+    }
+
+    @OnClick(R.id.btn_epaper_option)
+    void onEpaperOptionClicked() {
+        epaperOptionMenuDialog = new EpaperOptionMenu(this);
+        epaperOptionMenuDialog.setListPositionListener(this);
+
+        Window window = epaperOptionMenuDialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.TOP | Gravity.RIGHT;
+
+        wlp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        wlp.y = 100;
+        window.setAttributes(wlp);
+
+
+        epaperOptionMenuDialog.show();
     }
 
     private void swipePager() {
@@ -563,6 +586,7 @@ public class Dashboard extends BaseThemeActivity
             collapseToolbar = false;
             fragmentManager.popBackStack();
             navigationView.setCheckedItem(R.id.nav_all_news);
+            epaperOptionMenu.setVisibility(View.GONE);
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -669,21 +693,25 @@ public class Dashboard extends BaseThemeActivity
             case R.id.nav_all_news:
                 replaceableFragment = FragmentAllNews.createNewInstance();
                 shouldReplaceFragment = true;
+                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_photos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.PHOTOS);
                 shouldReplaceFragment = true;
+                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_cartoons:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.CARTOONS);
                 shouldReplaceFragment = true;
+                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_videos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.VIDEOS);
                 shouldReplaceFragment = true;
+                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_epaper:
@@ -691,12 +719,15 @@ public class Dashboard extends BaseThemeActivity
                 switch (sessionManager.getSwitchedNewsValue()) {
                     case 1:
                         epaperId = StaticStorage.E_PAPER_REPUBLICA;
+                        epaperOptionMenu.setVisibility(View.GONE);
                         break;
                     case 2:
                         epaperId = StaticStorage.E_PAPER_NAGARIK;
+                        epaperOptionMenu.setVisibility(View.VISIBLE);
                         break;
                     case 3:
                         epaperId = StaticStorage.E_PAPER_SUKRABAR;
+                        epaperOptionMenu.setVisibility(View.GONE);
                         break;
                 }
                 replaceableFragment = FragmentEpaper.createNewInstance(epaperId);
@@ -704,7 +735,7 @@ public class Dashboard extends BaseThemeActivity
                 break;
 
             case R.id.nav_saved:
-                replaceableFragment = FragmentSaved.createNewInstance();
+                replaceableFragment = new FragmentSaved();
                 shouldReplaceFragment = true;
                 break;
 
@@ -834,4 +865,10 @@ public class Dashboard extends BaseThemeActivity
     }
 
 
+    @Override
+    public void tappedPosition(int position) {
+        if (replaceableFragment instanceof FragmentEpaper) {
+            ((FragmentEpaper) replaceableFragment).getSelectedEpaperFor(position);
+        }
+    }
 }

@@ -20,19 +20,29 @@
         android:visibility="visible">
 
         <LinearLayout
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
 
             <ImageView
-                android:layout_marginRight="@dimen/tab_bar_layout_height"
                 android:id="@+id/news_type_image_logo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/tab_bar_layout_height"
                 android:src="@mipmap/nagarik"
                 android:visibility="visible" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btn_epaper_option"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="@dimen/screen_padding"
+            android:src="@mipmap/ic_more_vert_black_24dp"
+            android:tint="@color/white"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>
