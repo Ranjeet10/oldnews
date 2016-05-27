@@ -30,8 +30,8 @@
 
             <ImageView
                 android:id="@+id/logo_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/news_title_image_h"
+                android:layout_height="@dimen/news_title_image_h"
                 android:layout_centerHorizontal="true"
                 android:src="@mipmap/logo" />
 

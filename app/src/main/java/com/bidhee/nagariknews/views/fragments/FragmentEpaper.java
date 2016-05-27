@@ -2,6 +2,7 @@ package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,10 +12,12 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -24,6 +27,7 @@ import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.EpaperBundle;
 import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
@@ -64,12 +68,16 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
+    private String gallery = "epaper";
     ControllableAppBarLayout appBarLayout;
     EpapersListAdapter epapersListAdapter;
     GridLayoutManager gridLayoutManager;
 
     Response.Listener<String> response;
     Response.ErrorListener errorListener;
+
+    private SqliteDatabase db;
+    private Boolean isEpaperPagesPresent = false;
 
 
     // static factory method pattern
@@ -84,7 +92,9 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        epapers = new ArrayList<>();
+        db = new SqliteDatabase(getActivity());
+        db.open();
     }
 
     @Nullable
@@ -108,7 +118,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
          */
         appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
 
-        searchCardView.setVisibility(View.VISIBLE);
+        searchCardView.setVisibility(View.GONE);
 
         //setting the color of text of searchview
         SearchView.SearchAutoComplete theTextArea = (SearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
@@ -137,47 +147,28 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void fetchEpaper() {
-        ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
-        if (!BasicUtilMethods.isNetworkOnline(getActivity()))
+        if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+            ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
+            handleServerResponse();
+            WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+        } else {
+            loadFromCache();
             MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
-
-        handleServerResponse();
-        WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+        }
     }
 
     private void handleServerResponse() {
-        epapers = new ArrayList<>();
         response = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 try {
-                    JSONObject nodeObject = new JSONObject(response);
-                    String status = nodeObject.getString("status");
-
-                    if (status.equalsIgnoreCase("success")) {
-                        JSONArray dataArray = nodeObject.getJSONArray("data");
-                        for (int i = 0; i < dataArray.length(); i++) {
-                            JSONObject dObject = dataArray.getJSONObject(i);
-                            int id = dObject.getInt("id");
-                            String media = dObject.getString("media");
-                            String date = dObject.getString("publishOn");
-                            String coverImage = dObject.getString("coverImage");
-                            int pages = dObject.getInt("totalFiles");
-
-                            date = date.substring(0, date.lastIndexOf("T"));
-                            epapers.add(new Epaper(id, media, date, coverImage, pages));
-                        }
-                        epapersSearched = epapers;
-                        epapersListAdapter = new EpapersListAdapter(epapersSearched, R.layout.single_row_gallery);
-                        epaperRecyclerView.setAdapter(epapersListAdapter);
-                    } else {
-                        MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, StaticStorage.SOMETHING_WENT_WRONG).show();
-                    }
-                } catch (JSONException e) {
+                    db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                    db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+                } catch (CursorIndexOutOfBoundsException e) {
                     e.printStackTrace();
-                    ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 }
+                parseResponse(response);
             }
 
         };
@@ -186,8 +177,52 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             @Override
             public void onErrorResponse(VolleyError error) {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+                loadFromCache();
             }
         };
+    }
+
+    private void parseResponse(String response) {
+        try {
+            JSONObject nodeObject = new JSONObject(response);
+            String status = nodeObject.getString("status");
+
+            if (status.equalsIgnoreCase("success")) {
+                JSONArray dataArray = nodeObject.getJSONArray("data");
+                for (int i = 0; i < dataArray.length(); i++) {
+                    JSONObject dObject = dataArray.getJSONObject(i);
+                    int id = dObject.getInt("id");
+                    String media = dObject.getString("media");
+                    String date = dObject.getString("publishOn");
+                    String coverImage = dObject.getString("coverImage");
+                    int pages = dObject.getInt("totalFiles");
+
+                    date = date.substring(0, date.lastIndexOf("T"));
+                    epapers.add(new Epaper(id, media, date, coverImage, pages));
+                }
+                epapersSearched = epapers;
+                epapersListAdapter = new EpapersListAdapter(epapersSearched, R.layout.single_row_gallery);
+                epaperRecyclerView.setAdapter(epapersListAdapter);
+            } else {
+                MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, StaticStorage.SOMETHING_WENT_WRONG).show();
+            }
+            if (epapersSearched.size() > 0)
+                searchCardView.setVisibility(View.VISIBLE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
+        }
+    }
+
+    private void loadFromCache() {
+        try {
+            String response = db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery);
+            if (!TextUtils.isEmpty(response)) {
+                parseResponse(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -199,15 +234,24 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onItemClick(View view, int parentPosition, int position) {
-        Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
+        try {
+            isEpaperPagesPresent = db.isEpaperPagePresent(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epapersSearched.get(position).getId()));
+        } catch (CursorIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
 
-        epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
-        epaperIntent.putExtra("id", epapersSearched.get(position).getId());
-        epaperIntent.putExtra("date", epapersSearched.get(position).getDate());
-        epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
+        if (BasicUtilMethods.isNetworkOnline(getActivity()) || isEpaperPagesPresent) {
+            Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
+            epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
+            epaperIntent.putExtra("id", epapersSearched.get(position).getId());
+            epaperIntent.putExtra("date", epapersSearched.get(position).getDate());
+            epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
 
-        startActivity(epaperIntent);
-        Log.i("info", "clicked");
+            startActivity(epaperIntent);
+            Log.i("info", "clicked");
+        } else {
+            MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
+        }
     }
 
     @Override
@@ -231,5 +275,8 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epaperRecyclerView.setAdapter(epapersListAdapter);
 
         return true;
+    }
+
+    public void getSelectedEpaperFor(int position) {
     }
 }

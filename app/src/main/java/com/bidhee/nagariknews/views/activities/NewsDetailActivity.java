@@ -46,7 +46,6 @@ import com.bidhee.nagariknews.views.customviews.AlertDialog;
 import com.bidhee.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.bidhee.nagariknews.widget.CustomLinearLayoutManager;
-import com.bidhee.nagariknews.widget.NewsTitlesAdapter;
 import com.bidhee.nagariknews.widget.RelatedNewsTitleAdapter;
 import com.wangjie.androidbucket.utils.ABTextUtil;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
@@ -60,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -128,12 +128,15 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     private int fabDrawable;
     private int MENU_COLOR;
 
-    private Response.Listener<String> serverResponseNewsDetail;
-    private Response.ErrorListener errorListenernewsDetail;
+    private Response.Listener<String> serverResponseNewsDetail, saveResponse, unSaveResponse;
+    private Response.ErrorListener errorListenernewsDetail, saveErrorListener, unsaveErrorListener;
     private ProgressDialog progressDialog;
 
     SqliteDatabase db;
-    private Boolean isNewsInFavouite = false;
+    //    private Boolean isNewsInFavouite = false;
+    private Boolean isNewsDetailPresent = false;
+    private int SAVED_COLOR;
+    private int UN_SAVED_COLOR;
     private int NEWS_TYPE = 1;//default set to 1
 
     private AlertDialog alertDialog;
@@ -142,15 +145,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        /**
-         * make font selector dialog
-         *
-         */
         super.onCreate(savedInstanceState);
 
         initActivityTransitions();
         NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
+        SAVED_COLOR = getResources().getColor(R.color.grid_2);
+        UN_SAVED_COLOR = getResources().getColor(R.color.light_grey);
 
         setContentView(R.layout.news_detail_layout);
         ButterKnife.bind(this);
@@ -164,6 +164,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog.setCancelable(false);
         mainLayout.setVisibility(View.GONE);
 
+        CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(this);
+        recyclerVIew.setLayoutManager(linearLayoutManager);
+        recyclerVIew.setHasFixedSize(true);
+        recyclerVIew.setItemAnimator(new DefaultItemAnimator());
+        recyclerVIew.invalidate();
+
 
         gettingBundle();
 
@@ -172,21 +178,18 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         if (newsObjs.size() > 0) {
             selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
-            isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-//
-            if (isNewsInFavouite) {
-                if (BasicUtilMethods.isNetworkOnline(NewsDetailActivity.this)) {
-                    getNewsDetailFromServer(selectedNews.getNewsId());
-                } else {
-                    MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+
+            if (BasicUtilMethods.isNetworkOnline(this)) {
+                getNewsDetailFromServer(selectedNews.getNewsId());
+                loadAdapter();
+            } else {
+                relatedNewsTextView.setVisibility(View.GONE);
+                MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+                isNewsDetailPresent = db.isNewsDetailPresent(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+                if (isNewsDetailPresent) {
                     loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
                 }
-            } else {
-                getNewsDetailFromServer(selectedNews.getNewsId());
             }
-
-
-//            relatedNewsTextView.setVisibility(View.VISIBLE);
             String related = "";
             switch (NEWS_TYPE) {
                 case 1:
@@ -219,9 +222,9 @@ public class NewsDetailActivity extends BaseThemeActivity implements
             }
 
             relatedNewsTextView.setText(related);
-//            newsObjs.clear();
-            loadRelatedContent();
             setCallbackListenerToFabDial();
+        } else {
+
         }
 
         /**
@@ -235,9 +238,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     }
 
     private void getNewsDetailFromServer(String newsId) {
+        progressDialog.setCancelable(false);
         progressDialog.show();
         handleServerResponseForNewsDetail();
-        WebService.getServerData(ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId), serverResponseNewsDetail, errorListenernewsDetail);
+        WebService.getServerDataWithHeader(ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId), sessionManager.getToken(), serverResponseNewsDetail, errorListenernewsDetail);
     }
 
 
@@ -251,14 +255,19 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                     JSONObject nodeObject = new JSONObject(response);
                     JSONObject newsDetailObject = nodeObject.getJSONObject("data");
                     String detail = newsDetailObject.getString("content");
+                    Boolean isSaved = newsDetailObject.getBoolean("saved");
                     Log.i("detail", detail);
                     String newsUrl = newsDetailObject.getString("url");
+                    selectedNews.setIsSaved(isSaved ? 1 : 0);
                     selectedNews.setDescription(detail);
                     selectedNews.setNewsUrl(Dashboard.baseUrl + newsUrl);
 
-//                    isNewsInFavouite = false;
-                    isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+                    /**
+                     * update sqlite table
+                     */
+                    db.updateNewsDetail(selectedNews);
                     loadingDetail(selectedNews);
+                    Log.i(TAG, "saveddata" + selectedNews.toString());
 
                     if (nodeObject.has("relatedCatNews")) {
                         try {
@@ -270,16 +279,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                                 String newsTile = obj.getString("title");
                                 String introText = obj.getString("introText");
 
-                                String publishDate = obj.getString("publishOn");
-                                try {
-                                    publishDate = publishDate.substring(0, publishDate.lastIndexOf("+"));
-                                    publishDate = publishDate.replace("T", " ");
-                                    publishDate = BasicUtilMethods.getTimeAgo(publishDate);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                String publishDate;
+                                if (obj.has("nepaliDate")) {
+                                    publishDate = obj.getString("nepaliDate");
+                                } else {
+                                    publishDate = obj.getString("publishOnDate");
                                 }
-
-
                                 String publishedBy = "";
                                 String img = obj.getString("featuredImage");
 
@@ -289,8 +294,9 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
 
                                 Log.i(TAG, "list cleared");
-                                NewsObj newsObj = new NewsObj(newsType, String.valueOf(categoryId), newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "", 1);
+                                NewsObj newsObj = new NewsObj(newsType, String.valueOf(categoryId), newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
                                 newsObjs.add(newsObj);
+
                                 loadAdapter();
                             }
 
@@ -326,27 +332,105 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     @OnClick(R.id.news_add_to_fav)
     void onAddToFavCilck() {
         if (Dashboard.sessionManager.isLoggedIn()) {
-            if (isNewsInFavouite) {
-                //if news is in persist state remove it and toggle the favourite state
-                db.deleteRowFromNews(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-                isNewsInFavouite = false;
-                toggleFavouriteState();
-                Log.i(TAG, "news was present");
-
+            if (BasicUtilMethods.isNetworkOnline(this)) {
+                switch (selectedNews.getIsSaved()) {
+                    case 0:
+                        //save news
+                        saveNewsToMyFavourite();
+                        break;
+                    case 1:
+                        //delete news
+                        deleteNewsFromMyFavourite();
+                        break;
+                }
             } else {
-                //if news is not present add the current newsObject to the sqlite database
-                //set news Description and news url to the newsObject
-
-                db.saveNews(selectedNews);
-                isNewsInFavouite = true;
-                toggleFavouriteState();
-                Log.i(TAG, "news was not present");
+                MySnackbar.showSnackBar(this, newsAddToFav, BaseThemeActivity.NO_NETWORK).show();
             }
         } else {
             alertDialog = new AlertDialog(this, alertTitle, BaseThemeActivity.ALERT_LOGIN_TO_SAVE);
             alertDialog.setOnAlertDialogListener(this);
             alertDialog.show();
+
         }
+    }
+
+    private void saveNewsToMyFavourite() {
+        saveResponse = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                try {
+                    JSONObject nodeObject = new JSONObject(response);
+                    String status = nodeObject.getString("status");
+                    if (status.equals("success")) {
+                        selectedNews.setIsSaved(1);
+                        db.updateNewsDetail(selectedNews);
+                        Log.i(TAG, "saved:" + selectedNews.toString());
+                        newsAddToFav.setColorFilter(SAVED_COLOR);
+                    } else {
+                        MySnackbar.showSnackBar(NewsDetailActivity.this, newsAddToFav, "Something went wrong").show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        saveErrorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                MySnackbar.showSnackBar(NewsDetailActivity.this, newsAddToFav, "Something went wrong").show();
+            }
+        };
+
+        progressDialog.setMessage(BaseThemeActivity.PLEASE_WAIT);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+        HashMap<String, String> params = new HashMap<>();
+        params.put("consumer_news[newsId]", selectedNews.getNewsId());
+        params.put("consumer_news[media]", BaseThemeActivity.CAPS_CURRENT_MEDIA);
+        WebService.hitServerWithHeaderAndParams(ServerConfig.SAVE_NEWS_URL, sessionManager.getToken(), params, saveResponse, saveErrorListener);
+    }
+
+    private void deleteNewsFromMyFavourite() {
+        unSaveResponse = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                try {
+                    JSONObject nodeObject = new JSONObject(response);
+                    String status = nodeObject.getString("status");
+                    String message = nodeObject.getString("message");
+                    if (status.equals("success")) {
+                        selectedNews.setIsSaved(0);
+                        db.updateNewsDetail(selectedNews);
+                        Log.i(TAG, "saved:" + selectedNews.toString());
+                        newsAddToFav.setColorFilter(UN_SAVED_COLOR);
+                    } else {
+                        MySnackbar.showSnackBar(NewsDetailActivity.this, newsAddToFav, message).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        unsaveErrorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                MySnackbar.showSnackBar(NewsDetailActivity.this, newsAddToFav, "Something went wrong from volley error").show();
+            }
+        };
+
+        progressDialog.setMessage(BaseThemeActivity.PLEASE_WAIT);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
+
+        String url = ServerConfig.getUnsaveNewsUrl(selectedNews.getNewsId(), BaseThemeActivity.CAPS_CURRENT_MEDIA);
+        Log.i(TAG, "deleteurl" + url);
+        WebService.deleteNewsFromFavourite(url, sessionManager.getToken(), unSaveResponse, unsaveErrorListener);
     }
 
 
@@ -396,16 +480,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     }
 
 
-    private void loadRelatedContent() {
-        CustomLinearLayoutManager linearLayoutManager = new CustomLinearLayoutManager(this);
-        recyclerVIew.setLayoutManager(linearLayoutManager);
-        recyclerVIew.setHasFixedSize(true);
-        recyclerVIew.setItemAnimator(new DefaultItemAnimator());
-        recyclerVIew.invalidate();
-        loadAdapter();
-
-    }
-
     private void loadAdapter() {
         if (newsObjs.size() > 1)
             relatedNewsTextView.setVisibility(View.VISIBLE);
@@ -422,6 +496,11 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         if (news.getImg().length() > 0)
             BasicUtilMethods.loadImage(this, news.getImg(), image);
 
+        if (news.getIsSaved() == 1) {
+            newsAddToFav.setColorFilter(SAVED_COLOR);
+        } else {
+            newsAddToFav.setColorFilter(UN_SAVED_COLOR);
+        }
         mainLayout.setVisibility(View.VISIBLE);
         titleTextView.setText(news.getTitle());
         newsCategoryTextView.setText(news.getNewsCategoryName());
@@ -429,34 +508,18 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         String desc = news.getDescription();
         desc = "<html><body><p align=\"justify\">" + desc + "</p></body></html>";
+
+        webSettings.setDefaultFontSize(50);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
-
-//        scrollUp();
         /**
          * toggle the favourite icon color for saved/empty respectively
          */
 
-        toggleFavouriteState();
 
-
-    }
-
-    private void toggleFavouriteState() {
-        //if news already exist in favourite, change the color of fav icon to color that should be shown.
-        //and versa
-        if (isNewsInFavouite) {
-            newsAddToFav.setColorFilter(getResources().getColor(R.color.grid_3));
-            Log.i(TAG, "was in fav");
-        } else {
-            newsAddToFav.setColorFilter(getResources().getColor(R.color.light_grey));
-            Log.i(TAG, "was not in fav");
-        }
-    }
-
-    private Boolean checkIfNewsWasAddedToFavourite(String newsType, String newsCategoryId, String newsId) {
-        isNewsInFavouite = db.isNewsPresent(newsType, newsCategoryId, newsId);
-        return isNewsInFavouite;
+        Log.i("selectednewsduringSave:", news.toString());
     }
 
 
@@ -557,12 +620,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         switch (item.getItemId()) {
             case R.id.news_font_control_small:
                 scrollUp();
-                webSettings.setDefaultFontSize(15);
+                webSettings.setDefaultFontSize(50);
                 break;
 
             case R.id.news_font_control_large:
                 scrollUp();
-                webSettings.setDefaultFontSize(20);
+                webSettings.setDefaultFontSize(60);
                 break;
 
             case android.R.id.home:
@@ -589,20 +652,17 @@ public class NewsDetailActivity extends BaseThemeActivity implements
             newsObjs.get(i).setIsTOShow(1);
         }
         newsObjs.get(position).setIsTOShow(0);
-//        getNewsDetailFromServer(selectedNews.getNewsId());
-        isNewsInFavouite = checkIfNewsWasAddedToFavourite(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-//
-        if (isNewsInFavouite) {
-            if (BasicUtilMethods.isNetworkOnline(NewsDetailActivity.this)) {
-                getNewsDetailFromServer(selectedNews.getNewsId());
-            } else {
-                MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+        if (BasicUtilMethods.isNetworkOnline(this)) {
+            getNewsDetailFromServer(selectedNews.getNewsId());
+            scrollUp();
+        } else {
+            if (db.isNewsDetailPresent(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId())) {
+                scrollUp();
                 loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
             }
-        } else {
-            getNewsDetailFromServer(selectedNews.getNewsId());
+            MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
         }
-        scrollUp();
+
     }
 
     private void scrollUp() {

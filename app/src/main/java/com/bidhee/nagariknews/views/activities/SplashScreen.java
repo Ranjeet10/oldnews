@@ -24,8 +24,6 @@ public class SplashScreen extends AppCompatActivity implements Animation.Animati
 
     @Bind(R.id.logo_image)
     ImageView logoImage;
-    @Bind(R.id.powered_by_text_view)
-    TextView poweredByTextView;
 
     private Thread splashTimer;
     Animation fromCenterToBottomtAnim;
@@ -71,14 +69,11 @@ public class SplashScreen extends AppCompatActivity implements Animation.Animati
 
     private void loadAnimations() {
         logoImage.setVisibility(View.VISIBLE);
-        poweredByTextView.setVisibility(View.VISIBLE);
 
-        fromCenterToBottomtAnim = AnimationUtils.loadAnimation(this, R.anim.splash_slide_out_from_center_to_bottom);
-        logoAnimation = AnimationUtils.loadAnimation(this, R.anim.zoom_in_fad_in);
+        logoAnimation = AnimationUtils.loadAnimation(this, R.anim.center_zoom_in);
 
         logoAnimation.setAnimationListener(this);
         logoImage.startAnimation(logoAnimation);
-        poweredByTextView.startAnimation(fromCenterToBottomtAnim);
     }
 
     @Override

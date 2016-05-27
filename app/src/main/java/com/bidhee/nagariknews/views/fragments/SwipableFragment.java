@@ -155,6 +155,22 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                      * Adding to cache
                      */
                     if (newsListToShow != null) {
+                        /**
+                         * Deleting the news from sqlite if present
+                         */
+
+                        ArrayList<NewsObj> fromCache = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                        for (int i = 0; i < fromCache.size(); i++) {
+                            try {
+                                db.deleteRowFromNews(fromCache.get(i).getNewsType(), fromCache.get(i).getNewsCategoryId(), fromCache.get(i).getNewsId());
+                            } catch (NullPointerException npe) {
+                                npe.printStackTrace();
+                            }
+                        }
+
+                        /**
+                         * Adding the news fetched from the remote server to sqlite db
+                         */
                         for (int i = 0; i < newsListToShow.size(); i++) {
                             try {
                                 db.saveNews(newsListToShow.get(i));
@@ -173,7 +189,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
             @Override
             public void onErrorResponse(VolleyError error) {
                 try {
-                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId);
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
                     loadDatas(newsListToShow);
                     loadBannerViewPager(newsListToShow);
                 } catch (NullPointerException npe) {
@@ -246,16 +262,12 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 String newsId = obj.getString("id");
                 String newsTile = obj.getString("title");
                 String introText = obj.getString("introText");
-
-                String publishDate = obj.getString("publishOn");
-                try {
-                    publishDate = publishDate.substring(0, publishDate.lastIndexOf("+"));
-                    publishDate = publishDate.replace("T", " ");
-                    publishDate = BasicUtilMethods.getTimeAgo(publishDate);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String publishDate;
+                if (obj.has("nepaliDate")) {
+                    publishDate = obj.getString("nepaliDate");
+                } else {
+                    publishDate = obj.getString("publishOnDate");
                 }
-
 
                 String publishedBy = "";
                 String img = obj.getString("featuredImage");
@@ -267,7 +279,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 //its the category name
                 arrayName = categoryName;
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1);
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1,0);
                 newsObjs.add(newsObj);
             }
 
@@ -375,6 +387,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
              * when the fragment is re-created during viewpager swipe
              */
             newsListToShow = savedInstanceState.getParcelableArrayList(StaticStorage.KEY_NEWS_SAVED_STATE);
+            showContentNotFoundLayoutIfNeeded();
         } else {
             newsType = Dashboard.sessionManager.getSwitchedNewsValue();
             if (newsListToShow.size() <= 0) {
@@ -382,15 +395,15 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     getNewsTitles(Dashboard.baseUrl, 1, categoryId);
                 } else {
                     MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
-                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId);
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
                     loadBannerViewPager(newsListToShow);
+                    showContentNotFoundLayoutIfNeeded();
                 }
             }
 
         }
         resetNewsAdapter();
         loadMoreListener(linearLayoutManager);
-        showContentNotFoundLayoutIfNeeded();
     }
 
     private void resetNewsAdapter() {
@@ -440,14 +453,14 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
     @Override
     public void onChildItemPositionListen(int position, View view) {
-
+        NewsObj newsObj = newsListToShow.get(position);
         if (view.getId() == R.id.news_share_text_view) {
 
         } else if (view.getId() == R.id.news_show_detail_text_view) {
 
         } else {
 
-            if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+            if (BasicUtilMethods.isNetworkOnline(getActivity()) || db.isNewsDetailPresent(newsObj.getNewsType(), newsObj.getNewsCategoryId(), newsObj.getNewsId())) {
                 Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
                 newsListToShow.get(position).setIsTOShow(0);
                 for (int i = 0; i < newsListToShow.size(); i++) {
@@ -460,6 +473,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 startActivity(newsDetailIntent);
             } else {
                 MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK).show();
+
             }
 
         }
@@ -475,6 +489,5 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        db.close();
     }
 }

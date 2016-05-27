@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.Utils.ToggleRefresh;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.views.activities.Dashboard;
@@ -72,7 +74,12 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     private Response.ErrorListener errorListener;
     private ProgressDialog dialog;
     private int TYPE;
+    private String gallery;
+    private final String PHOTO = "photo";
+    private final String VIDEO = "video";
+    private final String CARTOON = "cartoon";
 
+    private SqliteDatabase db;
 
     public static FragmentGallery createNewInstance(int type) {
         FragmentGallery frag = new FragmentGallery();
@@ -97,6 +104,9 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         {
             TYPE = args.getInt(StaticStorage.KEY_GALLERY_TYPE);
         }
+
+        db = new SqliteDatabase(getActivity());
+        db.open();
 
     }
 
@@ -142,16 +152,36 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             loadAdapter(multimediaList);
         } else {
             if (TYPE == StaticStorage.VIDEOS) {
+                gallery = VIDEO;
+                if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+                    fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
+                } else {
+                    try {
+                        parseResponse(db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery));
+                    } catch (CursorIndexOutOfBoundsException exception) {
+                        exception.printStackTrace();
+                    }
+                    toggleContentNotFoundLayout();
+                    MySnackbar.showSnackBar(getActivity(), galleryRecyclerView, BaseThemeActivity.NO_NETWORK).show();
+                }
 
-                fetchYoutubeChannelData(ServerConfig.NAGARIK_VIDEO_CHANNEL_ID, 45);
-
-            } else if (TYPE == StaticStorage.PHOTOS) {
-
-                fetchGalleryFromOwnServer("photo");
-
-            } else if (TYPE == StaticStorage.CARTOONS) {
-
-                fetchGalleryFromOwnServer("cartoon");
+            } else {
+                if (TYPE == StaticStorage.PHOTOS) {
+                    gallery = PHOTO;
+                } else if (TYPE == StaticStorage.CARTOONS) {
+                    gallery = CARTOON;
+                }
+                if (BasicUtilMethods.isNetworkOnline(getActivity())) {
+                    fetchGalleryFromOwnServer();
+                } else {
+                    try {
+                        parseResponse(db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery));
+                    } catch (CursorIndexOutOfBoundsException exception) {
+                        exception.printStackTrace();
+                    }
+                    toggleContentNotFoundLayout();
+                    MySnackbar.showSnackBar(getActivity(), galleryRecyclerView, BaseThemeActivity.NO_NETWORK).show();
+                }
             }
         }
 
@@ -167,10 +197,10 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
         );
     }
 
-    private void fetchGalleryFromOwnServer(String galleryType) {
+    private void fetchGalleryFromOwnServer() {
         dialog.show();
         handleServerResponse();
-        WebService.getServerData(ServerConfig.getGalleryUrl(Dashboard.baseUrl, galleryType), serverResponse, errorListener);
+        WebService.getServerData(ServerConfig.getGalleryUrl(Dashboard.baseUrl, gallery), serverResponse, errorListener);
     }
 
     private void loadAdapter(ArrayList<Multimedias> multimediaList) {
@@ -195,8 +225,19 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             contentNotFoundLayout.setVisibility(View.GONE);
 
         } else {
-            contentNotFoundTextView.setText(BaseThemeActivity.EMPTY_YOUTUBE_VIDEOS);
-            Log.i(TAG, BaseThemeActivity.EMPTY_YOUTUBE_VIDEOS);
+            String string = "";
+            switch (gallery) {
+                case VIDEO:
+                    string = BaseThemeActivity.EMPTY_YOUTUBE_VIDEOS;
+                    break;
+                case PHOTO:
+                    string = BaseThemeActivity.EMPTY_PHOTOS;
+                    break;
+                case CARTOON:
+                    string = BaseThemeActivity.EMPTY_CARTOONS;
+                    break;
+            }
+            contentNotFoundTextView.setText(string);
             contentNotFoundLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -204,8 +245,6 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     private void fetchYoutubeChannelData(String channelId, int count) {
         dialog.show();
         handleServerResponse();
-        if (!BasicUtilMethods.isNetworkOnline(getActivity()))
-            MySnackbar.showSnackBar(getActivity(), galleryRecyclerView, BaseThemeActivity.NO_NETWORK).show();
         WebService.getServerData(ServerConfig.getYoutubeChannelLinkUrl(channelId, count), serverResponse, errorListener);
 
     }
@@ -217,49 +256,12 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
             public void onResponse(String response) {
                 dialog.dismiss();
                 Log.i(TAG, response);
-//                multimediaList = new ArrayList<>();
-                try {
-                    JSONObject nodeObject = new JSONObject(response);
-                    if (TYPE == StaticStorage.VIDEOS) {
-                        JSONArray itemArray = nodeObject.getJSONArray("items");
-                        for (int i = 0; i < itemArray.length(); i++) {
-                            JSONObject itemObject = itemArray.getJSONObject(i);
-                            JSONObject idObject = itemObject.getJSONObject("id");
-                            String id = idObject.getString("videoId");
 
-                            JSONObject snippet = itemObject.getJSONObject("snippet");
+                //delete response from the local cache and re-add fresh response
+                db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
 
-                            String publishDagte = snippet.getString("publishedAt");
-                            publishDagte = publishDagte.substring(0, publishDagte.lastIndexOf("."));
-                            publishDagte = publishDagte.replace("T", " ");
-                            publishDagte = BasicUtilMethods.getTimeAgo(publishDagte);
-
-                            String title = snippet.getString("title");
-                            multimediaList.add(new Multimedias("", title, id, "", publishDagte));
-                        }
-
-                    } else if (TYPE == StaticStorage.PHOTOS || TYPE == StaticStorage.CARTOONS) {
-                        if (nodeObject.has("status")) {
-                            String status = nodeObject.getString("status");
-                            if (status.equals("success")) {
-                                JSONArray galleryArray = nodeObject.getJSONArray("data");
-                                for (int i = 0; i < galleryArray.length(); i++) {
-                                    JSONObject data = galleryArray.getJSONObject(i);
-                                    String id = data.getString("id");
-                                    String title = data.getString("title");
-                                    String image = data.getString("featuredImage");
-                                    String date = data.getString("publishOn");
-                                    multimediaList.add(new Multimedias(id, title, image, "", date));
-                                }
-                            }
-                        }
-                    }
-
-                    loadAdapter(multimediaList);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                parseResponse(response);
             }
         };
 
@@ -270,6 +272,51 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
                 toggleContentNotFoundLayout();
             }
         };
+    }
+
+    private void parseResponse(String response) {
+        try {
+            JSONObject nodeObject = new JSONObject(response);
+            if (TYPE == StaticStorage.VIDEOS) {
+                JSONArray itemArray = nodeObject.getJSONArray("items");
+                for (int i = 0; i < itemArray.length(); i++) {
+                    JSONObject itemObject = itemArray.getJSONObject(i);
+                    JSONObject idObject = itemObject.getJSONObject("id");
+                    String id = idObject.getString("videoId");
+
+                    JSONObject snippet = itemObject.getJSONObject("snippet");
+
+                    String publishDagte = snippet.getString("publishedAt");
+                    publishDagte = publishDagte.substring(0, publishDagte.lastIndexOf("."));
+                    publishDagte = publishDagte.replace("T", " ");
+                    publishDagte = BasicUtilMethods.getTimeAgo(publishDagte);
+
+                    String title = snippet.getString("title");
+                    multimediaList.add(new Multimedias("", title, id, "", publishDagte));
+                }
+
+            } else if (TYPE == StaticStorage.PHOTOS || TYPE == StaticStorage.CARTOONS) {
+                if (nodeObject.has("status")) {
+                    String status = nodeObject.getString("status");
+                    if (status.equals("success")) {
+                        JSONArray galleryArray = nodeObject.getJSONArray("data");
+                        for (int i = 0; i < galleryArray.length(); i++) {
+                            JSONObject data = galleryArray.getJSONObject(i);
+                            String id = data.getString("id");
+                            String title = data.getString("title");
+                            String image = data.getString("featuredImage");
+                            String date = data.getString("publishOn");
+                            multimediaList.add(new Multimedias(id, title, image, "", date));
+                        }
+                    }
+                }
+            }
+
+            loadAdapter(multimediaList);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

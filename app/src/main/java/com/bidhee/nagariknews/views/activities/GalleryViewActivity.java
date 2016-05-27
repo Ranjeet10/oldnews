@@ -1,9 +1,11 @@
 package com.bidhee.nagariknews.views.activities;
 
 import android.app.ProgressDialog;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -15,6 +17,7 @@ import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.server_request.ServerConfig;
 import com.bidhee.nagariknews.controller.server_request.WebService;
+import com.bidhee.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.model.epaper.Epaper;
 import com.bidhee.nagariknews.model.epaper.Page;
@@ -57,6 +60,7 @@ public class GalleryViewActivity extends BaseThemeActivity {
     ArrayList<Multimedias> multimedias;
     PhotosCartoonPagerAdapter photosCartoonPagerAdapter;
     private int POSITION;
+    private SqliteDatabase db;
 
 
     @Override
@@ -84,7 +88,9 @@ public class GalleryViewActivity extends BaseThemeActivity {
             date = getIntent().getExtras().getString("date");
 
         }
-
+        db = new SqliteDatabase(this);
+        db.open();
+        epaperPages = new ArrayList<>();
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -98,7 +104,7 @@ public class GalleryViewActivity extends BaseThemeActivity {
             handleServerResponse();
             fetchEpapers();
         } else {
-            photosCartoonPagerAdapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), multimedias, TYPE,false);
+            photosCartoonPagerAdapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), multimedias, TYPE, false);
             epaperViewpager.setAdapter(photosCartoonPagerAdapter);
             epaperViewpager.setCurrentItem(POSITION);
         }
@@ -127,36 +133,23 @@ public class GalleryViewActivity extends BaseThemeActivity {
             dialog.show();
             WebService.getServerData(ServerConfig.getEpaperPages(epaperId), response, errorListener);
         } else {
+            loadingFromCache();
             MySnackbar.showSnackBar(this, epaperViewpager, BaseThemeActivity.NO_NETWORK);
         }
     }
 
     private void handleServerResponse() {
-        epaperPages = new ArrayList<>();
         response = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 dialog.dismiss();
                 try {
-                    JSONObject nodeObject = new JSONObject(response);
-                    String status = nodeObject.getString("status");
-                    if (status.equalsIgnoreCase("success")) {
-                        JSONObject dataObject = nodeObject.getJSONObject("data");
-                        JSONArray images = dataObject.getJSONArray("images");
-                        for (int i = 0; i < images.length(); i++) {
-                            JSONObject imageObject = images.getJSONObject(i);
-                            int id = imageObject.getInt("id");
-                            String imageUrl = imageObject.getString("imageUrl");
-                            epaperPages.add(new Page(id, imageUrl));
-                        }
-                        epaperPagerAdapter = new EpaperPagerAdapter(getSupportFragmentManager(), epaperPages);
-                        epaperViewpager.setAdapter(epaperPagerAdapter);
-                    } else {
-                        MySnackbar.showSnackBar(GalleryViewActivity.this, epaperViewpager, StaticStorage.SOMETHING_WENT_WRONG).show();
-                    }
-                } catch (JSONException e) {
+                    db.deleteEpaperPages(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epaperId));
+                    db.saveEpaperPages(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epaperId), response);
+                } catch (CursorIndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
+                parseResponse(response);
             }
         };
 
@@ -164,8 +157,43 @@ public class GalleryViewActivity extends BaseThemeActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 dialog.dismiss();
+                loadingFromCache();
             }
         };
+    }
+
+    private void loadingFromCache() {
+        String cacheResponse;
+        try {
+            cacheResponse = db.getEpaperPages(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epaperId));
+            if (!TextUtils.isEmpty(cacheResponse))
+                parseResponse(cacheResponse);
+        } catch (CursorIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parseResponse(String response) {
+        try {
+            JSONObject nodeObject = new JSONObject(response);
+            String status = nodeObject.getString("status");
+            if (status.equalsIgnoreCase("success")) {
+                JSONObject dataObject = nodeObject.getJSONObject("data");
+                JSONArray images = dataObject.getJSONArray("images");
+                for (int i = 0; i < images.length(); i++) {
+                    JSONObject imageObject = images.getJSONObject(i);
+                    int id = imageObject.getInt("id");
+                    String imageUrl = imageObject.getString("imageUrl");
+                    epaperPages.add(new Page(id, imageUrl));
+                }
+                epaperPagerAdapter = new EpaperPagerAdapter(getSupportFragmentManager(), epaperPages);
+                epaperViewpager.setAdapter(epaperPagerAdapter);
+            } else {
+                MySnackbar.showSnackBar(GalleryViewActivity.this, epaperViewpager, StaticStorage.SOMETHING_WENT_WRONG).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setPageTitle(int currentPageNumber) {

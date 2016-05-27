@@ -124,7 +124,7 @@ public class BasicUtilMethods {
 
                         @Override
                         public void onError() {
-                            //Try again online if cache failed
+//                            //Try again online if cache failed
                             try {
                                 Picasso.with(context)
                                         .load(url)

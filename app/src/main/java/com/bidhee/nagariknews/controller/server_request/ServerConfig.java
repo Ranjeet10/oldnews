@@ -38,6 +38,11 @@ public class ServerConfig {
         return url;
     }
 
+    public static String getSaveNewsTitleUrl(String baseurl) {
+        String url = baseurl + "/api/auth/saved-news";
+        return url;
+    }
+
     public static String getNewsDetailUrl(String baseUrl, String newsId) {
         String url = baseUrl + "/api/news/" + newsId + "/detail?_format=json";
         return url;
@@ -67,7 +72,7 @@ public class ServerConfig {
 
     public static String getGalleryUrl(String baseUrl, String galleryType) {
 
-        String url = baseUrl + "/api/news/list/"+galleryType+"?_format=json&page=1";
+        String url = baseUrl + "/api/news/list/" + galleryType + "?_format=json&page=1";
         return url;
     }
 
@@ -77,7 +82,7 @@ public class ServerConfig {
     }
 
     public static String getEpaperPages(int id) {
-        String url = "http://www.epaper.bidheegroup.com/api/news/1/detail?_format=json";
+        String url = "http://www.epaper.bidheegroup.com/api/news/" + id + "/detail?_format=json";
         return url;
     }
 
@@ -85,6 +90,13 @@ public class ServerConfig {
     public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
     public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
     public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
+    public static String SAVE_NEWS_URL = "http://consumers.bidheegroup.com/api/consumer/news/save";
+
+    public static String getUnsaveNewsUrl(String id, String media) {
+        String url = "http://consumers.bidheegroup.com/api/consumer/news/" + id + "/delete?media=" + media;
+        return url;
+    }
+
     public static String GCM_RREGISTRATION_URL = "";
 
     private static String[] getBaseUrlAndMedia(int newsType) {
