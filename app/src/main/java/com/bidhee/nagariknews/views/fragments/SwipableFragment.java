@@ -1,6 +1,7 @@
 package com.bidhee.nagariknews.views.fragments;
 
 import android.content.Intent;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -93,6 +94,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     private String categoryId;
     private String categoryName;
     SqliteDatabase db;
+    private Boolean isBannerLoaded = false;
 
     /**
      * response for the {@link com.android.volley.toolbox.Volley Request}
@@ -159,7 +161,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                          * Deleting the news from sqlite if present
                          */
 
-                        ArrayList<NewsObj> fromCache = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                        ArrayList<NewsObj> fromCache = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId, false);
                         for (int i = 0; i < fromCache.size(); i++) {
                             try {
                                 db.deleteRowFromNews(fromCache.get(i).getNewsType(), fromCache.get(i).getNewsCategoryId(), fromCache.get(i).getNewsId());
@@ -188,22 +190,22 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
         errorListenerNewsTitle = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.i(TAG, "loading from cache");
                 try {
-                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId, false);
                     loadDatas(newsListToShow);
                     loadBannerViewPager(newsListToShow);
-                } catch (NullPointerException npe) {
-                    npe.printStackTrace();
+                    resetNewsAdapter();
+                } catch (CursorIndexOutOfBoundsException ce) {
+                    ce.printStackTrace();
                 }
+                showContentNotFoundLayoutIfNeeded();
 
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 loadingBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
-                showContentNotFoundLayoutIfNeeded();
             }
-        }
-
-        ;
+        };
     }
 
     private void loadDatas(ArrayList<NewsObj> newsListToShow) {
@@ -214,19 +216,22 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
     }
 
     private void loadBannerViewPager(ArrayList<NewsObj> newsListToShow) {
-        if (categoryId.equals("-1")) {
-            ArrayList<Multimedias> list = new ArrayList<>();
-            for (int i = 0; i < newsListToShow.size(); i++) {
-                Log.i(TAG, "banner_size: " + newsListToShow.get(i).getImg());
-                if (!newsListToShow.get(i).getImg().equals(StaticStorage.DEFAULT_IMAGE))
-                    list.add(new Multimedias("", "", newsListToShow.get(i).getImg(), "", ""));
-            }
-            try {
-                ((Dashboard) getActivity()).setBannerViewpager(list);
-            } catch (NullPointerException npe) {
-                npe.printStackTrace();
-            }
+        if (!isBannerLoaded && newsListToShow.size() > 0) {
+            if (categoryId.equals("-1")) {
+                ArrayList<Multimedias> list = new ArrayList<>();
+                for (int i = 0; i < newsListToShow.size(); i++) {
+                    Log.i(TAG, "banner_size: " + newsListToShow.get(i).getImg());
+                    if (!newsListToShow.get(i).getImg().equals(StaticStorage.DEFAULT_IMAGE))
+                        list.add(new Multimedias("", "", newsListToShow.get(i).getImg(), "", ""));
+                }
+                try {
+                    ((Dashboard) getActivity()).setBannerViewpager(list);
+                } catch (NullPointerException npe) {
+                    npe.printStackTrace();
+                }
 
+            }
+            isBannerLoaded = true;
         }
     }
 
@@ -279,7 +284,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 //its the category name
                 arrayName = categoryName;
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1,0);
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
                 newsObjs.add(newsObj);
             }
 
@@ -395,7 +400,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                     getNewsTitles(Dashboard.baseUrl, 1, categoryId);
                 } else {
                     MySnackbar.showSnackBar(getActivity(), loadingBar, BaseThemeActivity.NO_NETWORK).show();
-                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId,false);
+                    newsListToShow = (ArrayList<NewsObj>) db.getNewsList(String.valueOf(newsType), categoryId, false);
                     loadBannerViewPager(newsListToShow);
                     showContentNotFoundLayoutIfNeeded();
                 }
@@ -403,8 +408,10 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
         }
         resetNewsAdapter();
-        loadMoreListener(linearLayoutManager);
+        if (BasicUtilMethods.isNetworkOnline(getActivity()))
+            loadMoreListener(linearLayoutManager);
     }
+
 
     private void resetNewsAdapter() {
         newsTitlesAdapter = new NewsTitlesAdapter(false, Integer.parseInt(categoryId), newsListToShow);

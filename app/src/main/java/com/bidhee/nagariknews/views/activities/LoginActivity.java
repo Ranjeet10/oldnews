@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -99,6 +100,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private String TAG = getClass().getSimpleName();
     private ProgressDialog dialog;
+    private Boolean isFromRegister = false;
 
 
     //SessionManager
@@ -278,6 +280,7 @@ public class LoginActivity extends AppCompatActivity implements
                 String secret = authToken.secret;
 
                 dialog.show();
+                isFromRegister = false;
                 WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_TWITTER, token, secret), signUpResponse, errorListener);
             }
 
@@ -299,6 +302,7 @@ public class LoginActivity extends AppCompatActivity implements
                 fbAccessToken = loginResult.getAccessToken().getToken();
                 Log.i(TAG, "accesstoken : " + fbAccessToken);
                 dialog.show();
+                isFromRegister = false;
                 WebService.authRequest(ServerConfig.AUTH_URL, getJsonBody(StaticStorage.LOGIN_TYPE_FACEBOOK, fbAccessToken, null), signUpResponse, errorListener);
 
             }
@@ -349,6 +353,7 @@ public class LoginActivity extends AppCompatActivity implements
      */
     @OnClick(R.id.btn_login)
     void onLoginClick() {
+        isFromRegister = false;
         attemptLogin(loginEmailField.getText().toString(), loginPasswordField.getText().toString());
 
     }
@@ -508,7 +513,7 @@ public class LoginActivity extends AppCompatActivity implements
         params.put("nagarik_consumer[name]", name);
         params.put("nagarik_consumer[email]", email);
         params.put("nagarik_consumer[plainPassword]", password);
-
+        isFromRegister = true;
         WebService.hitServerWithParams(ServerConfig.REGISTER_URL, params, signUpResponse, errorListener);
 
     }
@@ -523,13 +528,35 @@ public class LoginActivity extends AppCompatActivity implements
                     JSONObject sObject = new JSONObject(response);
 //                    if (sObject.has("status") && sObject.getString("status").equals("success")) {
                     JSONObject dataObject = sObject.getJSONObject("data");
-                    String username = dataObject.getString("username");
-                    String email = dataObject.getString("email");
-                    String name = dataObject.getString("name");
-                    String token = dataObject.getString("token");
-                    String profile_pic = dataObject.getString("profile_picture");
+                    final String username = dataObject.getString("username");
+                    final String email = dataObject.getString("email");
+                    final String name = dataObject.getString("name");
+                    final String token = dataObject.getString("token");
+                    final String profile_pic = dataObject.getString("profile_picture");
 
-                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                    if (isFromRegister) {
+
+                        Thread sucessmessageThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                MySnackbar.showSnackBar(LoginActivity.this, btnLogin, "Registered successfully").show();
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                                }
+                            }
+                        });
+
+
+                        sucessmessageThread.start();
+
+                    } else {
+
+                        createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                    }
 //                    } else if (sObject.has("status")) {
 //                        if (sObject.getString("status").equals("error"))
 //                            if (sObject.has("message")) {
@@ -658,11 +685,11 @@ public class LoginActivity extends AppCompatActivity implements
 
     // [START signIn]
     private void signIn() {
+        isFromRegister = false;
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     // [END signIn]
-
 
 
     @Override
@@ -719,7 +746,8 @@ public class LoginActivity extends AppCompatActivity implements
             String token = null;
             String scopes = "oauth2:profile email";
             try {
-                token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient), scopes);
+                if (mGoogleApiClient.isConnected())
+                    token = GoogleAuthUtil.getToken(getApplicationContext(), Plus.AccountApi.getAccountName(mGoogleApiClient), scopes);
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
             } catch (UserRecoverableAuthException e) {

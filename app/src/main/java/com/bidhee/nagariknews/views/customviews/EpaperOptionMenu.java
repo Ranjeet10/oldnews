@@ -50,12 +50,17 @@ public class EpaperOptionMenu extends Dialog {
      */
     @OnClick(R.id.menu_purweli)
     public void onMenuPurweliClicked() {
-        listPositionListener.tappedPosition(1);
+        listPositionListener.tappedPosition(0);
         dismiss();
     }
 
     @OnClick(R.id.menu_paschimi)
     public void onMenuPaschimiClicked() {
+        listPositionListener.tappedPosition(1);
+        dismiss();
+    }
+    @OnClick(R.id.menu_all_epaper_nagarik)
+    public void onMenuNagarikClicked() {
         listPositionListener.tappedPosition(2);
         dismiss();
     }

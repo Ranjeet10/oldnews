@@ -138,6 +138,7 @@ public class Dashboard extends BaseThemeActivity
     public static String currentNewsType;
     private Boolean collapseToolbar = false;
     public static int logoImage;
+    private PhotosCartoonPagerAdapter adapter;
 
 //    public static String baseUrl = "";
 
@@ -316,11 +317,13 @@ public class Dashboard extends BaseThemeActivity
 
 
     public void setBannerViewpager(ArrayList<Multimedias> list) {
-        PhotosCartoonPagerAdapter adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
-        bannerViewpager.setAdapter(adapter);
-        indicator.setViewPager(bannerViewpager);
-        NUM_PAGES = list.size();
-        swipePager();
+//        if (adapter.getCount() < 0) {
+            adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
+            bannerViewpager.setAdapter(adapter);
+            indicator.setViewPager(bannerViewpager);
+            NUM_PAGES = list.size();
+            swipePager();
+//        }
     }
 
     @OnClick(R.id.btn_epaper_option)
@@ -333,7 +336,7 @@ public class Dashboard extends BaseThemeActivity
         wlp.gravity = Gravity.TOP | Gravity.RIGHT;
 
         wlp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        wlp.y = 100;
+        wlp.y = 50;
         window.setAttributes(wlp);
 
 

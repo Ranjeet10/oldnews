@@ -14,10 +14,10 @@
 
         <ImageView
             android:id="@+id/gallery_thumbnail"
-            android:layout_width="@dimen/news_title_image_h"
+            android:layout_width="@dimen/news_item_height"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/andyrubin" />
+            android:src="@mipmap/logo" />
 
         <LinearLayout
             android:layout_centerVertical="true"

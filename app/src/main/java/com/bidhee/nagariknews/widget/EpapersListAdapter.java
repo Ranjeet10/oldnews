@@ -40,7 +40,8 @@ public class EpapersListAdapter extends RecyclerView.Adapter<EpapersListAdapter.
 
     @Override
     public void onBindViewHolder(EpaperViewHolder holder, int position) {
-        holder.galleryItemTitleTextView.setText(epapers.get(position).getDate());
+
+        holder.galleryItemTitleTextView.setText(epapers.get(position).getShowDate());
         holder.galleryThumbnail.setVisibility(View.GONE);
         holder.epaperThumbnail.setVisibility(View.VISIBLE);
         Picasso.with(context)

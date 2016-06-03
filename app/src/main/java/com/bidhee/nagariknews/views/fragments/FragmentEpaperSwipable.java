@@ -15,6 +15,8 @@ import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.BasicUtilMethods;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.controller.interfaces.ListPositionListener;
+import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
+import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.customviews.LisDialog;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
 import com.squareup.picasso.Callback;
@@ -36,6 +38,8 @@ public class FragmentEpaperSwipable extends Fragment {
     ProgressBar progressBar;
     @Bind(R.id.reload_image_view)
     ImageView reloadImage;
+
+    private int PLACE_HOLDER;
 
     @Bind(R.id.btn_gallery_option)
     ImageView btnOption;
@@ -106,6 +110,17 @@ public class FragmentEpaperSwipable extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
+            case 1:
+                PLACE_HOLDER=R.mipmap.republica;
+                break;
+            case 2:
+                PLACE_HOLDER=R.mipmap.nagarik;
+                break;
+            case 3:
+                PLACE_HOLDER=R.mipmap.sukrabar;
+                break;
+        }
         loadImage(pageUrl);
     }
 
@@ -113,8 +128,8 @@ public class FragmentEpaperSwipable extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
                 .load(pageUrl)
-                .error(R.drawable.nagariknews)
-                .placeholder(R.drawable.nagariknews)
+                .error(PLACE_HOLDER)
+                .placeholder(PLACE_HOLDER)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {

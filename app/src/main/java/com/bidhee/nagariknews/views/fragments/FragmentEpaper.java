@@ -66,6 +66,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     //    private int TYPE = 0;
 
+    private int SELECTED_POSITION = 2;
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
     private String gallery = "epaper";
@@ -92,7 +93,6 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        epapers = new ArrayList<>();
         db = new SqliteDatabase(getActivity());
         db.open();
     }
@@ -126,8 +126,8 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
 
         gridLayoutManager = (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ?
-                new GridLayoutManager(getActivity(), 2) :
-                new GridLayoutManager(getActivity(), 4);
+                new GridLayoutManager(getActivity(), 3) :
+                new GridLayoutManager(getActivity(), 5);
 
         epaperRecyclerView.setLayoutManager(gridLayoutManager);
         epaperRecyclerView.setHasFixedSize(true);
@@ -147,10 +147,24 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void fetchEpaper() {
+        epapers = new ArrayList<>();
         if (BasicUtilMethods.isNetworkOnline(getActivity())) {
             ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
             handleServerResponse();
-            WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+            if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
+
+                if (SELECTED_POSITION == 0) {
+                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI), response, errorListener);
+                } else if (SELECTED_POSITION == 1) {
+                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI), response, errorListener);
+                } else if (SELECTED_POSITION == 2) {
+                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+                }
+
+            } else {
+                WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+            }
+
         } else {
             loadFromCache();
             MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
@@ -163,8 +177,27 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             public void onResponse(String response) {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 try {
-                    db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
-                    db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+                    if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
+                        if (SELECTED_POSITION == 0) {
+
+                            db.deleteLocalGallery(BaseThemeActivity.PURBELI, gallery);
+                            db.saveGallery(BaseThemeActivity.PURBELI, gallery, response);
+
+                        } else if (SELECTED_POSITION == 1) {
+
+                            db.deleteLocalGallery(BaseThemeActivity.PASCHIMELI, gallery);
+                            db.saveGallery(BaseThemeActivity.PASCHIMELI, gallery, response);
+
+                        } else {
+
+                            db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                            db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+
+                        }
+                    } else {
+                        db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                        db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+                    }
                 } catch (CursorIndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
@@ -183,6 +216,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void parseResponse(String response) {
+
         try {
             JSONObject nodeObject = new JSONObject(response);
             String status = nodeObject.getString("status");
@@ -193,12 +227,16 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
                     JSONObject dObject = dataArray.getJSONObject(i);
                     int id = dObject.getInt("id");
                     String media = dObject.getString("media");
-                    String date = dObject.getString("publishOn");
+                    String engDate = dObject.getString("publishOnDate");
+                    String nepDate = dObject.getString("nepaliDate");
                     String coverImage = dObject.getString("coverImage");
                     int pages = dObject.getInt("totalFiles");
 
-                    date = date.substring(0, date.lastIndexOf("T"));
-                    epapers.add(new Epaper(id, media, date, coverImage, pages));
+                    if (Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
+                        epapers.add(new Epaper(id, media, engDate, nepDate, engDate, coverImage, pages));
+                    } else {
+                        epapers.add(new Epaper(id, media, engDate, nepDate, nepDate, coverImage, pages));
+                    }
                 }
                 epapersSearched = epapers;
                 epapersListAdapter = new EpapersListAdapter(epapersSearched, R.layout.single_row_gallery);
@@ -216,7 +254,21 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     private void loadFromCache() {
         try {
-            String response = db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery);
+            String response;
+            if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
+
+                if (SELECTED_POSITION == 0) {
+                    response = db.getLocalGalleryResponse(BaseThemeActivity.PURBELI, gallery);
+                } else if (SELECTED_POSITION == 1) {
+                    response = db.getLocalGalleryResponse(BaseThemeActivity.PASCHIMELI, gallery);
+                } else {
+                    response = db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                }
+
+            } else {
+                response = db.getLocalGalleryResponse(BaseThemeActivity.CURRENT_MEDIA, gallery);
+            }
+
             if (!TextUtils.isEmpty(response)) {
                 parseResponse(response);
             }
@@ -244,7 +296,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
             epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
             epaperIntent.putExtra("id", epapersSearched.get(position).getId());
-            epaperIntent.putExtra("date", epapersSearched.get(position).getDate());
+            epaperIntent.putExtra("date", epapersSearched.get(position).getEngDate());
             epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
 
             startActivity(epaperIntent);
@@ -265,7 +317,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epapersSearched = new ArrayList<>();
         for (int i = 0; i < epapers.size(); i++) {
 
-            if (epapers.get(i).getDate().contains(newText)) {
+            if (epapers.get(i).getEngDate().contains(newText)) {
 
                 epapersSearched.add(epapers.get(i));
 
@@ -278,5 +330,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     public void getSelectedEpaperFor(int position) {
+        SELECTED_POSITION = position;
+        fetchEpaper();
     }
 }

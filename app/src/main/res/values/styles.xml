@@ -122,7 +122,7 @@
     <style name="news_publish_time_text_style" parent="wrap_wrap">
         <item name="android:layout_centerVertical">true</item>
         <item name="android:textColor">@color/grey</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
     <style name="tab_menu_items_style">

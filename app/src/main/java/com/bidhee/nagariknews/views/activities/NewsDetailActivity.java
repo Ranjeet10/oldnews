@@ -389,7 +389,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog.show();
         HashMap<String, String> params = new HashMap<>();
         params.put("consumer_news[newsId]", selectedNews.getNewsId());
-        params.put("consumer_news[media]", BaseThemeActivity.CAPS_CURRENT_MEDIA);
+        params.put("consumer_news[media]", BaseThemeActivity.CURRENT_MEDIA.toUpperCase());
         WebService.hitServerWithHeaderAndParams(ServerConfig.SAVE_NEWS_URL, sessionManager.getToken(), params, saveResponse, saveErrorListener);
     }
 
@@ -428,7 +428,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog.show();
 
 
-        String url = ServerConfig.getUnsaveNewsUrl(selectedNews.getNewsId(), BaseThemeActivity.CAPS_CURRENT_MEDIA);
+        String url = ServerConfig.getUnsaveNewsUrl(selectedNews.getNewsId(), BaseThemeActivity.CURRENT_MEDIA.toUpperCase());
         Log.i(TAG, "deleteurl" + url);
         WebService.deleteNewsFromFavourite(url, sessionManager.getToken(), unSaveResponse, unsaveErrorListener);
     }
@@ -509,9 +509,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         String desc = news.getDescription();
         desc = "<html><body><p align=\"justify\">" + desc + "</p></body></html>";
 
-        webSettings.setDefaultFontSize(50);
+        setNormalFont();
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
+
+//        String head = "<head><style>img{display: inline; height: auto; max-width: 100%;}</style></head>";
+
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
         /**
@@ -522,6 +525,22 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         Log.i("selectednewsduringSave:", news.toString());
     }
 
+    private void setNormalFont() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setDefaultFontSize(50);
+        } else {
+            webSettings.setDefaultFontSize(15);
+        }
+
+    }
+
+    private void setLargeFont() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setDefaultFontSize(60);
+        } else {
+            webSettings.setDefaultFontSize(20);
+        }
+    }
 
     private void settingToolbar(final String title) {
 
@@ -620,12 +639,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         switch (item.getItemId()) {
             case R.id.news_font_control_small:
                 scrollUp();
-                webSettings.setDefaultFontSize(50);
+                setNormalFont();
                 break;
 
             case R.id.news_font_control_large:
                 scrollUp();
-                webSettings.setDefaultFontSize(60);
+                setLargeFont();
                 break;
 
             case android.R.id.home:

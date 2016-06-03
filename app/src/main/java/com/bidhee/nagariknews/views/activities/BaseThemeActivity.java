@@ -16,7 +16,9 @@ import com.bidhee.nagariknews.controller.SessionManager;
  */
 public abstract class BaseThemeActivity extends AppCompatActivity {
     public static String CURRENT_MEDIA;
-    public static String CAPS_CURRENT_MEDIA;
+    public static String NAGARIK = "nagarik";
+    public static String PURBELI = "purbeli";
+    public static String PASCHIMELI = "paschimeli";
     public static SessionManager sessionManager;
     public static String baseUrl = "";
     private int currentTheme;
@@ -53,8 +55,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
-                CURRENT_MEDIA = "myrepublica";
-                CURRENT_MEDIA = "REPUBLICA";
+                CURRENT_MEDIA = "republica";
                 CURRENT_NEWS_TITLE = getString(R.string.republica);
                 baseUrl = BuildConfig.BASE_URL_REPUBLICA;
 
@@ -77,7 +78,6 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
                 break;
             case 2:
                 CURRENT_MEDIA = "nagarik";
-                CAPS_CURRENT_MEDIA = "NAGARIK";
                 CURRENT_NEWS_TITLE = getString(R.string.nagarik);
                 baseUrl = BuildConfig.BASE_URL_NAGARIK;
                 currentTheme = R.style.NagarikTheme;
@@ -97,7 +97,6 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
                 break;
             case 3:
                 CURRENT_MEDIA = "sukrabar";
-                CAPS_CURRENT_MEDIA = "SUKRABAR";
                 CURRENT_NEWS_TITLE = getString(R.string.sukrabar);
                 baseUrl = BuildConfig.BASE_URL_SUKRABAR;
                 currentTheme = R.style.SukrabarTheme;

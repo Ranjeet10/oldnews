@@ -12,22 +12,28 @@ import java.util.List;
 public class Epaper implements Parcelable {
     private int id;
     private String media;
-    private String date;
+    private String engDate;
+    private String nepDate;
+    private String showDate;
     private String coverImage;
     private int noOfpages;
 
 
     public Epaper(Parcel parcel) {
         id = parcel.readInt();
-        date = parcel.readString();
+        engDate = parcel.readString();
+        nepDate = parcel.readString();
+        showDate = parcel.readString();
         coverImage = parcel.readString();
         noOfpages = parcel.readInt();
     }
 
-    public Epaper(int id, String media, String date, String coverImage, int noOfpages) {
+    public Epaper(int id, String media, String engDate, String nepDate, String showDate, String coverImage, int noOfpages) {
         this.id = id;
         this.media = media;
-        this.date = date;
+        this.engDate = engDate;
+        this.nepDate = nepDate;
+        this.showDate = showDate;
         this.coverImage = coverImage;
         this.noOfpages = noOfpages;
 
@@ -41,8 +47,16 @@ public class Epaper implements Parcelable {
         return media;
     }
 
-    public String getDate() {
-        return date;
+    public String getEngDate() {
+        return engDate;
+    }
+
+    public String getNepDate() {
+        return nepDate;
+    }
+
+    public String getShowDate() {
+        return showDate;
     }
 
 
@@ -64,7 +78,9 @@ public class Epaper implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(media);
-        dest.writeString(date);
+        dest.writeString(engDate);
+        dest.writeString(nepDate);
+        dest.writeString(showDate);
         dest.writeString(coverImage);
         dest.writeInt(noOfpages);
     }

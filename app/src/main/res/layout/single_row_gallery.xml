@@ -17,17 +17,17 @@
             android:layout_height="@dimen/news_title_image_h"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/andyrubin" />
+            android:scaleType="centerCrop"
+            android:src="@mipmap/logo" />
 
         <ImageView
             android:id="@+id/epaper_thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/news_item_height"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/andyrubin"
+            android:scaleType="centerInside"
+            android:src="@mipmap/logo"
             android:visibility="gone" />
 
         <TextView
@@ -38,7 +38,7 @@
             android:background="@color/transparent1"
             android:ellipsize="end"
             android:gravity="center"
-            android:padding="@dimen/screen_padding"
+            android:padding="@dimen/screen_padding_lr"
             android:singleLine="true"
             android:text="title"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
