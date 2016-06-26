@@ -3,6 +3,7 @@ package com.bidhee.nagariknews.views.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.Touch;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.bidhee.nagariknews.views.activities.BaseThemeActivity;
 import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.bidhee.nagariknews.views.customviews.LisDialog;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
+import com.bidhee.nagariknews.views.customviews.TouchImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +35,7 @@ import butterknife.OnClick;
  */
 public class FragmentEpaperSwipable extends Fragment {
     @Bind(R.id.gallery_item_image_view)
-    ImageView imageView;
+    TouchImageView imageView;
     @Bind(R.id.image_loading_progress)
     ProgressBar progressBar;
     @Bind(R.id.reload_image_view)
@@ -112,15 +114,16 @@ public class FragmentEpaperSwipable extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         switch (Dashboard.sessionManager.getSwitchedNewsValue()) {
             case 1:
-                PLACE_HOLDER=R.mipmap.republica;
+                PLACE_HOLDER = R.mipmap.republica;
                 break;
             case 2:
-                PLACE_HOLDER=R.mipmap.nagarik;
+                PLACE_HOLDER = R.mipmap.nagarik;
                 break;
             case 3:
-                PLACE_HOLDER=R.mipmap.sukrabar;
+                PLACE_HOLDER = R.mipmap.sukrabar;
                 break;
         }
+        imageView.setMaxZoom(20);
         loadImage(pageUrl);
     }
 

@@ -74,6 +74,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     EpapersListAdapter epapersListAdapter;
     GridLayoutManager gridLayoutManager;
 
+    private String EPAPER_URL = "";
     Response.Listener<String> response;
     Response.ErrorListener errorListener;
 
@@ -154,17 +155,24 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
 
                 if (SELECTED_POSITION == 0) {
-                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI), response, errorListener);
+                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI);
+//                    WebService.getServerData(EPAPER_URL, response, errorListener);
                 } else if (SELECTED_POSITION == 1) {
-                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI), response, errorListener);
+                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI);
+//                    WebService.getServerData(EPAPER_URL, response, errorListener);
                 } else if (SELECTED_POSITION == 2) {
-                    WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
+//                    WebService.getServerData(EPAPER_URL, response, errorListener);
                 }
 
+                WebService.getServerData(EPAPER_URL, response, errorListener);
             } else {
-                WebService.getServerData(ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA), response, errorListener);
+                EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
+//                WebService.getServerData(, response, errorListener);
             }
 
+            Log.i("EpaperURL:", EPAPER_URL);
+            WebService.getServerData(EPAPER_URL, response, errorListener);
         } else {
             loadFromCache();
             MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
@@ -217,6 +225,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     private void parseResponse(String response) {
 
+        Log.i("RESPONSE", response);
         try {
             JSONObject nodeObject = new JSONObject(response);
             String status = nodeObject.getString("status");

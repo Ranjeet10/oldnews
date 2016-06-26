@@ -31,6 +31,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -241,6 +242,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog.setCancelable(false);
         progressDialog.show();
         handleServerResponseForNewsDetail();
+        Log.i(TAG,"newsDetailUrl:"+ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId));
         WebService.getServerDataWithHeader(ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId), sessionManager.getToken(), serverResponseNewsDetail, errorListenernewsDetail);
     }
 
@@ -390,6 +392,11 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         HashMap<String, String> params = new HashMap<>();
         params.put("consumer_news[newsId]", selectedNews.getNewsId());
         params.put("consumer_news[media]", BaseThemeActivity.CURRENT_MEDIA.toUpperCase());
+
+        Log.i(TAG, "token:" + sessionManager.getToken());
+        Log.i(TAG, "consumer_news[newsId]:" + selectedNews.getNewsId());
+        Log.i(TAG, "consumer_news[media]:" + BaseThemeActivity.CURRENT_MEDIA.toUpperCase());
+
         WebService.hitServerWithHeaderAndParams(ServerConfig.SAVE_NEWS_URL, sessionManager.getToken(), params, saveResponse, saveErrorListener);
     }
 
@@ -439,12 +446,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
         List<RFACLabelItem> items = new ArrayList<>();
         items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Increase font size")
-                        .setResId(R.mipmap.ifont)
-                        .setIconNormalColor(MENU_COLOR)
-                        .setIconPressedColor(getResources().getColor(R.color.white))
-                        .setLabelColor(getResources().getColor(R.color.light_black))
-                        .setWrapper(0)
+                .setLabel("Increase font size")
+                .setResId(R.mipmap.ifont)
+                .setIconNormalColor(MENU_COLOR)
+                .setIconPressedColor(getResources().getColor(R.color.white))
+                .setLabelColor(getResources().getColor(R.color.light_black))
+                .setWrapper(0)
         );
         items.add(new RFACLabelItem<Integer>()
                         .setLabel("Decrease font size")
@@ -457,12 +464,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                         .setWrapper(1)
         );
         items.add(new RFACLabelItem<Integer>()
-                        .setLabel("Share this news")
-                        .setResId(R.mipmap.ic_share_black)
-                        .setIconNormalColor(MENU_COLOR)
-                        .setIconPressedColor(getResources().getColor(R.color.white))
-                        .setLabelColor(getResources().getColor(R.color.light_black))
-                        .setWrapper(2)
+                .setLabel("Share this news")
+                .setResId(R.mipmap.ic_share_black)
+                .setIconNormalColor(MENU_COLOR)
+                .setIconPressedColor(getResources().getColor(R.color.white))
+                .setLabelColor(getResources().getColor(R.color.light_black))
+                .setWrapper(2)
         );
         rfaContent
                 .setItems(items)

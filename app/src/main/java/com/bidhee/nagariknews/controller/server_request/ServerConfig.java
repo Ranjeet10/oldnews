@@ -77,23 +77,28 @@ public class ServerConfig {
     }
 
     public static String getEpaperListUrl(String media) {
-        String url = "http://www.epaper.bidheegroup.com/api/news/list?_format=json&media=" + media;
+        String url = BuildConfig.EPAPER_BASE_URL + "/api/news/list?_format=json&media=" + media;
         return url;
     }
 
     public static String getEpaperPages(int id) {
-        String url = "http://www.epaper.bidheegroup.com/api/news/" + id + "/detail?_format=json";
+        String url = BuildConfig.EPAPER_BASE_URL + "/api/news/" + id + "/detail?_format=json";
         return url;
     }
 
 
-    public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
-    public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
-    public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
-    public static String SAVE_NEWS_URL = "http://consumers.bidheegroup.com/api/consumer/news/save";
+//    public static String AUTH_URL = "http://consumers.bidheegroup.com/api/consumer/oauth";
+//    public static String REGISTER_URL = "http://consumers.bidheegroup.com/api/consumer/register";
+//    public static String LOGIN_URL = "http://consumers.bidheegroup.com/api/consumer/login";
+//    public static String SAVE_NEWS_URL = "http://consumers.bidheegroup.com/api/consumer/news/save";
+
+    public static String AUTH_URL = BuildConfig.AUTH_BASE_URL + "/api/consumer/oauth";
+    public static String REGISTER_URL = BuildConfig.AUTH_BASE_URL + "/api/consumer/register";
+    public static String LOGIN_URL = BuildConfig.AUTH_BASE_URL + "/api/consumer/login";
+    public static String SAVE_NEWS_URL = BuildConfig.AUTH_BASE_URL + "/api/consumer/news/save";
 
     public static String getUnsaveNewsUrl(String id, String media) {
-        String url = "http://consumers.bidheegroup.com/api/consumer/news/" + id + "/delete?media=" + media;
+        String url = BuildConfig.AUTH_BASE_URL + "/api/consumer/news/" + id + "/delete?media=" + media;
         return url;
     }
 

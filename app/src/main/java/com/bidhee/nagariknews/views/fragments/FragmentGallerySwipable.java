@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.Touch;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.bidhee.nagariknews.controller.interfaces.ListPositionListener;
 import com.bidhee.nagariknews.model.Multimedias;
 import com.bidhee.nagariknews.views.customviews.LisDialog;
 import com.bidhee.nagariknews.views.customviews.MySnackbar;
+import com.bidhee.nagariknews.views.customviews.TouchImageView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -39,7 +41,7 @@ public class FragmentGallerySwipable extends Fragment {
     @Bind(R.id.image_title)
     TextView imageTitleTextView;
     @Bind(R.id.gallery_item_image_view)
-    ImageView imageView;
+    TouchImageView imageView;
     @Bind(R.id.image_loading_progress)
     ProgressBar progressBar;
     @Bind(R.id.reload_image_view)
@@ -130,7 +132,7 @@ public class FragmentGallerySwipable extends Fragment {
 //            imageTitleTextView.setVisibility(View.VISIBLE);
 //            imageTitleTextView.setText(imageTitle);
 
-
+            imageView.setMaxZoom(20);
             Picasso.with(getActivity())
                     .load(imagePath)
                     .into(imageView, new Callback() {

@@ -20,7 +20,7 @@
             android:layout_width="@dimen/news_title_image_h"
             android:layout_height="@dimen/news_title_image_h"
             android:layout_marginLeft="@dimen/screen_padding"
-            android:layout_marginTop="@dimen/screen_padding"
+            android:layout_marginTop="@dimen/nav_user_image_margin"
             android:src="@drawable/empty"
             app:civ_border_color="@color/white"
             app:civ_border_width="2dp" />

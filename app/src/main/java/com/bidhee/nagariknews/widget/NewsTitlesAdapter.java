@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.bidhee.nagariknews.R;
 import com.bidhee.nagariknews.Utils.StaticStorage;
 import com.bidhee.nagariknews.model.NewsObj;
-import com.bidhee.nagariknews.views.activities.Dashboard;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
     private int categoryId;
     private Context context;
     private Boolean isFromDetail;
+    //    compile 'com.squareup.picasso:picasso:2.5.2'
 
     RecyclerPositionListener recyclerPositionListener;
 
@@ -89,7 +89,11 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
                     .load(no.getImg())
                     .placeholder(R.drawable.nagariknews)
                     .error(R.drawable.nagariknews)
+                    .resize(200, 180)
                     .into(holder.thumbnail);
+//            Glide.with(context)
+//                    .load(no.getImg())
+//                    .into(holder.thumbnail);
             holder.thumbnail.setVisibility(View.VISIBLE);
         }
 
@@ -108,9 +112,9 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
         holder.newsShareTv.getRootView().setOnClickListener(myClickListener);
 
-        if(no.isToShow()==0){
+        if (no.isToShow() == 0) {
             holder.cardView.setVisibility(View.GONE);
-        }else{
+        } else {
             holder.cardView.setVisibility(View.VISIBLE);
         }
     }

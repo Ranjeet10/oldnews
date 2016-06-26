@@ -523,7 +523,7 @@ public class LoginActivity extends AppCompatActivity implements
             @Override
             public void onResponse(String response) {
                 dialog.dismiss();
-                Log.i(TAG, response);
+                Log.i(TAG, "LoginResponse" + response);
                 try {
                     JSONObject sObject = new JSONObject(response);
 //                    if (sObject.has("status") && sObject.getString("status").equals("success")) {
@@ -631,7 +631,11 @@ public class LoginActivity extends AppCompatActivity implements
             Log.i(TAG, "google login result");
             if (mGoogleApiClient.isConnected()) {
                 Log.i(TAG, "was connected");
-                new RetrieveTokenTask(result).execute();
+                if (result != null) {
+                    new RetrieveTokenTask(result).execute();
+                } else {
+                    MySnackbar.showSnackBar(this, btnGooglePlusLogin, StaticStorage.SOMETHING_WENT_WRONG).show();
+                }
             } else {
                 Log.i(TAG, "not connected");
             }
@@ -674,6 +678,7 @@ public class LoginActivity extends AppCompatActivity implements
             dialog.show();
             String jsonBody = getJsonBody(StaticStorage.LOGIN_TYPE_GOOGLE, token, null).toString();
             Log.i(TAG, jsonBody);
+//            {"auth_google":true,"access_token":"ya29.CmEIA4fOyhVIFBZclnOZxmNuAJhu5HK4H_BF0CUREMmAH3gpgrg6s66yI8f0rkfSArD85hkbU987BKFXp07qZmLvLpnKE1Hidh5gvwVRMuYN-Jpo9IGhqap0ZfnHHfHq8ClJ"}
             WebService.authRequest(ServerConfig.AUTH_URL, jsonBody, signUpResponse, errorListener);
 
         } else {
@@ -762,8 +767,12 @@ public class LoginActivity extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.i("googletoken", s + "");
-            handleSignInResult(result, s);
+            try {
+                Log.i("googletoken", s + "");
+                handleSignInResult(result, s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

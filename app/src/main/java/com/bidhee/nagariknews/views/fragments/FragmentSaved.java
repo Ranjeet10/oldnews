@@ -191,6 +191,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
     private void getNewsTitles(String baseUrl) {
         handleServerResponseForNewsTitle();
         loadingBar.setVisibility(View.VISIBLE);
+        Log.i(TAG, "url:" + ServerConfig.getSaveNewsTitleUrl(baseUrl) + "\ntoken:" + Dashboard.sessionManager.getToken());
         WebService.getServerDataWithHeader(ServerConfig.getSaveNewsTitleUrl(baseUrl), Dashboard.sessionManager.getToken(), serverResponseNewsTitle, errorListenerNewsTitle);
     }
 

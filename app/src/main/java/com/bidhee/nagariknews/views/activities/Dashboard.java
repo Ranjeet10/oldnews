@@ -353,7 +353,7 @@ public class Dashboard extends BaseThemeActivity
                 }
                 try {
                     bannerViewpager.setCurrentItem(currentPage++, true);
-                } catch (Exception e) {
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
             }
