@@ -8,7 +8,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:329117814887:android:8abd122f47ecdbbe",
         "android_client_info": {
-          "package_name": "com.bidhee.nagariknews"
+          "package_name": "com.bajratechnologies.nagariknews"
         }
       },
       "oauth_client": [
@@ -16,7 +16,7 @@
           "client_id": "329117814887-ret8tbaqirq5p096hod6scftv3r5pqht.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.bidhee.nagariknews",
+            "package_name": "com.bajratechnologies.nagariknews",
             "certificate_hash": "452389DEC71756C184525600A7177FA8B6CF8ACA"
           }
         },
