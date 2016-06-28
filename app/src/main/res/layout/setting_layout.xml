@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.bidhee.nagariknews.views.activities.SettingActivity">
+    tools:context="com.bajratechnologies.nagariknews.views.activities.SettingActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

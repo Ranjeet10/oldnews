@@ -88,6 +88,19 @@
             android:background="@drawable/transparent_btn_grey_focus"
             android:gravity="center_vertical"
             android:text="पश्चिमी" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_red_grey" />
+
+        <TextView
+            android:id="@+id/menu_all_epaper_nagarik"
+            android:paddingLeft="@dimen/badge_padding"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:background="@drawable/transparent_btn_grey_focus"
+            android:gravity="center_vertical"
+            android:text="@string/nagarik" />
 
     </LinearLayout>
 

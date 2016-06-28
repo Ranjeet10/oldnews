@@ -5,7 +5,7 @@
     android:background="@color/transparent2">
 
 
-    <com.bidhee.nagariknews.views.customviews.TouchImageView
+    <com.bajratechnologies.nagariknews.views.customviews.TouchImageView
         android:id="@+id/gallery_item_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
