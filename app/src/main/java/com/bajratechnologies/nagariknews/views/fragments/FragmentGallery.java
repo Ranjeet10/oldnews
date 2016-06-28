@@ -243,7 +243,9 @@ public class FragmentGallery extends Fragment implements RecyclerItemClickListen
     private void fetchYoutubeChannelData(String channelId, int count) {
         dialog.show();
         handleServerResponse();
-        WebService.getServerData(ServerConfig.getYoutubeChannelLinkUrl(channelId, count), serverResponse, errorListener);
+        String url = ServerConfig.getYoutubeChannelLinkUrl(channelId, count);
+        Log.i(TAG,"YoutubeURL:"+url);
+        WebService.getServerData(url, serverResponse, errorListener);
 
     }
 

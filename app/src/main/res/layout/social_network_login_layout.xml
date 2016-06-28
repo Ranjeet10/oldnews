@@ -33,6 +33,7 @@
         android:layout_height="@dimen/tab_bar_layout_height"
         android:layout_below="@id/line_layout"
         android:layout_centerVertical="true"
+        android:visibility="visible"
         android:layout_marginTop="@dimen/screen_padding"
         android:layout_weight="1">
 

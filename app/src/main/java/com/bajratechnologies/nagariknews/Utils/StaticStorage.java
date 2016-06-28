@@ -113,11 +113,19 @@ public class StaticStorage {
                 tabs.add(new TabModel("-1", "ताजा समाचार"));
                 tabs.add(new TabModel("0", "मेरो रुची"));
                 tabs.add(new TabModel("1", "कभर स्टोरी"));
-                tabs.add(new TabModel("2", "विविध"));
-                tabs.add(new TabModel("3", "मव सम्मत"));
+                tabs.add(new TabModel("10", "अन्तरंग"));
+                tabs.add(new TabModel("3", "मत सम्मत"));
+                tabs.add(new TabModel("21", "अलग/फरक"));
+                tabs.add(new TabModel("6", "मनोरञ्जन"));
                 tabs.add(new TabModel("4", "प्रविधि"));
-                tabs.add(new TabModel("5", "संगाीत"));
                 tabs.add(new TabModel("22", "टिप्स"));
+                tabs.add(new TabModel("24", "स्वास्थ्य"));
+                tabs.add(new TabModel("2", "विविध"));
+                tabs.add(new TabModel("7", "गसिप"));
+                tabs.add(new TabModel("27", "धरान"));
+                tabs.add(new TabModel("8", "खेल"));
+                tabs.add(new TabModel("28", "पोखरा"));
+                tabs.add(new TabModel("26", "विदेशको काम"));
                 break;
         }
 
