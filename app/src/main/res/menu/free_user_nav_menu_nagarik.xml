@@ -29,7 +29,14 @@
             <!--android:icon="@mipmap/ic_library_add_black_24dp"-->
             <!--android:title="@string/extra_n" />-->
     </group>
-
+    <item android:title="@string/preferences_nep">
+        <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@mipmap/ic_info_outline_black_24dp"
+                android:title="@string/about_nep" />
+        </menu>
+    </item>
 
 
 </menu>

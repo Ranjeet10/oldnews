@@ -8,6 +8,7 @@ import com.bajratechnologies.nagariknews.BuildConfig;
 public class ServerConfig {
 
     public static String NAGARIK_VIDEO_CHANNEL_ID = "UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults";
+
     //i found it
     public static String playlisturl = "https://www.googleapis.com/youtube/v3/search?part=id%2C+snippet&channelId=UCxxx4M3jP9HcKLHJ0dFLe7g&maxResults=50&order=date&type=video%2C+playlist&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
 
@@ -60,13 +61,13 @@ public class ServerConfig {
 
     }
 
-    public static String getYoutubeChannelLinkUrl(String channelId, int count) {
-        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=" + channelId + "=" + count + "&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+    public static String getYoutubeChannelLinkUrl(String channelId, int count, String apikey) {
+        String url = "https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=" + channelId + "=" + count + "&key=" + apikey;
         return url;
     }
 
-    public static String getVideoInfoUrl(String videoId) {
-        String url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + videoId + "&key=AIzaSyBvuEzoL3_rdCuOs7wpvVxLlpIa8kVPdcs";
+    public static String getVideoInfoUrl(String videoId, String apikey) {
+        String url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + videoId + "&key=" + apikey;
         return url;
     }
 
@@ -102,7 +103,7 @@ public class ServerConfig {
         return url;
     }
 
-    public static String GCM_RREGISTRATION_URL = "";
+    public static String GCM_RREGISTRATION_URL = "http://consumers.bidheegroup.com/api/consumer/save-device-information";
 
     private static String[] getBaseUrlAndMedia(int newsType) {
         String[] bm = new String[2];

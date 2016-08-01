@@ -207,4 +207,51 @@ public class StaticStorage {
     }
 
 
+    public static String aboutString = "<html>" +
+            "<body>" +
+            "<p>" +
+            "<b>नेपाल रिपब्लिक मिडिया (प्रा) लि</b>" +
+            "<br><br>रजिस्टर्ड नंः १६३/०५४/०५५" +
+            "<br>जेडिए कम्प्लेक्स" +
+            "<br>बागदरबार, काठमाडौं" +
+            "<br>फोनः ४२६५१००" +
+            "<br>फ्याक्सः ४२५२२६२" +
+            "<br>प्रबन्ध निर्देशकः विनोदराज ज्ञवाली" +
+            "<br>निर्देशकः शोभा ज्ञवाली" +
+            "<br><br>नागरिकन्युज डटकम सन् २००९ को अप्रिल १८ तारिखदेखि सञ्चालित नेपाल रिपब्लिक मिडिया (प्रा) लि.को अनलाइन मिडिया हो।" +
+            "<br>हाम्रो अंग्रेजी अनलाइन मिडिया www.myrepublica.com पनि सञ्चालनमा छ।" +
+            "नेपाल रिपब्लिक मिडिया (प्रा) लि.ले नेपाली भाषामा नागरिक राष्ट्रिय दैनिक (गुणराज लुइँटेलको सम्पादकत्वमा) काठमाडौँ, नेपालगञ्ज र विराटनगरबाट एक साथ प्रकाशन गर्दै आएको छ भने अंग्रेजीमा Republica दैनिक (सुभाष घिमिरेको सम्पादकत्वमा) प्रकाशन गर्छ। त्यसैगरी साप्ताहिक प्रकाशन शुक्रवार (राजन नेपालको सम्पादकत्वमा) प्रकाशन गर्ने गरेको छ।" +
+            "नागरिकन्युज डटकम" +
+            "<br>समाचार संयोजनः" +
+            "<br>कृष्ण ढुंगाना" +
+            "<br>मदन चौधरी" +
+            "<br>प्रशान्त लामिछाने" +
+            "<br>मदन कोइराला" +
+            "<br>पुष्पराज कोइराला" +
+            "<br>टेकनारायण भट्टराई" +
+            "</p>" +
+            "<br>" +
+            "<b>Amended in April 2009</b>" +
+            "<br><br>'In pursuit of truth' sums up what the Republica, and its web version www.myrepublica.com, are all about. That is our calling, and our crusade. We will speak truth to people; we will speak truth to power." +
+            "<br>We are a team of professional management and journalists — one of the best in the Nepali media. Our duty toward our readers is to provide them with impartial news, bold views, in-depth analysis and thought-provoking commentary. We shall do this without fear or favor, and we shall be guided by nothing but our conscience.\n" +
+            "<br>www.myrepublica.com will bring you news as it happens. We understand that online is going to be one of the most influential medium of information in future. We will continue to grow and add ever more features, and we will lead you through this change." +
+            "<br>Welcome to your one stop window on what is happening in the country." +
+            "Republica and myrepublica.com are owned by Nepal Republic Media Private Limited." +
+            "</body>" +
+            "</html>";
+
+    public static String developedByString = "<html>" +
+            "<body>" +
+            "<p>Bidhee Private Limited is a company solely established for development and deployment of innovative products and services in the field of IT globally." +
+            "It is established to carter the growing needs in the space of mobility with quality service at reliable cost focusing on after sales service." +
+            "<br>The main vision of the company is to become a leader in developing and introducing disruptive technologies" +
+            "in mobility space having social and cultural impacts." +
+            "<br>It currently spreads it’s expertise in the scope of Mobile Application Development and Web Application Development." +
+            "<br><br>" +
+            "We are the first and single company in Nepal to develop highly valued mobile apps" +
+            "like Hamro Patro, Hamro Keyboard, Hamro Sambidhan, Nepali English Dictionary etc. with more than 3.5 million active mobile app users" +
+            "around the world. We hold premium clients across the globe and we value Corporate Social Responsibility too." +
+            "</p>" +
+            "</body>" +
+            "</html>";
 }

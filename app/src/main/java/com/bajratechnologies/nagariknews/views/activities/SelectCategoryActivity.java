@@ -228,11 +228,12 @@ public class SelectCategoryActivity extends BaseThemeActivity {
                             CheckBox checkBox = new CheckBox(SelectCategoryActivity.this);
                             checkBox.setPadding(20, 0, 0, 0);
                             checkBox.setChecked(myCheckBox.getIsPreferred());
-                            if (BaseThemeActivity.sessionManager.getSwitchedNewsValue() == 1) {
-                                checkBox.setText(myCheckBox.getAlias());
-                            } else {
+
+//                            if (BaseThemeActivity.sessionManager.getSwitchedNewsValue() == 1) {
+//                                checkBox.setText(myCheckBox.getAlias());
+//                            } else {
                                 checkBox.setText(myCheckBox.getName());
-                            }
+//                            }
 
                             selectCategoryLayout.addView(checkBox, params);
                             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

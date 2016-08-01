@@ -68,6 +68,7 @@
                     android:id="@+id/signup_profile_image"
                     android:layout_width="@dimen/news_title_image_w"
                     android:layout_height="@dimen/news_title_image_w"
+                    android:visibility="gone"
                     android:scaleType="centerCrop"
                     android:src="@drawable/empty" />
                 <!-- first name layout-->

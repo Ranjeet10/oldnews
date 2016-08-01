@@ -42,6 +42,7 @@ import com.bajratechnologies.nagariknews.controller.interfaces.ListPositionListe
 import com.bajratechnologies.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bajratechnologies.nagariknews.gcm.RegistrationIntentService;
 import com.bajratechnologies.nagariknews.model.Multimedias;
+import com.bajratechnologies.nagariknews.views.customviews.AboutDialog;
 import com.bajratechnologies.nagariknews.views.customviews.AlertDialog;
 import com.bajratechnologies.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bajratechnologies.nagariknews.views.customviews.EpaperOptionMenu;
@@ -129,6 +130,7 @@ public class Dashboard extends BaseThemeActivity
     private EpaperOptionMenu epaperOptionMenuDialog;
 
     HashMap<String, String> userDetail;
+    public static String userId = "";
     public static String userName = "";
     public static String userEmail = "";
     public static String userImage = "";
@@ -265,14 +267,28 @@ public class Dashboard extends BaseThemeActivity
     private void startGcmCheck() {
 
         if (checkPlayServices()) {
+
             String regId = BasicUtilMethods.getRegistrationId(this);
-            if (regId.isEmpty() || !SessionManager.isRegisterd(this)) {
+            Log.i(TAG, "regId:" + regId);
+
+
+            if (userDetail != null) {
+                userId = userDetail.get(SessionManager.KEY_USER_ID);
+            }
+            if ((regId.isEmpty() || !SessionManager.isRegisterdWithoutUserId(this))) {
 
                 Log.i(TAG, "USER NOT REGISTERED TO SERVER");
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
+
+            } else if ((!TextUtils.isEmpty(userId) && !SessionManager.isRegisteredWithUserId(this))) {
+
+                Log.i(TAG, "there was user but not registered for gcm");
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+
             } else {
-                Log.i(TAG, "USER REGISTERED ALREADY");
+                Log.i(TAG, "User Registered earlier");
             }
 
         } else {
@@ -318,11 +334,11 @@ public class Dashboard extends BaseThemeActivity
 
     public void setBannerViewpager(ArrayList<Multimedias> list) {
 //        if (adapter.getCount() < 0) {
-            adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
-            bannerViewpager.setAdapter(adapter);
-            indicator.setViewPager(bannerViewpager);
-            NUM_PAGES = list.size();
-            swipePager();
+        adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
+        bannerViewpager.setAdapter(adapter);
+        indicator.setViewPager(bannerViewpager);
+        NUM_PAGES = list.size();
+        swipePager();
 //        }
     }
 
@@ -399,20 +415,25 @@ public class Dashboard extends BaseThemeActivity
                 switch (toolbarChange) {
 
                     case COLLAPSED:
+                        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorPrimary));
                         break;
 
                     case EXPANDED:
-                        if (collapseToolbar)
+                        if (collapseToolbar) {
                             BasicUtilMethods.collapseAppbar(appBarLayout, null);
+
+                        }
+//                        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.transparent));
                         break;
 
                     case IDLE:
                         /**
                          * IDLE is listened when collapsing toolbar is on motion
                          */
-                        if (collapseToolbar)
+                        if (collapseToolbar) {
                             BasicUtilMethods.collapseAppbar(appBarLayout, null);
 
+                        }
                         break;
                 }
             }
@@ -631,7 +652,9 @@ public class Dashboard extends BaseThemeActivity
         //show menu item (search) if the fragment is FragmentAllNews
         //hide menu item (search) if the fragment is other than FragmentAllNews
         if (!TextUtils.isEmpty(currentFragmentTag)) {
-            if (currentFragmentTag.equals("com.bidhee.nagariknews.views.fragments.FragmentAllNews")) {
+            String packageName = getPackageName();
+            Log.i(TAG, "PakageName:" + packageName);
+            if (currentFragmentTag.equals(packageName + ".views.fragments.FragmentAllNews")) {
                 BasicUtilMethods.expandAppbar(appBarLayout, this.menu);
             } else {
                 BasicUtilMethods.collapseAppbar(appBarLayout, this.menu);
@@ -757,6 +780,11 @@ public class Dashboard extends BaseThemeActivity
                 startActivity(new Intent(Dashboard.this, SettingActivity.class));
                 shouldReplaceFragment = false;
 
+                break;
+            case R.id.nav_about:
+                AboutDialog aboutDialog = new AboutDialog();
+                aboutDialog.show(getFragmentManager(), "about");
+                shouldReplaceFragment = false;
                 break;
 
         }

@@ -121,7 +121,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements Recycl
                 youtubePlayerStock = youTubePlayer;
                 videoTitleTextView.setText(title);
                 youTubePlayer.loadVideo(videoId);
-                WebService.getServerData(ServerConfig.getVideoInfoUrl(videoId), response, errorListener);
+                WebService.getServerData(ServerConfig.getVideoInfoUrl(videoId,getString(R.string.project_server_api_key)), response, errorListener);
             }
 
             @Override
@@ -130,7 +130,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements Recycl
             }
         };
 
-        playerView.initialize(getString(R.string.apikey), listener);
+        playerView.initialize(getString(R.string.project_server_api_key), listener);
     }
 
     private void handleSererResponse() {

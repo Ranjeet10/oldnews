@@ -3,6 +3,7 @@ package com.bajratechnologies.nagariknews.views.fragments;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.CursorIndexOutOfBoundsException;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bajratechnologies.nagariknews.BuildConfig;
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
@@ -41,6 +43,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -124,9 +128,14 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         theTextArea.setTextColor(getResources().getColor(R.color.colorPrimary));
 
 
-        gridLayoutManager = (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ?
-                new GridLayoutManager(getActivity(), 3) :
-                new GridLayoutManager(getActivity(), 5);
+//        gridLayoutManager = (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) ?
+//                new GridLayoutManager(getActivity(), 2) :
+//                new GridLayoutManager(getActivity(), 3);
+
+//        gridLayoutManager = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ?
+//                new GridLayoutManager(getActivity(), 2) :
+//                new GridLayoutManager(getActivity(), 2);
+        gridLayoutManager = new GridLayoutManager(getActivity(), 2);
 
         epaperRecyclerView.setLayoutManager(gridLayoutManager);
         epaperRecyclerView.setHasFixedSize(true);
@@ -146,7 +155,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void fetchEpaper() {
-        epapers = new ArrayList<>();
+//        epapers = new ArrayList<>();
         if (BasicUtilMethods.isNetworkOnline(getActivity())) {
             ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
             handleServerResponse();
@@ -154,19 +163,17 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
                 if (SELECTED_POSITION == 0) {
                     EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI);
-//                    WebService.getServerData(EPAPER_URL, response, errorListener);
+
                 } else if (SELECTED_POSITION == 1) {
                     EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI);
-//                    WebService.getServerData(EPAPER_URL, response, errorListener);
+
                 } else if (SELECTED_POSITION == 2) {
                     EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
-//                    WebService.getServerData(EPAPER_URL, response, errorListener);
                 }
 
                 WebService.getServerData(EPAPER_URL, response, errorListener);
             } else {
                 EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
-//                WebService.getServerData(, response, errorListener);
             }
 
             Log.i("EpaperURL:", EPAPER_URL);
@@ -222,7 +229,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void parseResponse(String response) {
-
+        epapers = new ArrayList<>();
         Log.i("RESPONSE", response);
         try {
             JSONObject nodeObject = new JSONObject(response);
@@ -245,6 +252,20 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
                         epapers.add(new Epaper(id, media, engDate, nepDate, nepDate, coverImage, pages));
                     }
                 }
+
+                /**
+                 * sorting {@link epapers} in ascending order
+                 * so that the latest {@link epapers} will be displayed on top of the list
+                 */
+                Comparator<Epaper> epaperComparator = new Comparator<Epaper>() {
+                    @Override
+                    public int compare(Epaper lhs, Epaper rhs) {
+                        return rhs.getEngDate().compareTo(lhs.getEngDate());
+                    }
+                };
+
+                Collections.sort(epapers, epaperComparator);
+
                 epapersSearched = epapers;
                 epapersListAdapter = new EpapersListAdapter(epapersSearched, R.layout.single_row_gallery);
                 epaperRecyclerView.setAdapter(epapersListAdapter);
@@ -260,6 +281,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void loadFromCache() {
+        Log.i(TAG, "loading from cache");
         try {
             String response;
             if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
@@ -282,6 +304,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
 

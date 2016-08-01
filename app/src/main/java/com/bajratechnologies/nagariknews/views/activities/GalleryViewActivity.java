@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -29,6 +30,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -130,7 +134,9 @@ public class GalleryViewActivity extends BaseThemeActivity {
 
         if (BasicUtilMethods.isNetworkOnline(this)) {
             dialog.show();
-            WebService.getServerData(ServerConfig.getEpaperPages(epaperId), response, errorListener);
+            String url = ServerConfig.getEpaperPages(epaperId);
+            Log.i("EPAPER", url);
+            WebService.getServerData(url, response, errorListener);
         } else {
             loadingFromCache();
             MySnackbar.showSnackBar(this, epaperViewpager, BaseThemeActivity.NO_NETWORK);
@@ -181,10 +187,26 @@ public class GalleryViewActivity extends BaseThemeActivity {
                 JSONArray images = dataObject.getJSONArray("images");
                 for (int i = 0; i < images.length(); i++) {
                     JSONObject imageObject = images.getJSONObject(i);
-                    int id = imageObject.getInt("id");
+//                    int id = imageObject.getInt("id");
+                    int id = 1;
                     String imageUrl = imageObject.getString("imageUrl");
                     epaperPages.add(new Page(id, imageUrl));
                 }
+                /**
+                 * sorting the pages in ascending order
+                 */
+
+                Comparator<Page> pageComparator = new Comparator<Page>() {
+                    @Override
+                    public int compare(Page lhs, Page rhs) {
+                        return lhs.getPageUrl().compareTo(rhs.getPageUrl());
+                    }
+                };
+                Collections.sort(epaperPages,pageComparator);
+
+                /**
+                 * setting the pages to the adapter
+                 */
                 epaperPagerAdapter = new EpaperPagerAdapter(getSupportFragmentManager(), epaperPages);
                 epaperViewpager.setAdapter(epaperPagerAdapter);
             } else {

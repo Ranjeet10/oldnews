@@ -205,7 +205,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
                 }
 
                 //its the category name
-                arrayName = "saved news";
+                arrayName = "Saved News";
 
                 NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
                 newsObjs.add(newsObj);
@@ -271,6 +271,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
         } else {
             warningImage.setImageResource(R.mipmap.ic_warning_white_48dp);
             contentNotFoundLayout.setVisibility(View.VISIBLE);
+            contentNotFoundTextView.setText(BaseThemeActivity.EMPTY_SAVED_NEWS);
         }
 
     }

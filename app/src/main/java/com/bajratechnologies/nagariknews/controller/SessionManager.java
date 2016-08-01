@@ -27,12 +27,14 @@ public class SessionManager {
     public static final String FIRST_RUN_PREFERENCE_NAME = "firstRunPrefs";
     public static final String SWITCHED_TO_PREFERENCE_NAME = "switchedToPreference";
     public static final String FONT_CONTROLLER_PREFERENCE_Name = "fontControllerPreference";
+    public static final String GCM_PREFERENCE_NAME = "gcm_pref";
 
 
     public static final String isFirstRun = "isFirstRun";
 
     private static final String IS_LOGIN = "isLoggedIn";
     private static final String KEY_LOGIN_TYPE = "loginType";
+    public static final String KEY_USER_ID = "user_id";
     public static final String KEY_USER_NAME = "userName";
     public static final String KEY_USER_IMAGE = "userImage";
     public static final String KEY_USER_EMAIL = "userEmail";
@@ -40,12 +42,8 @@ public class SessionManager {
 
     //gcm keys
     public static final String KEY_SENT_TOKEN_TO_SERVER = "sentToken";
-    public static final String REGISTRATION_ID_GCM="registrationId";
+    public static final String REGISTRATION_ID_GCM = "registrationId";
     public static final String PROPERTY_APP_VERSION = "appVersion";
-
-    //notification keys
-    public static final String NOTIFICATION_TITLE="notificationTitle";
-    public static final String NOTIFICATION_DESCRIPTION="notificationDescription";
 
 
     public static final String KEY_NEWS_SWITCHED_TO = "newsSwitchedTo";
@@ -58,6 +56,7 @@ public class SessionManager {
         LOGIN_PREFERENCE = context.getSharedPreferences(PREFERENCE_NAME, PRIVATE_MODE);
         SWITCHED_TO_PREFERENCE = context.getSharedPreferences(SWITCHED_TO_PREFERENCE_NAME, PRIVATE_MODE);
         FONT_CONTROLLER_PREFERENCE = context.getSharedPreferences(FONT_CONTROLLER_PREFERENCE_Name, PRIVATE_MODE);
+
 
         //initializing the editors for update operation
         loginEditor = LOGIN_PREFERENCE.edit();
@@ -72,8 +71,9 @@ public class SessionManager {
     }
 
     //creating new session for the  user
-    public void createLoginSession(int loginType, String user_name, String user_email, String user_image, String token) {
+    public void createLoginSession(String userId, int loginType, String user_name, String user_email, String user_image, String token) {
         loginEditor.putBoolean(IS_LOGIN, true);
+        loginEditor.putString(KEY_USER_ID, userId);
         loginEditor.putInt(KEY_LOGIN_TYPE, loginType);
         loginEditor.putString(KEY_USER_NAME, user_name);
         loginEditor.putString(KEY_USER_EMAIL, user_email);
@@ -108,6 +108,7 @@ public class SessionManager {
 
     public HashMap<String, String> getLoginDetail() {
         HashMap<String, String> user = new HashMap<>();
+        user.put(KEY_USER_ID, LOGIN_PREFERENCE.getString(KEY_USER_ID, null));
         user.put(KEY_USER_NAME, LOGIN_PREFERENCE.getString(KEY_USER_NAME, null));
         user.put(KEY_USER_EMAIL, LOGIN_PREFERENCE.getString(KEY_USER_EMAIL, null));
         user.put(KEY_USER_IMAGE, LOGIN_PREFERENCE.getString(KEY_USER_IMAGE, null));
@@ -161,15 +162,22 @@ public class SessionManager {
     }
 
     /**
-     *
-     * @return
-     * true if app on device was registered for gcm
+     * @return true if app on device was registered for gcm
      * false if app on device was not registered
      */
-    public static boolean isRegisterd(Context context) {
+    public static boolean isRegisterdWithoutUserId(Context context) {
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getBoolean(SessionManager.KEY_SENT_TOKEN_TO_SERVER, false);
+        SharedPreferences gcmPreference = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getBoolean(SessionManager.KEY_SENT_TOKEN_TO_SERVER, false);
+
+//        SharedPreferences gcmPreference = context.getSharedPreferences(GCM_PREFERENCE_NAME, 0);
+        return gcmPreference.getBoolean(SessionManager.KEY_SENT_TOKEN_TO_SERVER, false);
+    }
+
+    public static boolean isRegisteredWithUserId(Context context) {
+        SharedPreferences gcmPreference = PreferenceManager.getDefaultSharedPreferences(context);
+//        SharedPreferences gcmPreference = context.getSharedPreferences(GCM_PREFERENCE_NAME, 0);
+        return gcmPreference.getBoolean(SessionManager.KEY_USER_ID, false);
     }
 
 }

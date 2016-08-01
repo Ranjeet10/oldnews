@@ -3,10 +3,13 @@
 
     <!-- API KEYS FOR THE SOCIAL NETWORK-->
     <!-- ===============================================================================================-->
-    <!-- google api key-->
-    <string name="apikey">AIzaSyARzDSEGAMscF5wy-fJ2eS_Z36UzXOJM-0</string>
-    <!--<string name="sender_id">424391978066</string>-->
-    <string name="sender_id">329117814887</string>
+    <!-- google project info -->
+    <string name="project_id">nagariknews-1469785885211</string>
+    <string name="project_no">522116992871</string>
+    <string name="project_server_api_key">AIzaSyA0U9R3etV4UQjEIhUVPLYrH3xNywIlhGQ</string>
+    <string name="android_api_key"> AIzaSyBqkAtpErU7FbsHB5B55ecL-iqe2KhWDUE</string>
+    <string name="gcm_sender_id">522116992871</string>
+    <string name="gcm_server_api_key">AIzaSyB0VjWhll5wuPmbJh4vHuFoLN_AtQ8uNkA</string>
 
     <!-- facebook api key-->
     <string name="facebook_app_id">1035290163212506</string>
@@ -118,6 +121,9 @@
     <string name="nagarik">नागरिक</string>
     <string name="sukrabar">शुक्रबार</string>
 
+    <!--epaper option menu-->
+    <string name="purbeli">पूर्वेली </string>
+    <string name="paschimeli">पश्चिमेली</string>
 
 
     <!-- miscellaneous-->
@@ -125,6 +131,8 @@
     <string name="related_news">Related News</string>
     <string name="preferences_nep">प्रीफेरेन्सेस </string>
     <string name="preferences_eng">Preferences</string>
+    <string name="about_nep">हामरो बारेमा </string>
+    <string name="about_eng">About us</string>
 
     <string name="bla">
         I really want to see how its like inside black hole

@@ -391,7 +391,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     }
 
-    private void createSessionAndLaunchSelectCategoryActivity(int loginType, String userName, String userEmail, String avatarImage, String token) {
+    private void createSessionAndLaunchSelectCategoryActivity(String userId, int loginType, String userName, String userEmail, String avatarImage, String token) {
         /**
          * if {@link Dashboard} was created before
          * clear the instance and proceed the further
@@ -400,7 +400,7 @@ public class LoginActivity extends AppCompatActivity implements
             Dashboard.getInstance().finish();
             Dashboard.instance = null;
         }
-        sessionManager.createLoginSession(loginType, userName, userEmail, avatarImage, token);
+        sessionManager.createLoginSession(userId, loginType, userName, userEmail, avatarImage, token);
         launchActivity(SelectCategoryActivity.class);
     }
 
@@ -526,6 +526,7 @@ public class LoginActivity extends AppCompatActivity implements
                     JSONObject sObject = new JSONObject(response);
 //                    if (sObject.has("status") && sObject.getString("status").equals("success")) {
                     JSONObject dataObject = sObject.getJSONObject("data");
+                    final String userId = dataObject.getString("id");
                     final String username = dataObject.getString("username");
                     final String email = dataObject.getString("email");
                     final String name = dataObject.getString("name");
@@ -543,7 +544,7 @@ public class LoginActivity extends AppCompatActivity implements
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 } finally {
-                                    createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                                    createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
                                 }
                             }
                         });
@@ -553,7 +554,7 @@ public class LoginActivity extends AppCompatActivity implements
 
                     } else {
 
-                        createSessionAndLaunchSelectCategoryActivity(StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                        createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
                     }
 //                    } else if (sObject.has("status")) {
 //                        if (sObject.getString("status").equals("error"))

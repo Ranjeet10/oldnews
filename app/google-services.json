@@ -1,33 +1,20 @@
 {
   "project_info": {
-    "project_number": "329117814887",
-    "project_id": "nagariknews-1298"
+    "project_number": "522116992871",
+    "project_id": "nagariknews-1469785885211"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:329117814887:android:8abd122f47ecdbbe",
+        "mobilesdk_app_id": "1:522116992871:android:0ad3cb3b71ecf2c1",
         "android_client_info": {
           "package_name": "com.bajratechnologies.nagariknews"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "329117814887-ret8tbaqirq5p096hod6scftv3r5pqht.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.bajratechnologies.nagariknews",
-            "certificate_hash": "452389DEC71756C184525600A7177FA8B6CF8ACA"
-          }
-        },
-        {
-          "client_id": "329117814887-v3ci5ltks15nd5t3itmv71820jgcsnl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAvELddBEyLHGK1Y6DFZhk0ZMyHnRtgNUQ"
+          "current_key": "AIzaSyDWueWAXUHuwDudo4r738TK6U3nrbvG3Ns"
         }
       ],
       "services": {

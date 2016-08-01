@@ -42,14 +42,15 @@
         android:id="@+id/btn_negative"
         style="@style/alert_button_style"
         android:layout_alignParentRight="true"
-
         android:layout_below="@id/alert_desc"
-        android:text="NO" />
+        android:textAllCaps="true"
+        android:text="cancel" />
 
     <Button
         android:id="@+id/btn_positive"
         style="@style/alert_button_style"
         android:layout_below="@id/alert_desc"
+        android:textAllCaps="true"
         android:layout_toLeftOf="@id/btn_negative"
         android:text="OK" />
 </RelativeLayout>

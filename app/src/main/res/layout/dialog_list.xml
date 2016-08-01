@@ -73,7 +73,7 @@
             android:layout_height="@dimen/button_height"
             android:background="@drawable/transparent_btn_grey_focus"
             android:gravity="center_vertical"
-            android:text="पूर्वेली " />
+            android:text="@string/purbeli" />
 
         <View
             android:layout_width="match_parent"
@@ -87,7 +87,7 @@
             android:layout_height="@dimen/button_height"
             android:background="@drawable/transparent_btn_grey_focus"
             android:gravity="center_vertical"
-            android:text="पश्चिमी" />
+            android:text="@string/paschimeli" />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

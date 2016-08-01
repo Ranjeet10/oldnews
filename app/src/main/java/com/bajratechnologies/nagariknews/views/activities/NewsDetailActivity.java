@@ -148,7 +148,8 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         super.onCreate(savedInstanceState);
 
         initActivityTransitions();
-        NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
+//        NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
+        NEWS_TYPE = BaseThemeActivity.sessionManager.getSwitchedNewsValue();
         SAVED_COLOR = getResources().getColor(R.color.grid_2);
         UN_SAVED_COLOR = getResources().getColor(R.color.light_grey);
 
@@ -337,7 +338,8 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
     @OnClick(R.id.news_add_to_fav)
     void onAddToFavCilck() {
-        if (Dashboard.sessionManager.isLoggedIn()) {
+//        if (Dashboard.sessionManager.isLoggedIn()) {
+        if (BaseThemeActivity.sessionManager.isLoggedIn()) {
             if (BasicUtilMethods.isNetworkOnline(this)) {
                 switch (selectedNews.getIsSaved()) {
                     case 0:
