@@ -203,10 +203,12 @@ public class Dashboard extends BaseThemeActivity
         } else {
             isUser = sessionManager.isLoggedIn() ? true : false;
             if (isUser) {
+                String userId = userDetail.get(SessionManager.KEY_USER_ID);
                 userName = userDetail.get(SessionManager.KEY_USER_NAME);
                 userImage = userDetail.get(SessionManager.KEY_USER_IMAGE);
                 userEmail = userDetail.get(SessionManager.KEY_USER_EMAIL);
-                Log.i(TAG, "AccessToken:" + sessionManager.getToken());
+
+                Log.i(TAG, "AccessToken:" + sessionManager.getToken() + "\nand userId: " + userId);
             }
 
             googleClientConfigure();
@@ -513,7 +515,7 @@ public class Dashboard extends BaseThemeActivity
         BasicUtilMethods.loadImage(this, navImageUrl, navImageView);
 
         if (userDetail != null) {
-            Log.i(TAG, "user detail was null");
+            Log.i(TAG, "user detail was not null");
             BasicUtilMethods.loadImage(this, userImage, userImageView);
             userNameTextView.setText(userName);
             userEmailTextView.setText(userEmail);
@@ -808,10 +810,11 @@ public class Dashboard extends BaseThemeActivity
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         ButterKnife.unbind(this);
         db.close();
-        Log.i("onDestroy", "called");
+        instance = null;
+        super.onDestroy();
     }
 
     @Override

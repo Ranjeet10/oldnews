@@ -162,6 +162,7 @@ public class LoginActivity extends AppCompatActivity implements
     //facebook tracker object
     AccessTokenTracker accessTokenTracker;
     private String fbAccessToken;
+    String profile_pic = "";
 
     public static String avatarImage = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQyK7CYeBTH0OML49nzdiFcszgtGpaj67qRVrRT3dp-sSz1k-QXGA";
 
@@ -517,10 +518,12 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void handleParamsResponseForLoginSignup() {
+
         signUpResponse = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 dialog.dismiss();
+
                 Log.i(TAG, "LoginResponse" + response);
                 try {
                     JSONObject sObject = new JSONObject(response);
@@ -531,7 +534,12 @@ public class LoginActivity extends AppCompatActivity implements
                     final String email = dataObject.getString("email");
                     final String name = dataObject.getString("name");
                     final String token = dataObject.getString("token");
-                    final String profile_pic = dataObject.getString("profile_picture");
+
+
+                    if (dataObject.has("profile_picture")) {
+                        profile_pic = dataObject.getString("profile_picture");
+                    }
+
 
                     if (isFromRegister) {
 

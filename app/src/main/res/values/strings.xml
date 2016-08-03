@@ -9,7 +9,7 @@
     <string name="project_server_api_key">AIzaSyA0U9R3etV4UQjEIhUVPLYrH3xNywIlhGQ</string>
     <string name="android_api_key"> AIzaSyBqkAtpErU7FbsHB5B55ecL-iqe2KhWDUE</string>
     <string name="gcm_sender_id">522116992871</string>
-    <string name="gcm_server_api_key">AIzaSyB0VjWhll5wuPmbJh4vHuFoLN_AtQ8uNkA</string>
+    <string name="gcm_server_api_key">AIzaSyAJxsbX765adT65EAxuVYVWnvyeFR67MMo</string>
 
     <!-- facebook api key-->
     <string name="facebook_app_id">1035290163212506</string>

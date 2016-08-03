@@ -31,6 +31,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -530,6 +531,15 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         descriptionTextView.loadDataWithBaseURL(null, desc, "text/html", "utf-8", null);
 
+        //disabling the text selection=================================================================================================================
+        descriptionTextView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            public boolean onLongClick(View v) {
+                Log.i(TAG,"long pressed");
+                return true;
+            }
+        });
+
         /**
          * toggle the favourite icon color for saved/empty respectively
          */
@@ -661,11 +671,23 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                 break;
 
             case android.R.id.home:
-                finish();
+                goback();
                 break;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goback() {
+        if (Dashboard.getInstance() != null) {
+            this.finish();
+        } else {
+            Intent intent = new Intent(NewsDetailActivity.this, Dashboard.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            this.finish();
+
+        }
     }
 
     @Override
@@ -673,6 +695,11 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         super.onDestroy();
         ButterKnife.unbind(this);
         db.close();
+    }
+
+    @Override
+    public void onBackPressed() {
+        goback();
     }
 
     @Override

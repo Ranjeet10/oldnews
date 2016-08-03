@@ -2,106 +2,7 @@ package com.bajratechnologies.nagariknews.gcm;
 
 /**
  * Created by ram on 1/28/16.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * <p/>
- * Copyright 2015 Google Inc. All Rights Reserved.
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ **/
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -114,16 +15,33 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.bajratechnologies.nagariknews.R;
+import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
 import com.bajratechnologies.nagariknews.controller.SessionManager;
 import com.bajratechnologies.nagariknews.model.NewsObj;
 import com.bajratechnologies.nagariknews.views.activities.NewsDetailActivity;
-import com.bajratechnologies.nagariknews.views.activities.NotificationActivity;
 import com.google.android.gms.gcm.GcmListenerService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class MyGcmListenerService extends GcmListenerService {
+
+    int isTOShow = 0;
+    String newsType = "";
+    String newsCategoryId = "2";
+    String newsId = "";
+    String newsCategoryName = "";
+    String title = "";
+    String introText = "";
+    String description = "";
+    String newsUrl = "";
+    String date = "";
+    String img = "";
+    String reportedBy = "";
+    int isSaved = 0;
 
     private static final String TAG = "MyGcmListenerService";
 
@@ -138,36 +56,53 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.i("messagereceived", data.toString());
+        Log.i(TAG, "message_received : " + data.toString());
 
-//        type = data.getString("type");
-//        title = data.getString("title");
-//        message = data.getString("message");
+        String _message = data.getString("message");
 
-//        Log.d(TAG, "From: " + from);
-//        Log.d(TAG, "Message: " + message);
+        Log.i(TAG, "Message:" + _message);
 
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
-        } else {
-            // normal downstream message.
+        if (BasicUtilMethods.isValidJSON(_message)) {
+            try {
+                JSONObject jsonObject = new JSONObject(_message);
+                newsId = jsonObject.getString("id");
+                newsType = jsonObject.getString("media");
+                title = jsonObject.getString("title");
+                newsUrl = jsonObject.getString("url");
+                description = jsonObject.getString("description");
+
+                SessionManager sessionManager = new SessionManager(this);
+
+                if (newsType.equals("republica")) {
+
+                    sessionManager.switchNewsTo(1);
+
+                } else if (newsType.equals("nagarik")) {
+
+                    sessionManager.switchNewsTo(2);
+
+                } else {
+
+                    sessionManager.switchNewsTo(3);
+
+                }
+
+
+                ArrayList<NewsObj> newsObjs = new ArrayList<>();
+                NewsObj newsObj = new NewsObj(newsType, newsCategoryId, newsId, newsCategoryName, img, title, reportedBy, date, introText, description, newsUrl, isTOShow, isSaved);
+
+                Log.i(TAG, "news:" + newsObj.toString());
+
+                newsObjs.add(newsObj);
+
+                sendNotification(newsObjs);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
 
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
-
-        ArrayList<NewsObj> newsObjs = new ArrayList<>();
-        sendNotification(newsObjs);
         // [END_EXCLUDE]
     }
     // [END receive_message]

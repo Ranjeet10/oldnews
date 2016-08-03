@@ -25,6 +25,10 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -291,4 +295,17 @@ public class BasicUtilMethods {
         return registrationId;
     }
 
+    public static Boolean isValidJSON(String string) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(string);
+        } catch (JSONException e) {
+            try {
+                JSONArray jsonArray = new JSONArray(string);
+            } catch (JSONException e1) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
