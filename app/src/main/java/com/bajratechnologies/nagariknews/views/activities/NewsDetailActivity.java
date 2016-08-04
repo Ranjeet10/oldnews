@@ -143,6 +143,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     private AlertDialog alertDialog;
     private String alertTitle;
 
+    private static NewsDetailActivity instance = null;
+
+    public static NewsDetailActivity getInstance() {
+        return instance;
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +161,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         UN_SAVED_COLOR = getResources().getColor(R.color.light_grey);
 
         setContentView(R.layout.news_detail_layout);
+        instance = this;
         ButterKnife.bind(this);
 
         db = new SqliteDatabase(NewsDetailActivity.this);
@@ -535,7 +542,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         descriptionTextView.setOnLongClickListener(new View.OnLongClickListener() {
 
             public boolean onLongClick(View v) {
-                Log.i(TAG,"long pressed");
+                Log.i(TAG, "long pressed");
                 return true;
             }
         });
@@ -692,9 +699,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        instance = null;
         ButterKnife.unbind(this);
         db.close();
+        super.onDestroy();
     }
 
     @Override
