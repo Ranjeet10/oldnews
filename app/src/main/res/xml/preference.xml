@@ -3,6 +3,6 @@
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="@string/preference_checkbox_key"
-        android:summary="Check un-check to change notifications"
-        android:title="Notification state" />
+        android:summary="Notify me if there is any news update"
+        android:title="Push Notification" />
 </PreferenceScreen>

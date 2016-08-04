@@ -18,7 +18,6 @@ public class PreferenceFramgment extends PreferenceFragment {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference);
-//        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         Preference p = findPreference(getString(R.string.preference_checkbox_key));
         p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -28,6 +27,7 @@ public class PreferenceFramgment extends PreferenceFragment {
                 return true;
             }
         });
+
     }
 
 

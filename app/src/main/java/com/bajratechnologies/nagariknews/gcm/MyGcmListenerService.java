@@ -8,14 +8,17 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
@@ -70,6 +73,18 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Log.i(TAG, "Message:" + _message);
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean show = pref.getBoolean(getString(R.string.preference_checkbox_key), false);
+
+        if (show) {
+            showNotification(_message);
+        }
+
+
+        // [END_EXCLUDE]
+    }
+
+    private void showNotification(String _message) {
         if (BasicUtilMethods.isValidJSON(_message)) {
             try {
                 JSONObject jsonObject = new JSONObject(_message);
@@ -79,8 +94,8 @@ public class MyGcmListenerService extends GcmListenerService {
                 newsUrl = jsonObject.getString("url");
                 description = jsonObject.getString("description");
                 img = jsonObject.getString("featured_image");
-                newsCategoryName=jsonObject.getString("category_name");
-                newsCategoryId=jsonObject.getString("category_id");
+                newsCategoryName = jsonObject.getString("category_name");
+                newsCategoryId = jsonObject.getString("category_id");
 
                 SessionManager sessionManager = new SessionManager(this);
 
@@ -110,7 +125,6 @@ public class MyGcmListenerService extends GcmListenerService {
                 if (!TextUtils.isEmpty(img)) {
                     try {
 
-//                        String img = "http://www.nagariknews.com/uploads/media/2016/Agust/over%20head%20bridge%20of%20Kalanki%2003.jpg";
                         InputStream inputStream = (InputStream) new URL(img).getContent();
                         newsImage = BitmapFactory.decodeStream(inputStream);
 
@@ -127,9 +141,6 @@ public class MyGcmListenerService extends GcmListenerService {
                 e.printStackTrace();
             }
         }
-
-
-        // [END_EXCLUDE]
     }
     // [END receive_message]
 

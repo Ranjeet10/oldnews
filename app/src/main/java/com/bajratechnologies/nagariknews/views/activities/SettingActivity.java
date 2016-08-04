@@ -24,6 +24,7 @@ public class SettingActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.RepublicaTheme);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.setting_layout);
