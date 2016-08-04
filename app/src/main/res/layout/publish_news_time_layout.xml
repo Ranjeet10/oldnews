@@ -49,7 +49,7 @@
         android:id="@+id/news_from_category_text_view"
         style="@style/news_publish_time_text_style"
         android:layout_toRightOf="@id/vertical_view"
-        android:text="" />
+        android:text="sdf" />
 
 
 </RelativeLayout>

@@ -55,7 +55,8 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
-                CURRENT_MEDIA = "my-republica";
+//                CURRENT_MEDIA = "my-republica";
+                CURRENT_MEDIA = "republica";
                 CURRENT_NEWS_TITLE = getString(R.string.republica);
                 baseUrl = BuildConfig.BASE_URL_REPUBLICA;
 

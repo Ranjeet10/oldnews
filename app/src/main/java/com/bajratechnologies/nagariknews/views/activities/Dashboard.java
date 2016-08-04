@@ -51,6 +51,9 @@ import com.bajratechnologies.nagariknews.views.fragments.FragmentEpaper;
 import com.bajratechnologies.nagariknews.views.fragments.FragmentGallery;
 import com.bajratechnologies.nagariknews.views.fragments.FragmentSaved;
 import com.bajratechnologies.nagariknews.widget.PhotosCartoonPagerAdapter;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -77,7 +80,8 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class Dashboard extends BaseThemeActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener, ListPositionListener {
+        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener, ListPositionListener,
+        BaseSliderView.OnSliderClickListener {
 
     public static Dashboard instance = null;
 
@@ -93,10 +97,8 @@ public class Dashboard extends BaseThemeActivity
     ImageView newsTypeImageLogo;
     @Bind(R.id.btn_epaper_option)
     ImageView epaperOptionMenu;
-    @Bind(R.id.banner_viewpager)
-    ViewPager bannerViewpager;
-    @Bind(R.id.indicator)
-    CircleIndicator indicator;
+    @Bind(R.id.slider)
+    SliderLayout sliderLayout;
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @Bind(R.id.app_bar_layout)
@@ -117,11 +119,6 @@ public class Dashboard extends BaseThemeActivity
     ImageView navImageView, userImageView;
     TextView userNameTextView, userEmailTextView;
     ImageView switchNagarik, switchRepublica, switchSukrabar;
-    Handler handler, viewpagerHandler;
-    Runnable runnable, viewpagerRunnable;
-    int NUM_PAGES = 0;
-    int currentPage = 0;
-    Timer swipeTimer;
 
     private Boolean isUser;
     private Boolean shouldReplaceFragment = false;
@@ -168,7 +165,6 @@ public class Dashboard extends BaseThemeActivity
         setContentView(R.layout.activity_dashboard);
         ButterKnife.bind(this);
         fragmentManager = getSupportFragmentManager();
-        handler = new Handler();
         printHashKey();
         settingToolbar();
 
@@ -334,14 +330,26 @@ public class Dashboard extends BaseThemeActivity
     }
 
 
-    public void setBannerViewpager(ArrayList<Multimedias> list) {
-//        if (adapter.getCount() < 0) {
-        adapter = new PhotosCartoonPagerAdapter(getSupportFragmentManager(), list, 100, true);
-        bannerViewpager.setAdapter(adapter);
-        indicator.setViewPager(bannerViewpager);
-        NUM_PAGES = list.size();
-        swipePager();
-//        }
+    public void setBannerViewpager(ArrayList<Multimedias> bannerDatas) {
+        if (!bannerDatas.isEmpty()) {
+
+            for (int i = 0; i < bannerDatas.size(); i++) {
+                DefaultSliderView textSliderView = new DefaultSliderView(this);
+                textSliderView
+                        .description("")
+                        .image(bannerDatas.get(i).getMultimediaPath())
+                        .setScaleType(BaseSliderView.ScaleType.CenterCrop)
+                        .setOnSliderClickListener(this);
+
+                //add your extra information
+                textSliderView.bundle(new Bundle());
+                textSliderView.getBundle()
+                        .putString("extra", String.valueOf(bannerDatas.get(i).getTitle()));
+
+                sliderLayout.addSlider(textSliderView);
+            }
+            sliderLayout.setDuration(4000);
+        }
     }
 
     @OnClick(R.id.btn_epaper_option)
@@ -361,30 +369,6 @@ public class Dashboard extends BaseThemeActivity
         epaperOptionMenuDialog.show();
     }
 
-    private void swipePager() {
-
-        viewpagerHandler = new Handler();
-        viewpagerRunnable = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
-                }
-                try {
-                    bannerViewpager.setCurrentItem(currentPage++, true);
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(viewpagerRunnable);
-            }
-        }, 500, 3000);
-    }
 
     private void printHashKey() {
         // Add code to print out the key hash
@@ -817,20 +801,6 @@ public class Dashboard extends BaseThemeActivity
         super.onDestroy();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            if (runnable != null)
-                handler.removeCallbacks(runnable);
-            if (viewpagerRunnable != null)
-                viewpagerHandler.removeCallbacks(viewpagerRunnable);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.i("onstop", "called");
-    }
-
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -904,5 +874,10 @@ public class Dashboard extends BaseThemeActivity
         if (replaceableFragment instanceof FragmentEpaper) {
             ((FragmentEpaper) replaceableFragment).getSelectedEpaperFor(position);
         }
+    }
+
+    @Override
+    public void onSliderClick(BaseSliderView slider) {
+        Toast.makeText(getApplicationContext(), slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
     }
 }

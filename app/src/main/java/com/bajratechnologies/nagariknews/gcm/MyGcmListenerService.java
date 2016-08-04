@@ -8,10 +8,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.bajratechnologies.nagariknews.R;
@@ -25,13 +28,18 @@ import com.google.android.gms.gcm.GcmListenerService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MyGcmListenerService extends GcmListenerService {
 
     int isTOShow = 0;
     String newsType = "";
-    String newsCategoryId = "2";
+    String newsCategoryId = "";
     String newsId = "";
     String newsCategoryName = "";
     String title = "";
@@ -70,6 +78,9 @@ public class MyGcmListenerService extends GcmListenerService {
                 title = jsonObject.getString("title");
                 newsUrl = jsonObject.getString("url");
                 description = jsonObject.getString("description");
+                img = jsonObject.getString("featured_image");
+                newsCategoryName=jsonObject.getString("category_name");
+                newsCategoryId=jsonObject.getString("category_id");
 
                 SessionManager sessionManager = new SessionManager(this);
 
@@ -94,8 +105,23 @@ public class MyGcmListenerService extends GcmListenerService {
                 Log.i(TAG, "news:" + newsObj.toString());
 
                 newsObjs.add(newsObj);
+                Bitmap newsImage = null;
 
-                sendNotification(newsObjs);
+                if (!TextUtils.isEmpty(img)) {
+                    try {
+
+//                        String img = "http://www.nagariknews.com/uploads/media/2016/Agust/over%20head%20bridge%20of%20Kalanki%2003.jpg";
+                        InputStream inputStream = (InputStream) new URL(img).getContent();
+                        newsImage = BitmapFactory.decodeStream(inputStream);
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                sendNotification(newsImage, newsObjs);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -108,7 +134,7 @@ public class MyGcmListenerService extends GcmListenerService {
     // [END receive_message]
 
 
-    private void sendNotification(ArrayList<NewsObj> newsObjs) {
+    private void sendNotification(Bitmap newsImage, ArrayList<NewsObj> newsObjs) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
         intent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
@@ -119,10 +145,14 @@ public class MyGcmListenerService extends GcmListenerService {
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        Bitmap large = BitmapFactory.decodeResource(getResources(), R.drawable.nagariknews);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(newsImage != null ? newsImage : large)
                 .setContentTitle(newsObjs.get(0).getTitle())
-                .setContentText(newsObjs.get(0).getIntroText())
+                .setContentText(newsObjs.get(0).getDescription())
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -130,6 +160,9 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        Random rand = new Random();
+        //make only 5 notification live
+        int num = rand.nextInt(5);
+        notificationManager.notify(num /* ID of notification */, notificationBuilder.build());
     }
 }
