@@ -744,6 +744,20 @@ package com.bajratechnologies.nagariknews.gcm;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * <p/>
+ * Copyright 2015 Google Inc. All Rights Reserved.
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 /**
  * Copyright 2015 Google Inc. All Rights Reserved.
@@ -885,6 +899,8 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void handleGcmRegistrationResponse() {
+    // from facebook:->czY1weacI2M:APA91bF8BmEBXV8PY1zW99nt4358YxoXzGloE0rWLdiZTtl__15tKmcbC8bHR9jU5BkEzYembTAsebeDmXmzfixxgaQJLW5LeiS_iDUYzxzw4oOmLSDykAXYlsojAqJeoZUeR9z-vh7l
+
         response = new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -901,7 +917,7 @@ public class RegistrationIntentService extends IntentService {
 
                         editor.putBoolean(SessionManager.KEY_USER_ID, consumerId.length() > 0 ? true : false).apply();
                         editor.putString(SessionManager.REGISTRATION_ID_GCM, token).apply();
-                        Log.i(TAG,token);
+                        Log.i(TAG, token);
                         editor.putBoolean(SessionManager.KEY_SENT_TOKEN_TO_SERVER, true).apply();
 
 

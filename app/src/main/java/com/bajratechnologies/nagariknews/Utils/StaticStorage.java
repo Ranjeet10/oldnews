@@ -242,15 +242,11 @@ public class StaticStorage {
 
     public static String developedByString = "<html>" +
             "<body>" +
-            "<p>Bidhee Private Limited is a company solely established for development and deployment of innovative products and services in the field of IT globally." +
-            "It is established to carter the growing needs in the space of mobility with quality service at reliable cost focusing on after sales service." +
-            "<br>The main vision of the company is to become a leader in developing and introducing disruptive technologies" +
-            "in mobility space having social and cultural impacts." +
-            "<br>It currently spreads it’s expertise in the scope of Mobile Application Development and Web Application Development." +
-            "<br><br>" +
-            "We are the first and single company in Nepal to develop highly valued mobile apps" +
-            "like Hamro Patro, Hamro Keyboard, Hamro Sambidhan, Nepali English Dictionary etc. with more than 3.5 million active mobile app users" +
-            "around the world. We hold premium clients across the globe and we value Corporate Social Responsibility too." +
+            "<p>" +
+            "<strong>Bidhee Pvt. Ltd.</strong>" +
+            "<br><br>New Baneshwor-10, Kathmandu,Nepal" +
+            "<br>Phone: +977-1-4785679" +
+            "<br>email: info@bidhee.com" +
             "</p>" +
             "</body>" +
             "</html>";

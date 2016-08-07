@@ -500,7 +500,11 @@ public class LoginActivity extends AppCompatActivity implements
         if (isSignUpCanceled) {
             signUpFormFieldView.requestFocus();
         } else {
-            registerUser(fName + " " + lName, email, password);
+            if (BasicUtilMethods.isNetworkOnline(this)) {
+                registerUser(fName + " " + lName, email, password);
+            } else {
+                MySnackbar.showSnackBar(this, btnSignUp, "Cannot connect right now").show();
+            }
         }
     }
 
@@ -527,53 +531,56 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.i(TAG, "LoginResponse" + response);
                 try {
                     JSONObject sObject = new JSONObject(response);
-//                    if (sObject.has("status") && sObject.getString("status").equals("success")) {
-                    JSONObject dataObject = sObject.getJSONObject("data");
-                    final String userId = dataObject.getString("id");
-                    final String username = dataObject.getString("username");
-                    final String email = dataObject.getString("email");
-                    final String name = dataObject.getString("name");
-                    final String token = dataObject.getString("token");
+                    if (sObject.has("status") && sObject.getString("status").equals("success")) {
+
+                        JSONObject dataObject = sObject.getJSONObject("data");
+                        final String userId = dataObject.getString("id");
+//                        final String userId = "";
+                        final String username = dataObject.getString("username");
+                        final String email = dataObject.getString("email");
+                        final String name = dataObject.getString("name");
+                        final String token = dataObject.getString("token");
 
 
-                    if (dataObject.has("profile_picture")) {
-                        profile_pic = dataObject.getString("profile_picture");
-                    }
+                        if (dataObject.has("profile_picture")) {
+                            profile_pic = dataObject.getString("profile_picture");
+                        }
 
 
-                    if (isFromRegister) {
+                        if (isFromRegister) {
 
-                        Thread sucessmessageThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                MySnackbar.showSnackBar(LoginActivity.this, btnLogin, "Registered successfully").show();
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                            Thread sucessmessageThread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MySnackbar.showSnackBar(LoginActivity.this, btnLogin, "Registered successfully").show();
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                                    }
                                 }
+                            });
+
+
+                            sucessmessageThread.start();
+
+                        } else {
+
+                            createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                        }
+
+                    } else if (sObject.has("status")) {
+                        if (sObject.getString("status").equals("error"))
+                            if (sObject.has("message")) {
+                                String message = sObject.getString("message");
+                                MySnackbar.showSnackBar(LoginActivity.this, btnCreateAccount, message).show();
                             }
-                        });
-
-
-                        sucessmessageThread.start();
-
-                    } else {
-
-                        createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
                     }
-//                    } else if (sObject.has("status")) {
-//                        if (sObject.getString("status").equals("error"))
-//                            if (sObject.has("message")) {
-//                                String message = sObject.getString("message");
-//                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-//                            }
-//                    }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+
                 }
             }
         };

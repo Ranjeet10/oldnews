@@ -275,13 +275,13 @@ public class Dashboard extends BaseThemeActivity
             }
             if ((regId.isEmpty() || !SessionManager.isRegisterdWithoutUserId(this))) {
 
-                Log.i(TAG, "USER NOT REGISTERED TO SERVER");
+                Log.i(TAG, "GCM:" + "either gcm Id was empty or gmc id was registered but without any user id");
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
 
             } else if ((!TextUtils.isEmpty(userId) && !SessionManager.isRegisteredWithUserId(this))) {
 
-                Log.i(TAG, "there was user but not registered for gcm");
+                Log.i(TAG, "GCM:" + "Device registered but for free user");
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
 
@@ -549,11 +549,11 @@ public class Dashboard extends BaseThemeActivity
                         isProfileImageClicked = true;
                         drawerLayout.closeDrawer(GravityCompat.START);
                         if (sessionManager.isLoggedIn()) {
-                            alertDialog = new AlertDialog(getInstance(), StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
+                            alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
                         } else {
-                            alertDialog = new AlertDialog(getInstance(), StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
+                            alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
                         }
-                        alertDialog.setOnAlertDialogListener(getInstance());
+                        alertDialog.setOnAlertDialogListener(Dashboard.this);
                         alertDialog.show();
                         break;
                 }
@@ -688,6 +688,8 @@ public class Dashboard extends BaseThemeActivity
              */
             params.setScrollFlags(ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED);
 
+        } else if (id == R.id.nav_settings || id == R.id.nav_about || id == R.id.nav_select_categorylist) {
+            //do nothing
         } else {
             collapseToolbar = true;
             BasicUtilMethods.collapseAppbar(appBarLayout, this.menu);
@@ -699,6 +701,7 @@ public class Dashboard extends BaseThemeActivity
              * so that image collapses but toolbar remains sticked on scroll up
              */
             params.setScrollFlags(ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | ControllableAppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+
         }
 
         switch (id) {
@@ -813,7 +816,7 @@ public class Dashboard extends BaseThemeActivity
         if (sessionManager.isLoggedIn()) {
             logout();
         } else {
-            Intent loginIntent = new Intent(getInstance(), LoginActivity.class);
+            Intent loginIntent = new Intent(Dashboard.this, LoginActivity.class);
             startActivity(loginIntent);
         }
 

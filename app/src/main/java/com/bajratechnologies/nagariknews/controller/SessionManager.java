@@ -96,13 +96,15 @@ public class SessionManager {
     }
 
     public void clearSession() {
-        loginEditor.putBoolean(IS_LOGIN, false);
-        loginEditor.putInt(KEY_LOGIN_TYPE, 0);
-        loginEditor.putString(KEY_USER_NAME, "");
-        loginEditor.putString(KEY_USER_EMAIL, "");
-        loginEditor.putString(KEY_USER_IMAGE, "");
-        loginEditor.putString(KEY_USER_TOKEN, "");
-        loginEditor.commit();
+//        loginEditor.putBoolean(IS_LOGIN, false);
+//        loginEditor.putInt(KEY_LOGIN_TYPE, 0);
+//        loginEditor.putString(KEY_USER_NAME, "");
+//        loginEditor.putString(KEY_USER_EMAIL, "");
+//        loginEditor.putString(KEY_USER_IMAGE, "");
+//        loginEditor.putString(KEY_USER_TOKEN, "");
+
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
+        loginEditor.clear().commit();
     }
 
 

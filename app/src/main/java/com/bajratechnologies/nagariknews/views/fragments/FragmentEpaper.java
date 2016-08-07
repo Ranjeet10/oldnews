@@ -72,7 +72,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
     private String gallery = "epaper";
-    ControllableAppBarLayout appBarLayout;
+//    ControllableAppBarLayout appBarLayout;
     EpapersListAdapter epapersListAdapter;
     GridLayoutManager gridLayoutManager;
 
@@ -115,11 +115,13 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //disable the nestedScrollview to forbade appbarLayout's collapsing toolbar to collapse and expand
+        epaperRecyclerView.setNestedScrollingEnabled(false);
         Log.i(TAG, "onViewCreated called");
-        /**
-         * accessing the views of the parent activity {@link Dashboard}
-         */
-        appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
+//        /**
+//         * accessing the views of the parent activity {@link Dashboard}
+//         */
+//        appBarLayout = (ControllableAppBarLayout) (getActivity().findViewById(R.id.app_bar_layout));
 
         searchCardView.setVisibility(View.GONE);
 
@@ -149,7 +151,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             @Override
             public void onRefresh() {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
-                BasicUtilMethods.collapseAppbar(appBarLayout, null);
+//                BasicUtilMethods.collapseAppbar(appBarLayout, null);
             }
         });
     }
