@@ -5,43 +5,86 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/white"
-        app:cardElevation="@dimen/elevation"
-        app:cardUseCompatPadding="true">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+
+        <RelativeLayout
+            android:id="@+id/font_slider_parent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/screen_padding"
-            android:layout_marginRight="@dimen/screen_padding"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:background="@drawable/corner_white_bg"
+            android:animateLayoutChanges="true"
+            android:visibility="gone"
+            android:padding="4dp">
 
-            <TextView
-                android:id="@+id/title"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/screen_padding"
-                android:text="loading..."
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="@color/black" />
+                android:layout_height="wrap_content">
 
-            <include layout="@layout/publish_news_time_layout" />
+                <ImageView
+                    android:id="@+id/df"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/df" />
 
-            <WebView
-                android:id="@+id/description"
+                <ImageView
+                    android:id="@+id/ifont"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@mipmap/ifont" />
+
+                <SeekBar
+                    android:id="@+id/font_slider"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/ifont"
+                    android:layout_toRightOf="@+id/df" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/white"
+            app:cardElevation="@dimen/elevation"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/screen_padding"
-                android:background="@color/white"
-                android:paddingBottom="@dimen/tab_bar_layout_height"
-                android:text="@string/news_description_republica"
-                android:textColor="@color/grey" />
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/screen_padding"
+                android:layout_marginRight="@dimen/screen_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/screen_padding"
+                    android:text="loading..."
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/black" />
+
+                <include layout="@layout/publish_news_time_layout" />
+
+                <WebView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/screen_padding"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/tab_bar_layout_height"
+                    android:text="@string/news_description_republica"
+                    android:textColor="@color/grey" />
 
 
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 </FrameLayout>

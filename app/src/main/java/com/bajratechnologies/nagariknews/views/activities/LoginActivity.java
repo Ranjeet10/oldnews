@@ -569,6 +569,7 @@ public class LoginActivity extends AppCompatActivity implements
                         } else {
 
                             createSessionAndLaunchSelectCategoryActivity(userId, StaticStorage.LOGIN_TYPE_FORM, name, email, profile_pic, token);
+                            Toast.makeText(getApplicationContext(), "logged in", Toast.LENGTH_SHORT).show();
                         }
 
                     } else if (sObject.has("status")) {

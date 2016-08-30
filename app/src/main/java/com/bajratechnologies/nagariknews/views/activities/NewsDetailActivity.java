@@ -26,10 +26,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +41,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
+import com.bajratechnologies.nagariknews.Utils.MyAnimation;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
 import com.bajratechnologies.nagariknews.controller.interfaces.AlertDialogListener;
 import com.bajratechnologies.nagariknews.controller.server_request.ServerConfig;
@@ -112,6 +117,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     ImageView newsAddToFav;
     @Bind(R.id.vertical_line_separator)
     View verticalLineSeparator;
+    @Bind(R.id.font_slider)
+    SeekBar fontSlider;
+    @Bind(R.id.font_slider_parent)
+    RelativeLayout fontSliderParent;
 
     RelatedNewsTitleAdapter newsTitlesAdapter;
     WebSettings webSettings;
@@ -244,6 +253,25 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         settingToolbar(selectedNewsType + " : " + selectedNews.getNewsCategoryName());
 
 
+        //seek bar controller
+        fontSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                webSettings.setDefaultFontSize(progress);
+                Log.d(TAG, "PROGRESS:" + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     private void getNewsDetailFromServer(String newsId) {
@@ -369,6 +397,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         }
     }
+
 
     private void saveNewsToMyFavourite() {
         saveResponse = new Response.Listener<String>() {
@@ -556,10 +585,13 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     }
 
     private void setNormalFont() {
+        fontSlider.setMax(80);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.setDefaultFontSize(50);
+            fontSlider.setProgress(50);
         } else {
             webSettings.setDefaultFontSize(15);
+            fontSlider.setProgress(15);
         }
 
     }
@@ -647,6 +679,9 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         getMenuInflater().inflate(R.menu.dashboard, menu);
         menu.getItem(0).setVisible(false);
 
+        //is for A-
+        menu.getItem(1).setVisible(false);
+
         /**
          * applying the tint color to all the font icon
          * with color white
@@ -673,8 +708,9 @@ public class NewsDetailActivity extends BaseThemeActivity implements
                 break;
 
             case R.id.news_font_control_large:
-                scrollUp();
-                setLargeFont();
+//                scrollUp();
+//                setLargeFont();
+                showFontControllerSlider();
                 break;
 
             case android.R.id.home:
@@ -683,6 +719,15 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showFontControllerSlider() {
+        if (fontSliderParent.getVisibility() == View.VISIBLE) {
+            MyAnimation.collapse(fontSliderParent);
+
+        } else {
+            MyAnimation.expand(fontSliderParent);
+        }
     }
 
     private void goback() {
@@ -748,10 +793,12 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     private void setFont(int i) {
         switch (i) {
             case 0:
-                webSettings.setDefaultFontSize(20);
+//                webSettings.setDefaultFontSize(20);
+                setLargeFont();
                 break;
             case 1:
-                webSettings.setDefaultFontSize(15);
+//                webSettings.setDefaultFontSize(15);
+                setNormalFont();
                 break;
             case 2:
                 BasicUtilMethods.shareLink(this, selectedNews.getNewsUrl());

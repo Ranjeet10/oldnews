@@ -11,7 +11,20 @@
           "package_name": "com.bajratechnologies.nagariknews"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "522116992871-lbuhevabo7ch4qmfg4duuenaoebm2jur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bajratechnologies.nagariknews",
+            "certificate_hash": "14DE0DC7087DDBDA10E5FA4CC6632C2ADF516924"
+          }
+        },
+        {
+          "client_id": "522116992871-5c4pot2t9649gpnnclbeilreshdsd7sg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDkHHFt_3grxQdUXCtWyJsX9GzB4nOldPM"

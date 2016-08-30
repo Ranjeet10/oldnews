@@ -77,7 +77,6 @@
         आजको दिन युवाले आफ्ना प्रेमीप्रेमिकालाई रातो गुलाबको फूल उपहारका रुपमा आदानप्रदान गरेर प्रेम दिवस बनाउने गर्छन् । रासस
     </string>
 
-
     <!-- Menu items-->
     <!-- republica-->
     <string name="all_news_r">All News</string>
@@ -131,7 +130,7 @@
     <string name="related_news">Related News</string>
     <string name="preferences_nep">प्रीफेरेन्सेस </string>
     <string name="preferences_eng">Preferences</string>
-    <string name="about_nep">हामरो बारेमा </string>
+    <string name="about_nep">हाम्रो बारेमा </string>
     <string name="about_eng">About us</string>
 
     <string name="bla">

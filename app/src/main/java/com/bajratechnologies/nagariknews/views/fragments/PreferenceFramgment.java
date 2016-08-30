@@ -1,8 +1,10 @@
 package com.bajratechnologies.nagariknews.views.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.bajratechnologies.nagariknews.R;
@@ -12,7 +14,8 @@ import com.bajratechnologies.nagariknews.R;
  * Created by ronem on 1/28/16.
  */
 public class PreferenceFramgment extends PreferenceFragment {
-//    SharedPreferences prefs;
+    //    SharedPreferences prefs;
+    private String TAG = getClass().getSimpleName();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {

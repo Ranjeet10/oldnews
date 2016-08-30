@@ -103,7 +103,8 @@ public class ServerConfig {
         return url;
     }
 
-    public static String GCM_RREGISTRATION_URL = "http://consumers.bidheegroup.com/api/consumer/save-device-information";
+    //    public static String GCM_RREGISTRATION_URL = "http://consumers.bidheegroup.com/api/consumer/save-device-information";
+    public static String GCM_RREGISTRATION_URL = BuildConfig.GCM_REGISTRATION_URL + "/api/consumer/save-device-information";
 
     private static String[] getBaseUrlAndMedia(int newsType) {
         String[] bm = new String[2];

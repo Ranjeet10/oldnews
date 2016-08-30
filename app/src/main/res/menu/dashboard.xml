@@ -22,4 +22,5 @@
         android:orderInCategory="101"
         android:title="@string/action_large_font"
         app:showAsAction="always" />
+    
 </menu>

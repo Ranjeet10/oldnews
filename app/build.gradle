@@ -33,6 +33,7 @@ android {
             buildConfigField "String", "BASE_URL_SUKRABAR", '"http://www.shukrabar.com"'
             buildConfigField "String", "AUTH_BASE_URL", '"http://consumer.myrepublica.com"'
             buildConfigField "String", "EPAPER_BASE_URL", '"http://dev.myrepublica.com"'
+            buildConfigField "String", "GCM_REGISTRATION_URL", '"http://consumer.myrepublica.com"'
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -40,17 +41,19 @@ android {
             debuggable true
             buildConfigField "String", "BUILD_STAGE", '"debug"'
 
-//            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com"'
-//            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com"'
-//            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://sukrabar.bidheegroup.com"'
-//            buildConfigField "String", "AUTH_BASE_URL", '"http://consumers.bidheegroup.com"'
+//            buildConfigField "String", "BASE_URL_NAGARIK", '"http://www.nagariknews.com"'
+//            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://www.myrepublica.com"'
+//            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://www.shukrabar.com"'
+//            buildConfigField "String", "AUTH_BASE_URL", '"http://consumer.myrepublica.com"'
+//            buildConfigField "String", "EPAPER_BASE_URL", '"http://dev.myrepublica.com"'
+//            buildConfigField "String", "GCM_REGISTRATION_URL", '"http://consumer.myrepublica.com"'
 
-
-            buildConfigField "String", "BASE_URL_NAGARIK", '"http://www.nagariknews.com"'
-            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://www.myrepublica.com"'
-            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://www.shukrabar.com"'
+            buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com"'
+            buildConfigField "String", "BASE_URL_SUKRABAR", '"http://sukrabar.bidheegroup.com"'
             buildConfigField "String", "AUTH_BASE_URL", '"http://consumer.myrepublica.com"'
             buildConfigField "String", "EPAPER_BASE_URL", '"http://dev.myrepublica.com"'
+            buildConfigField "String", "GCM_REGISTRATION_URL", '"http://consumers.bidheegroup.com"'
         }
     }
 }

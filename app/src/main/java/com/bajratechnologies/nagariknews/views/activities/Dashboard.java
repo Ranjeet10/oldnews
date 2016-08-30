@@ -1,16 +1,27 @@
 package com.bajratechnologies.nagariknews.views.activities;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -42,6 +53,7 @@ import com.bajratechnologies.nagariknews.controller.interfaces.ListPositionListe
 import com.bajratechnologies.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bajratechnologies.nagariknews.gcm.RegistrationIntentService;
 import com.bajratechnologies.nagariknews.model.Multimedias;
+import com.bajratechnologies.nagariknews.model.NewsObj;
 import com.bajratechnologies.nagariknews.views.customviews.AboutDialog;
 import com.bajratechnologies.nagariknews.views.customviews.AlertDialog;
 import com.bajratechnologies.nagariknews.views.customviews.ControllableAppBarLayout;
@@ -70,6 +82,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -258,6 +271,8 @@ public class Dashboard extends BaseThemeActivity
         }
 
         startGcmCheck();
+
+//        sendNotification();
     }
 
 
@@ -430,6 +445,7 @@ public class Dashboard extends BaseThemeActivity
     protected void onResume() {
         super.onResume();
         invalidateOptionsMenu();
+
     }
 
     private void settingToolbar() {
@@ -546,15 +562,32 @@ public class Dashboard extends BaseThemeActivity
                         sessionManager.switchNewsTo(3);
                         break;
                     case R.id.profile_image:
-                        isProfileImageClicked = true;
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        if (sessionManager.isLoggedIn()) {
-                            alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
-                        } else {
-                            alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
+
+                        try {
+//                            Toast.makeText(getApplicationContext(), "went before dialog created", Toast.LENGTH_SHORT).show();
+                            Log.i(TAG, "went before dialog created");
+
+                            isProfileImageClicked = true;
+                            drawerLayout.closeDrawer(GravityCompat.START);
+
+                            if (sessionManager.isLoggedIn()) {
+
+//                                Toast.makeText(getApplicationContext(), "was Logged-in : before creating", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "was Logged-in : before creating");
+                                alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
+                            } else {
+//                                Toast.makeText(getApplicationContext(), "before creating", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "before creating");
+                                alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
+//                                Toast.makeText(getApplicationContext(), "after creating", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "after creating");
+                            }
+
+                            alertDialog.setOnAlertDialogListener(Dashboard.this);
+                            alertDialog.show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        alertDialog.setOnAlertDialogListener(Dashboard.this);
-                        alertDialog.show();
                         break;
                 }
                 if (!isProfileImageClicked)
@@ -566,7 +599,6 @@ public class Dashboard extends BaseThemeActivity
         switchNagarik.setOnClickListener(switchListener);
         switchSukrabar.setOnClickListener(switchListener);
         userImageView.setOnClickListener(switchListener);
-
 
     }
 
@@ -822,6 +854,7 @@ public class Dashboard extends BaseThemeActivity
 
     }
 
+
     private void logout() {
         String wasFrom = "";
         switch (sessionManager.getLoginType()) {
@@ -881,6 +914,37 @@ public class Dashboard extends BaseThemeActivity
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
-        Toast.makeText(getApplicationContext(), slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), slider.getBundle().get("extra") + "", Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendNotification() {
+
+        Intent intent = new Intent(this, NewsDetailActivity.class);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        Bitmap large = BitmapFactory.decodeResource(getResources(), R.drawable.nagariknews);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(large)
+                .setContentTitle("title")
+                .setContentText("description")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setColor(COLOR_PRIMARY_DARK)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Random rand = new Random();
+        //make only 5 notification live
+        int num = rand.nextInt(5);
+        notificationManager.notify(num /* ID of notification */, notificationBuilder.build());
     }
 }

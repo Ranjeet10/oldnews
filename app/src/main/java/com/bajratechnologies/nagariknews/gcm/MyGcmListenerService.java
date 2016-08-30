@@ -75,9 +75,12 @@ public class MyGcmListenerService extends GcmListenerService {
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean show = pref.getBoolean(getString(R.string.preference_checkbox_key), false);
-
+//
         if (show) {
+            Log.i(TAG, "Was checked");
             showNotification(_message);
+        } else {
+            Log.i(TAG, "Was not checked");
         }
 
 
@@ -176,4 +179,5 @@ public class MyGcmListenerService extends GcmListenerService {
         int num = rand.nextInt(5);
         notificationManager.notify(num /* ID of notification */, notificationBuilder.build());
     }
+
 }
