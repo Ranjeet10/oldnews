@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -44,6 +45,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bajratechnologies.nagariknews.BuildConfig;
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
@@ -168,6 +170,18 @@ public class Dashboard extends BaseThemeActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
+
+        if (BuildConfig.DEBUG) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            Boolean show = pref.getBoolean(getString(R.string.preference_checkbox_key), false);
+
+            if (show) {
+                Toast.makeText(getApplicationContext(), "was checked", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "was not checked", Toast.LENGTH_SHORT).show();
+            }
+        }
+
         db = new SqliteDatabase(this);
         db.open();
 

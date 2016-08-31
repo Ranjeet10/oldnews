@@ -1,6 +1,7 @@
 package com.bajratechnologies.nagariknews.controller;
 
 import android.app.Application;
+import android.preference.PreferenceManager;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -62,10 +63,11 @@ public class AppController extends Application {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(getResources().getString(R.string.twitter_consumer_api_key), getResources().getString(R.string.twitter_consumer_secrete_key));
         Fabric.with(this, new Twitter(authConfig));
 
+        //set default value for the checkbox preference
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(getString(R.string.preference_checkbox_key), true).apply();
     }
 
     /**
-     *
      * @return instance of the {@link AppController}
      */
     public static synchronized AppController getInstance() {
@@ -73,10 +75,8 @@ public class AppController extends Application {
     }
 
     /**
-     *
      * @return requestQueue
      * initialize only once throughout the whole application
-     *
      */
     public RequestQueue getRequestQueue() {
         if (requestQueue == null) {
@@ -88,9 +88,9 @@ public class AppController extends Application {
 
     /**
      * Method to add the {@link Volley requests} to the #requestQueue
+     *
      * @param req
      * @param <T>
-     *
      */
     public <T> void addToRequestQueue(Request<T> req) {
         req.setTag(TAG);
