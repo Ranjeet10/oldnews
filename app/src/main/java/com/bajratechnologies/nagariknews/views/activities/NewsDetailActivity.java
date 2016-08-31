@@ -702,6 +702,8 @@ public class NewsDetailActivity extends BaseThemeActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
+            // is disabled
             case R.id.news_font_control_small:
                 scrollUp();
                 setNormalFont();
