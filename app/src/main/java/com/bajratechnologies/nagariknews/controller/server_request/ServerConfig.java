@@ -78,7 +78,11 @@ public class ServerConfig {
     }
 
     public static String getEpaperListUrl(String media) {
-        String url = BuildConfig.EPAPER_BASE_URL + "/api/news/list?_format=json&media=" + media;
+
+//        http://dev.myrepublica.com/api/v1/news/list?media=nagarik
+
+//        String url = BuildConfig.EPAPER_BASE_URL + "/api/news/list?_format=json&media=" + media;
+        String url = BuildConfig.EPAPER_BASE_URL + "/api/v1/news/list?media=" + media;
         return url;
     }
 

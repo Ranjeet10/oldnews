@@ -66,6 +66,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <activity android:name=".views.activities.GalleryViewActivity" />
+        <activity android:name=".views.activities.PDFViewer"/>
         <activity
             android:name=".views.activities.SettingActivity"
             android:label="@string/preference_toolbar_title"

@@ -33,6 +33,7 @@ import com.bajratechnologies.nagariknews.model.epaper.Epaper;
 import com.bajratechnologies.nagariknews.views.activities.BaseThemeActivity;
 import com.bajratechnologies.nagariknews.views.activities.Dashboard;
 import com.bajratechnologies.nagariknews.views.activities.GalleryViewActivity;
+import com.bajratechnologies.nagariknews.views.activities.PDFViewer;
 import com.bajratechnologies.nagariknews.views.customviews.ControllableAppBarLayout;
 import com.bajratechnologies.nagariknews.views.customviews.MySnackbar;
 import com.bajratechnologies.nagariknews.widget.EpapersListAdapter;
@@ -72,7 +73,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     private ArrayList<Epaper> epapers;
     private ArrayList<Epaper> epapersSearched;
     private String gallery = "epaper";
-//    ControllableAppBarLayout appBarLayout;
+    //    ControllableAppBarLayout appBarLayout;
     EpapersListAdapter epapersListAdapter;
     GridLayoutManager gridLayoutManager;
 
@@ -144,6 +145,7 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
         epaperRecyclerView.setItemAnimator(new DefaultItemAnimator());
         epaperRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), 0, this));
 
+        handleServerResponse();
         fetchEpaper();
 
         searchView.setOnQueryTextListener(this);
@@ -157,26 +159,25 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
     }
 
     private void fetchEpaper() {
-//        epapers = new ArrayList<>();
         if (BasicUtilMethods.isNetworkOnline(getActivity())) {
             ToggleRefresh.showRefreshDialog(getActivity(), swipeRefreshLayout);
-            handleServerResponse();
-            if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
-
-                if (SELECTED_POSITION == 0) {
-                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI);
-
-                } else if (SELECTED_POSITION == 1) {
-                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI);
-
-                } else if (SELECTED_POSITION == 2) {
-                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
-                }
-
-                WebService.getServerData(EPAPER_URL, response, errorListener);
-            } else {
-                EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
-            }
+//            handleServerResponse();
+//            if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
+//
+//                if (SELECTED_POSITION == 0) {
+//                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PURBELI);
+//
+//                } else if (SELECTED_POSITION == 1) {
+//                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.PASCHIMELI);
+//
+//                } else if (SELECTED_POSITION == 2) {
+//                    EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
+//                }
+//
+//                WebService.getServerData(EPAPER_URL, response, errorListener);
+//            } else {
+            EPAPER_URL = ServerConfig.getEpaperListUrl(BaseThemeActivity.CURRENT_MEDIA);
+//            }
 
             Log.i("EpaperURL:", EPAPER_URL);
             WebService.getServerData(EPAPER_URL, response, errorListener);
@@ -192,27 +193,27 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
             public void onResponse(String response) {
                 ToggleRefresh.hideRefreshDialog(swipeRefreshLayout);
                 try {
-                    if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
-                        if (SELECTED_POSITION == 0) {
-
-                            db.deleteLocalGallery(BaseThemeActivity.PURBELI, gallery);
-                            db.saveGallery(BaseThemeActivity.PURBELI, gallery, response);
-
-                        } else if (SELECTED_POSITION == 1) {
-
-                            db.deleteLocalGallery(BaseThemeActivity.PASCHIMELI, gallery);
-                            db.saveGallery(BaseThemeActivity.PASCHIMELI, gallery, response);
-
-                        } else {
-
-                            db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
-                            db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
-
-                        }
-                    } else {
-                        db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
-                        db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
-                    }
+//                    if (BaseThemeActivity.CURRENT_MEDIA.equals(BaseThemeActivity.NAGARIK)) {
+//                        if (SELECTED_POSITION == 0) {
+//
+//                            db.deleteLocalGallery(BaseThemeActivity.PURBELI, gallery);
+//                            db.saveGallery(BaseThemeActivity.PURBELI, gallery, response);
+//
+//                        } else if (SELECTED_POSITION == 1) {
+//
+//                            db.deleteLocalGallery(BaseThemeActivity.PASCHIMELI, gallery);
+//                            db.saveGallery(BaseThemeActivity.PASCHIMELI, gallery, response);
+//
+//                        } else {
+//
+//                            db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+//                            db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+//
+//                        }
+//                    } else {
+                    db.deleteLocalGallery(BaseThemeActivity.CURRENT_MEDIA, gallery);
+                    db.saveGallery(BaseThemeActivity.CURRENT_MEDIA, gallery, response);
+//                    }
                 } catch (CursorIndexOutOfBoundsException e) {
                     e.printStackTrace();
                 }
@@ -246,12 +247,12 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
                     String engDate = dObject.getString("publishOnDate");
                     String nepDate = dObject.getString("nepaliDate");
                     String coverImage = dObject.getString("coverImage");
-                    int pages = dObject.getInt("totalFiles");
+                    String pdf = dObject.getString("pdfFile");
 
                     if (Dashboard.sessionManager.getSwitchedNewsValue() == 1) {
-                        epapers.add(new Epaper(id, media, engDate, nepDate, engDate, coverImage, pages));
+                        epapers.add(new Epaper(id, media, engDate, nepDate, engDate, coverImage, pdf));
                     } else {
-                        epapers.add(new Epaper(id, media, engDate, nepDate, nepDate, coverImage, pages));
+                        epapers.add(new Epaper(id, media, engDate, nepDate, nepDate, coverImage, pdf));
                     }
                 }
 
@@ -318,24 +319,29 @@ public class FragmentEpaper extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onItemClick(View view, int parentPosition, int position) {
-        try {
-            isEpaperPagesPresent = db.isEpaperPagePresent(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epapersSearched.get(position).getId()));
-        } catch (CursorIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            isEpaperPagesPresent = db.isEpaperPagePresent(BaseThemeActivity.CURRENT_MEDIA, String.valueOf(epapersSearched.get(position).getId()));
+//        } catch (CursorIndexOutOfBoundsException e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (BasicUtilMethods.isNetworkOnline(getActivity()) || isEpaperPagesPresent) {
+//            Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
+//            epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
+//            epaperIntent.putExtra("id", epapersSearched.get(position).getId());
+//            epaperIntent.putExtra("date", epapersSearched.get(position).getEngDate());
+//            epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
+//
+//            startActivity(epaperIntent);
+//            Log.i("info", "clicked");
+//        } else {
+//            MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
+//        }
 
-        if (BasicUtilMethods.isNetworkOnline(getActivity()) || isEpaperPagesPresent) {
-            Intent epaperIntent = new Intent(getActivity(), GalleryViewActivity.class);
-            epaperIntent.putExtra(StaticStorage.KEY_GALLERY_TYPE, StaticStorage.KEY_EPAPER);
-            epaperIntent.putExtra("id", epapersSearched.get(position).getId());
-            epaperIntent.putExtra("date", epapersSearched.get(position).getEngDate());
-            epaperIntent.putExtra(StaticStorage.FOLDER_TYPE, StaticStorage.EPAPER);
+        Intent epaperIntent = new Intent(getActivity(), PDFViewer.class);
+        epaperIntent.putExtra("pdf", epapersSearched.get(position).getPdf());
+        startActivity(epaperIntent);
 
-            startActivity(epaperIntent);
-            Log.i("info", "clicked");
-        } else {
-            MySnackbar.showSnackBar(getActivity(), epaperRecyclerView, BaseThemeActivity.NO_NETWORK).show();
-        }
     }
 
     @Override

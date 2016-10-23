@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.bajratechnologies.nagariknews"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 18
         versionName "1.4.4"
@@ -47,6 +47,7 @@ android {
 //            buildConfigField "String", "AUTH_BASE_URL", '"http://consumer.myrepublica.com"'
 //            buildConfigField "String", "EPAPER_BASE_URL", '"http://dev.myrepublica.com"'
 //            buildConfigField "String", "GCM_REGISTRATION_URL", '"http://consumer.myrepublica.com"'
+
 
             buildConfigField "String", "BASE_URL_NAGARIK", '"http://nagarik.bidheegroup.com"'
             buildConfigField "String", "BASE_URL_REPUBLICA", '"http://myrepublica.bidheegroup.com"'
@@ -86,6 +87,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
+    compile 'es.voghdev.pdfviewpager:library:1.0.1'
 
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.2.4'

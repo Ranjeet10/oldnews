@@ -578,7 +578,6 @@ public class Dashboard extends BaseThemeActivity
                     case R.id.profile_image:
 
                         try {
-//                            Toast.makeText(getApplicationContext(), "went before dialog created", Toast.LENGTH_SHORT).show();
                             Log.i(TAG, "went before dialog created");
 
                             isProfileImageClicked = true;
@@ -586,14 +585,11 @@ public class Dashboard extends BaseThemeActivity
 
                             if (sessionManager.isLoggedIn()) {
 
-//                                Toast.makeText(getApplicationContext(), "was Logged-in : before creating", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "was Logged-in : before creating");
                                 alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGOUT, StaticStorage.LOGOUT_INFO + userName + " ?");
                             } else {
-//                                Toast.makeText(getApplicationContext(), "before creating", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "before creating");
                                 alertDialog = new AlertDialog(Dashboard.this, StaticStorage.ALERT_TITLE_LOGIN, StaticStorage.LOGIN_INFO);
-//                                Toast.makeText(getApplicationContext(), "after creating", Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "after creating");
                             }
 

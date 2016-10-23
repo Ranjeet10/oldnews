@@ -13,7 +13,7 @@ public class Epaper implements Parcelable {
     private String nepDate;
     private String showDate;
     private String coverImage;
-    private int noOfpages;
+    private String pdf;
 
 
     public Epaper(Parcel parcel) {
@@ -22,17 +22,17 @@ public class Epaper implements Parcelable {
         nepDate = parcel.readString();
         showDate = parcel.readString();
         coverImage = parcel.readString();
-        noOfpages = parcel.readInt();
+        pdf = parcel.readString();
     }
 
-    public Epaper(int id, String media, String engDate, String nepDate, String showDate, String coverImage, int noOfpages) {
+    public Epaper(int id, String media, String engDate, String nepDate, String showDate, String coverImage, String pdf) {
         this.id = id;
         this.media = media;
         this.engDate = engDate;
         this.nepDate = nepDate;
         this.showDate = showDate;
         this.coverImage = coverImage;
-        this.noOfpages = noOfpages;
+        this.pdf = pdf;
 
     }
 
@@ -62,8 +62,12 @@ public class Epaper implements Parcelable {
     }
 
 
-    public int getNoOfpages() {
-        return noOfpages;
+    public String getPdf() {
+        return pdf;
+    }
+
+    public void setPdf(String pdf) {
+        this.pdf = pdf;
     }
 
     @Override
@@ -79,7 +83,7 @@ public class Epaper implements Parcelable {
         dest.writeString(nepDate);
         dest.writeString(showDate);
         dest.writeString(coverImage);
-        dest.writeInt(noOfpages);
+        dest.writeString(pdf);
     }
 
     public static Creator<Epaper> CREATOR = new Creator<Epaper>() {
