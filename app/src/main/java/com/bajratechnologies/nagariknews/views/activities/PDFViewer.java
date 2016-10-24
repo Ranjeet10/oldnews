@@ -3,6 +3,7 @@ package com.bajratechnologies.nagariknews.views.activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +57,7 @@ public class PDFViewer extends BaseThemeActivity {
     private String localPdfPath;
     private String pdfName;
     private ProgressDialog dialog;
+    private File ePaperDirectory;
     private String EPAPER_DIRECTORY = Environment.getExternalStorageDirectory() + File.separator + StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
 
 
@@ -67,10 +69,17 @@ public class PDFViewer extends BaseThemeActivity {
 
         //configure progress dialog
         dialog = new ProgressDialog(PDFViewer.this);
-        dialog.setTitle("Download in progress...");
+        dialog.setTitle("Downloading to Nagarik/Epapers");
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setMax(100);
         dialog.setProgress(0);
+        dialog.setCancelable(true);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                setErrorMessage("Download interrupted. Tap to load again ?");
+            }
+        });
 
         //get pdf path from the intent and substring the path to get the pdf file name
         remotePdfPath = getIntent().getStringExtra("pdf");
@@ -83,6 +92,11 @@ public class PDFViewer extends BaseThemeActivity {
         if (localFile.exists()) {
             loadPDF(localPdfPath);
         } else {
+
+            ePaperDirectory = new File(EPAPER_DIRECTORY);
+            if (!ePaperDirectory.exists()) {
+                ePaperDirectory.mkdirs();
+            }
 
             downloader = new Downloader();
             if (BasicUtilMethods.isNetworkOnline(this)) {
@@ -108,13 +122,13 @@ public class PDFViewer extends BaseThemeActivity {
         @Override
         protected File doInBackground(String... params) {
 
-            File directory = new File(EPAPER_DIRECTORY);
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
+//            File directory = new File(EPAPER_DIRECTORY);
+//            if (!directory.exists()) {
+//                directory.mkdir();
+//            }
 
             String remote_pdf_path = params[0];
-            File fileName = new File(directory, pdfName);
+            File fileName = new File(ePaperDirectory, pdfName);
 
             try {
                 URL url = new URL(remote_pdf_path);
@@ -166,7 +180,7 @@ public class PDFViewer extends BaseThemeActivity {
                 fileName.delete();
 
             }
-            return new File(directory, pdfName);
+            return new File(ePaperDirectory, pdfName);
         }
 
         @Override
@@ -214,13 +228,27 @@ public class PDFViewer extends BaseThemeActivity {
             downloader.cancel(true);
     }
 
-    @OnClick(R.id.error_image_view)
+    @OnClick(R.id.error_layout)
     public void onErrorImageViewClicked() {
         if (BasicUtilMethods.isNetworkOnline(this)) {
-            downloader = new Downloader();
-            downloader.execute(remotePdfPath);
+            if (downloader != null) {
+                downloader.cancel(true);
+                downloader = new Downloader();
+                downloader.execute(remotePdfPath);
+            }
         } else {
             setErrorMessage(BaseThemeActivity.NO_NETWORK);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+            setErrorMessage("Download interrupted. Tap to load again ?");
+        } else {
+            super.onBackPressed();
         }
     }
 }

@@ -95,7 +95,7 @@ import me.relex.circleindicator.CircleIndicator;
 
 public class Dashboard extends BaseThemeActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener, ListPositionListener,
+        GoogleApiClient.OnConnectionFailedListener, AlertDialogListener/*, ListPositionListener*/,
         BaseSliderView.OnSliderClickListener {
 
     public static Dashboard instance = null;
@@ -110,8 +110,8 @@ public class Dashboard extends BaseThemeActivity
     Menu menu;
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
-    @Bind(R.id.btn_epaper_option)
-    ImageView epaperOptionMenu;
+//    @Bind(R.id.btn_epaper_option)
+//    ImageView epaperOptionMenu;
     @Bind(R.id.slider)
     SliderLayout sliderLayout;
     @Bind(R.id.collapsing_toolbar)
@@ -381,22 +381,22 @@ public class Dashboard extends BaseThemeActivity
         }
     }
 
-    @OnClick(R.id.btn_epaper_option)
-    void onEpaperOptionClicked() {
-        epaperOptionMenuDialog = new EpaperOptionMenu(this);
-        epaperOptionMenuDialog.setListPositionListener(this);
-
-        Window window = epaperOptionMenuDialog.getWindow();
-        WindowManager.LayoutParams wlp = window.getAttributes();
-        wlp.gravity = Gravity.TOP | Gravity.RIGHT;
-
-        wlp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        wlp.y = 50;
-        window.setAttributes(wlp);
-
-
-        epaperOptionMenuDialog.show();
-    }
+//    @OnClick(R.id.btn_epaper_option)
+//    void onEpaperOptionClicked() {
+//        epaperOptionMenuDialog = new EpaperOptionMenu(this);
+//        epaperOptionMenuDialog.setListPositionListener(this);
+//
+//        Window window = epaperOptionMenuDialog.getWindow();
+//        WindowManager.LayoutParams wlp = window.getAttributes();
+//        wlp.gravity = Gravity.TOP | Gravity.RIGHT;
+//
+//        wlp.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//        wlp.y = 50;
+//        window.setAttributes(wlp);
+//
+//
+//        epaperOptionMenuDialog.show();
+//    }
 
 
     private void printHashKey() {
@@ -638,7 +638,7 @@ public class Dashboard extends BaseThemeActivity
             collapseToolbar = false;
             fragmentManager.popBackStack();
             navigationView.setCheckedItem(R.id.nav_all_news);
-            epaperOptionMenu.setVisibility(View.GONE);
+//            epaperOptionMenu.setVisibility(View.GONE);
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -750,25 +750,25 @@ public class Dashboard extends BaseThemeActivity
             case R.id.nav_all_news:
                 replaceableFragment = FragmentAllNews.createNewInstance();
                 shouldReplaceFragment = true;
-                epaperOptionMenu.setVisibility(View.GONE);
+//                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_photos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.PHOTOS);
                 shouldReplaceFragment = true;
-                epaperOptionMenu.setVisibility(View.GONE);
+//                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_cartoons:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.CARTOONS);
                 shouldReplaceFragment = true;
-                epaperOptionMenu.setVisibility(View.GONE);
+//                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_videos:
                 replaceableFragment = FragmentGallery.createNewInstance(StaticStorage.VIDEOS);
                 shouldReplaceFragment = true;
-                epaperOptionMenu.setVisibility(View.GONE);
+//                epaperOptionMenu.setVisibility(View.GONE);
                 break;
 
             case R.id.nav_epaper:
@@ -776,15 +776,15 @@ public class Dashboard extends BaseThemeActivity
                 switch (sessionManager.getSwitchedNewsValue()) {
                     case 1:
                         epaperId = StaticStorage.E_PAPER_REPUBLICA;
-                        epaperOptionMenu.setVisibility(View.GONE);
+//                        epaperOptionMenu.setVisibility(View.GONE);
                         break;
                     case 2:
                         epaperId = StaticStorage.E_PAPER_NAGARIK;
-                        epaperOptionMenu.setVisibility(View.VISIBLE);
+//                        epaperOptionMenu.setVisibility(View.GONE);
                         break;
                     case 3:
                         epaperId = StaticStorage.E_PAPER_SUKRABAR;
-                        epaperOptionMenu.setVisibility(View.GONE);
+//                        epaperOptionMenu.setVisibility(View.GONE);
                         break;
                 }
                 replaceableFragment = FragmentEpaper.createNewInstance(epaperId);
@@ -915,12 +915,12 @@ public class Dashboard extends BaseThemeActivity
     }
 
 
-    @Override
-    public void tappedPosition(int position) {
-        if (replaceableFragment instanceof FragmentEpaper) {
-            ((FragmentEpaper) replaceableFragment).getSelectedEpaperFor(position);
-        }
-    }
+//    @Override
+//    public void tappedPosition(int position) {
+//        if (replaceableFragment instanceof FragmentEpaper) {
+//            ((FragmentEpaper) replaceableFragment).getSelectedEpaperFor(position);
+//        }
+//    }
 
     @Override
     public void onSliderClick(BaseSliderView slider) {

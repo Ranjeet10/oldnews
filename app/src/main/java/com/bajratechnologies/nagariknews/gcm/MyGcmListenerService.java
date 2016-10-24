@@ -54,6 +54,8 @@ public class MyGcmListenerService extends GcmListenerService {
     String reportedBy = "";
     int isSaved = 0;
 
+    private String notificationTitle;
+
     private static final String TAG = "MyGcmListenerService";
 
 
@@ -103,16 +105,17 @@ public class MyGcmListenerService extends GcmListenerService {
                 SessionManager sessionManager = new SessionManager(this);
 
                 if (newsType.equals("republica")) {
-
+                    notificationTitle = getResources().getString(R.string.republica);
                     sessionManager.switchNewsTo(1);
 
                 } else if (newsType.equals("nagarik")) {
-
+                    notificationTitle = getResources().getString(R.string.nagarik);
                     sessionManager.switchNewsTo(2);
 
                 } else {
 
                     sessionManager.switchNewsTo(3);
+                    notificationTitle = getResources().getString(R.string.sukrabar);
 
                 }
 
@@ -160,13 +163,13 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        Bitmap large = BitmapFactory.decodeResource(getResources(), R.drawable.nagariknews);
+//        Bitmap large = BitmapFactory.decodeResource(getResources(), R.drawable.nagariknews);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(newsImage != null ? newsImage : large)
-                .setContentTitle(newsObjs.get(0).getTitle())
-                .setContentText(newsObjs.get(0).getDescription())
+//                .setLargeIcon(newsImage != null ? newsImage : large)
+                .setContentTitle(notificationTitle)
+                .setContentText(newsObjs.get(0).getTitle())
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
