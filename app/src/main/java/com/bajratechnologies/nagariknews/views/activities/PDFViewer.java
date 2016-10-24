@@ -9,13 +9,21 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bajratechnologies.nagariknews.R;
+import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
+import com.bajratechnologies.nagariknews.views.customviews.MySnackbar;
+import com.joanzapata.pdfview.PDFView;
+import com.squareup.okhttp.internal.Util;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,26 +34,29 @@ import java.net.URLConnection;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import es.voghdev.pdfviewpager.library.PDFViewPagerZoom;
-import es.voghdev.pdfviewpager.library.adapter.BasePDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.adapter.PdfScale;
+import butterknife.OnClick;
 
 /**
  * Created by ronem on 10/23/16.
  */
 
 public class PDFViewer extends BaseThemeActivity {
-    @Bind(R.id.pdfViewPager)
-    PDFViewPagerZoom pdfViewPager;
+    private String TAG = getClass().getSimpleName();
+    @Bind(R.id.pdfview)
+    PDFView pdfView;
+    @Bind(R.id.error_layout)
+    LinearLayout errorLayout;
+    @Bind(R.id.error_text_view)
+    TextView errorTv;
+    @Bind(R.id.error_image_view)
+    ImageView errorImageView;
 
+    private Downloader downloader;
     private String remotePdfPath;
     private String localPdfPath;
     private String pdfName;
     private ProgressDialog dialog;
-    private String EPAPER_DIRECTORY = File.separator + StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
-    ;
-    private BasePDFPagerAdapter adapter;
+    private String EPAPER_DIRECTORY = Environment.getExternalStorageDirectory() + File.separator + StaticStorage.FOLDER_ROOT + File.separator + StaticStorage.FOLDER_EPAPER;
 
 
     @Override
@@ -54,36 +65,50 @@ public class PDFViewer extends BaseThemeActivity {
         setContentView(R.layout.pdf_viewer_layout);
         ButterKnife.bind(this);
 
-        remotePdfPath = getIntent().getStringExtra("pdf");
-        pdfName = remotePdfPath.substring(remotePdfPath.lastIndexOf("/"));
+        //configure progress dialog
+        dialog = new ProgressDialog(PDFViewer.this);
+        dialog.setTitle("Download in progress...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setMax(100);
+        dialog.setProgress(0);
 
-        localPdfPath = Environment.getExternalStorageDirectory() + File.separator + EPAPER_DIRECTORY + File.separator + pdfName;
+        //get pdf path from the intent and substring the path to get the pdf file name
+        remotePdfPath = getIntent().getStringExtra("pdf");
+        pdfName = remotePdfPath.substring(remotePdfPath.lastIndexOf("/") + 1);
+
+        localPdfPath = EPAPER_DIRECTORY + File.separator + pdfName;
 
         File localFile = new File(localPdfPath);
 
         if (localFile.exists()) {
             loadPDF(localPdfPath);
         } else {
-            new Downloader().execute(remotePdfPath);
+
+            downloader = new Downloader();
+            if (BasicUtilMethods.isNetworkOnline(this)) {
+                downloader.execute(remotePdfPath);
+            } else {
+                setErrorMessage(BaseThemeActivity.NO_NETWORK);
+            }
         }
 
     }
 
-    public class Downloader extends AsyncTask<String, Integer, String> {
+    public class Downloader extends AsyncTask<String, Integer, File> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = new ProgressDialog(PDFViewer.this);
-            dialog.setTitle("Download in progress...");
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dialog.setMax(100);
-            dialog.setProgress(0);
+
             dialog.show();
+
+            pdfView.setVisibility(View.VISIBLE);
+            errorLayout.setVisibility(View.GONE);
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            File directory = new File(Environment.getExternalStorageDirectory(), EPAPER_DIRECTORY);
+        protected File doInBackground(String... params) {
+
+            File directory = new File(EPAPER_DIRECTORY);
             if (!directory.exists()) {
                 directory.mkdir();
             }
@@ -111,26 +136,48 @@ public class PDFViewer extends BaseThemeActivity {
                     Log.i("Downloaded::", downloadedPercent + "");
                     publishProgress(downloadedPercent);
                     outputStream.write(buffer, 0, count);
+
+                    if (isCancelled()) {
+                        fileName.delete();
+                        break;
+                    }
                 }
+
+
                 outputStream.flush();
                 outputStream.close();
                 inputStream.close();
 
+                //delete the partial downloaded file
+                //occurred may be due to network problem
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+
+                fileName.delete();
+
+            } catch (FileNotFoundException e) {
+
                 e.printStackTrace();
+                fileName.delete();
+
+            } catch (IOException e) {
+
+                e.printStackTrace();
+                fileName.delete();
+
             }
-
-
-            return "Download complete...";
+            return new File(directory, pdfName);
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(File file) {
+            super.onPostExecute(file);
             dialog.dismiss();
-            loadPDF(Environment.getExternalStorageDirectory() + File.separator + EPAPER_DIRECTORY + File.separator + pdfName);
+            if (file.exists()) {
+                loadPDF(file.getAbsolutePath());
+            } else {
+                setErrorMessage("Some thing went wrong");
+            }
 
 
         }
@@ -142,47 +189,38 @@ public class PDFViewer extends BaseThemeActivity {
 
     }
 
+    private void setErrorMessage(String s) {
+        errorLayout.setVisibility(View.VISIBLE);
+        pdfView.setVisibility(View.INVISIBLE);
+        errorTv.setText(s);
+    }
+
     private void loadPDF(String filePath) {
-        //            adapter = new PDFPagerAdapter(PDFViewer.this, Environment.getExternalStorageDirectory() + File.separator + EPAPER_DIRECTORY + File.separator + pdfName);
-//            pdfViewPager.setAdapter(adapter);
+        Log.i(TAG, "LOCAL::" + filePath);
+        pdfView.fromFile(new File(filePath))
+                .defaultPage(1)
+                .showMinimap(false)
+                .enableSwipe(true)
+                .load();
 
-        pdfViewPager.setAdapter(new PDFPagerAdapter.Builder(PDFViewer.this)
-                .setPdfPath(filePath)
-                .setScale(getPdfScale())
-                .setOnPageClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        pdfViewPager.setVisibility(View.GONE);
-                        Toast.makeText(PDFViewer.this, "CLICKED", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .create());
     }
 
-    private PdfScale getPdfScale() {
-        PdfScale scale = new PdfScale();
-        scale.setScale(5.0f);
-        scale.setCenterX(getScreenWidth(this));
-        scale.setCenterY(0f);
-        return scale;
-    }
-
-    public int getScreenWidth(Context ctx) {
-        int w = 0;
-        if (ctx instanceof Activity) {
-            DisplayMetrics displaymetrics = new DisplayMetrics();
-            ((Activity) ctx).getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-            w = displaymetrics.widthPixels;
-        }
-        return w;
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (adapter != null) {
-            adapter.close();
-            adapter = null;
+        Log.i(TAG, "onDestroy() Called");
+        if (downloader != null)
+            downloader.cancel(true);
+    }
+
+    @OnClick(R.id.error_image_view)
+    public void onErrorImageViewClicked() {
+        if (BasicUtilMethods.isNetworkOnline(this)) {
+            downloader = new Downloader();
+            downloader.execute(remotePdfPath);
+        } else {
+            setErrorMessage(BaseThemeActivity.NO_NETWORK);
         }
     }
 }

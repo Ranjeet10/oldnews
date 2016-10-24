@@ -87,7 +87,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
-    compile 'es.voghdev.pdfviewpager:library:1.0.1'
+    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
 
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.2.4'
