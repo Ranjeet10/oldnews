@@ -22,6 +22,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
     public static SessionManager sessionManager;
     public static String baseUrl = "";
     private int currentTheme;
+    public static int CURRENT_NEWS_TYPE;
     public static String CURRENT_NEWS_TITLE;
     public static int COLOR_PRIMARY_DARK;
     public static int ALERT_BUTTON_THEME_STYLE;
@@ -53,6 +54,7 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
          * setting the app theme according to the specific news type selected
          */
         sessionManager = new SessionManager(this);
+
         switch (sessionManager.getSwitchedNewsValue()) {
             case 1:
 //                CURRENT_MEDIA = "my-republica";
@@ -130,4 +132,9 @@ public abstract class BaseThemeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 }

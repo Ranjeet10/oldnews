@@ -278,7 +278,7 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
                 //its the category name
                 arrayName = categoryName;
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 0);
                 newsObjs.add(newsObj);
             }
 
@@ -463,14 +463,8 @@ public class SwipableFragment extends Fragment implements NewsTitlesAdapter.Recy
 
             if (BasicUtilMethods.isNetworkOnline(getActivity()) || db.isNewsDetailPresent(newsObj.getNewsType(), newsObj.getNewsCategoryId(), newsObj.getNewsId())) {
                 Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-                newsListToShow.get(position).setIsTOShow(0);
-                for (int i = 0; i < newsListToShow.size(); i++) {
-                    newsListToShow.get(i).setIsTOShow(1);
-                }
-                newsListToShow.get(position).setIsTOShow(0);
-                newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
+                newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_LIST, newsObj);
 
-                newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
                 startActivity(newsDetailIntent);
             } else {
                 MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK).show();

@@ -3,11 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.joanzapata.pdfview.PDFView
-        android:id="@+id/pdfview"
+    <!--<com.joanzapata.pdfview.PDFView-->
+        <!--android:id="@+id/pdfview"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:visibility="visible" />-->
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible" />
+        android:layout_height="match_parent"/>
 
     <LinearLayout
         android:id="@+id/error_layout"

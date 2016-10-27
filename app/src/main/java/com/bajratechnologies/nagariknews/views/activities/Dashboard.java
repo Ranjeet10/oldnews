@@ -110,7 +110,7 @@ public class Dashboard extends BaseThemeActivity
     Menu menu;
     @Bind(R.id.news_type_image_logo)
     ImageView newsTypeImageLogo;
-//    @Bind(R.id.btn_epaper_option)
+    //    @Bind(R.id.btn_epaper_option)
 //    ImageView epaperOptionMenu;
     @Bind(R.id.slider)
     SliderLayout sliderLayout;
@@ -155,6 +155,8 @@ public class Dashboard extends BaseThemeActivity
     private PhotosCartoonPagerAdapter adapter;
 
 //    public static String baseUrl = "";
+
+    private int NEWS_TYPE;
 
 
     String navImageUrl = "https://s3.amazonaws.com/uploads.hipchat.com/509974/3391264/KWM6fpLrshlYjh0/profile.jpg";
@@ -237,6 +239,8 @@ public class Dashboard extends BaseThemeActivity
             googleClientConfigure();
         }
 
+
+        BaseThemeActivity.CURRENT_NEWS_TYPE = sessionManager.getSwitchedNewsValue();
 
         setUpNavigation();
         setUpNavigationMenu();
@@ -459,6 +463,12 @@ public class Dashboard extends BaseThemeActivity
     protected void onResume() {
         super.onResume();
         invalidateOptionsMenu();
+
+        //if news type is changed while viewing news detail from notification
+        //if changed relaunch the app so that proper news will be selected
+        if(BaseThemeActivity.CURRENT_NEWS_TYPE!=sessionManager.getSwitchedNewsValue()){
+            reLaunch();
+        }
 
     }
 

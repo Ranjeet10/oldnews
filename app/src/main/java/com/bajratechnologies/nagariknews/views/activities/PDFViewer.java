@@ -1,26 +1,20 @@
 package com.bajratechnologies.nagariknews.views.activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
-import com.bajratechnologies.nagariknews.views.customviews.MySnackbar;
-import com.joanzapata.pdfview.PDFView;
-import com.squareup.okhttp.internal.Util;
+import com.github.barteksc.pdfviewer.PDFView;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -43,7 +37,7 @@ import butterknife.OnClick;
 
 public class PDFViewer extends BaseThemeActivity {
     private String TAG = getClass().getSimpleName();
-    @Bind(R.id.pdfview)
+    @Bind(R.id.pdfView)
     PDFView pdfView;
     @Bind(R.id.error_layout)
     LinearLayout errorLayout;
@@ -121,11 +115,6 @@ public class PDFViewer extends BaseThemeActivity {
 
         @Override
         protected File doInBackground(String... params) {
-
-//            File directory = new File(EPAPER_DIRECTORY);
-//            if (!directory.exists()) {
-//                directory.mkdir();
-//            }
 
             String remote_pdf_path = params[0];
             File fileName = new File(ePaperDirectory, pdfName);
@@ -210,10 +199,10 @@ public class PDFViewer extends BaseThemeActivity {
     }
 
     private void loadPDF(String filePath) {
+        pdfView.setMaxZoom(8);
         Log.i(TAG, "LOCAL::" + filePath);
         pdfView.fromFile(new File(filePath))
                 .defaultPage(1)
-                .showMinimap(false)
                 .enableSwipe(true)
                 .load();
 

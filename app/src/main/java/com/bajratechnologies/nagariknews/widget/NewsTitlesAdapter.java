@@ -112,11 +112,6 @@ public class NewsTitlesAdapter extends RecyclerView.Adapter<NewsTitlesAdapter.Vi
 
         holder.newsShareTv.getRootView().setOnClickListener(myClickListener);
 
-        if (no.isToShow() == 0) {
-            holder.cardView.setVisibility(View.GONE);
-        } else {
-            holder.cardView.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override

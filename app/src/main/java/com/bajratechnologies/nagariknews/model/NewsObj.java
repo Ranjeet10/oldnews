@@ -7,7 +7,6 @@ import android.os.Parcelable;
  * Created by ronem on 2/9/16.
  */
 public class NewsObj implements Parcelable {
-    private int isTOShow;
     private String newsType;
     private String newsCategoryId;
     private String newsId;
@@ -26,7 +25,7 @@ public class NewsObj implements Parcelable {
 
 
     public NewsObj(String newsType, String newsCategoryId, String newsId, String newsCategoryName, String img, String title,
-                   String reportedBy, String date, String introText, String description, String newsUrl, int isTOShow, int isSaved) {
+                   String reportedBy, String date, String introText, String description, String newsUrl, int isSaved) {
         this.newsType = newsType;
         this.newsCategoryId = newsCategoryId;
         this.newsId = newsId;
@@ -38,7 +37,6 @@ public class NewsObj implements Parcelable {
         this.date = date;
         this.img = img;
         this.reportedBy = reportedBy;
-        this.isTOShow = isTOShow;
         this.isSaved = isSaved;
     }
 
@@ -54,7 +52,7 @@ public class NewsObj implements Parcelable {
         date = source.readString();
         img = source.readString();
         reportedBy = source.readString();
-        isTOShow = source.readInt();
+//        isTOShow = source.readInt();
         isSaved = source.readInt();
     }
 
@@ -95,9 +93,6 @@ public class NewsObj implements Parcelable {
         this.description = description;
     }
 
-    public int getIsTOShow() {
-        return isTOShow;
-    }
 
     public void setNewsType(String newsType) {
         this.newsType = newsType;
@@ -155,13 +150,6 @@ public class NewsObj implements Parcelable {
         return newsType;
     }
 
-    public int isToShow() {
-        return isTOShow;
-    }
-
-    public void setIsTOShow(int isTOShow) {
-        this.isTOShow = isTOShow;
-    }
 
     public void setIsSaved(int isSaved) {
         this.isSaved = isSaved;
@@ -194,7 +182,6 @@ public class NewsObj implements Parcelable {
         dest.writeString(date);
         dest.writeString(img);
         dest.writeString(reportedBy);
-        dest.writeInt(isTOShow);
         dest.writeInt(isSaved);
     }
 
@@ -250,7 +237,6 @@ public class NewsObj implements Parcelable {
     @Override
     public String toString() {
         return "NewsObj{" +
-                "isTOShow=" + isTOShow +
                 ", newsType='" + newsType + '\'' +
                 ", newsCategoryId='" + newsCategoryId + '\'' +
                 ", newsId='" + newsId + '\'' +

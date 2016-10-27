@@ -18,8 +18,8 @@ android {
         applicationId "com.bajratechnologies.nagariknews"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 19
-        versionName "1.5"
+        versionCode 20
+        versionName "1.6"
 
         generatedDensities = []
     }
@@ -87,7 +87,9 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
-    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
+    compile 'com.github.barteksc:android-pdf-viewer:2.1.0'
+
+//    compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
 
     compile 'com.android.support:palette-v7:23.1.1'
     compile 'com.google.code.gson:gson:2.2.4'

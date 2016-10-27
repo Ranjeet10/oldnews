@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.bajratechnologies.nagariknews.BuildConfig;
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.MyAnimation;
@@ -164,7 +165,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         super.onCreate(savedInstanceState);
 
         initActivityTransitions();
-//        NEWS_TYPE = Dashboard.sessionManager.getSwitchedNewsValue();
         NEWS_TYPE = BaseThemeActivity.sessionManager.getSwitchedNewsValue();
         SAVED_COLOR = getResources().getColor(R.color.grid_2);
         UN_SAVED_COLOR = getResources().getColor(R.color.light_grey);
@@ -194,56 +194,51 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
         webSettings = descriptionTextView.getSettings();
 
-        if (newsObjs.size() > 0) {
-            selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
 
-            if (BasicUtilMethods.isNetworkOnline(this)) {
-                getNewsDetailFromServer(selectedNews.getNewsId());
-                loadAdapter();
-            } else {
-                relatedNewsTextView.setVisibility(View.GONE);
-                MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
-                isNewsDetailPresent = db.isNewsDetailPresent(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
-                if (isNewsDetailPresent) {
-                    loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
-                }
-            }
-            String related = "";
-            switch (NEWS_TYPE) {
-                case 1:
-                    fabDrawable = R.drawable.menu_republica_corner_fab;
-                    MENU_COLOR = getResources().getColor(R.color.republicaColorPrimary);    //setting menu color to current themes colorPrimary
-                    related = getResources().getString(R.string.related_news);              //getting related value to show for the bottom news list
-                    selectedNewsType = getResources().getString(R.string.republica);        //setting the title for the toolbar (not showing but jst geting for future use)
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
-                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_republica_background);
-                    alertTitle = getResources().getString(R.string.myrepublica_alert_title);
-                    break;
-                case 2:
-                    fabDrawable = R.drawable.menu_nagarik_corner_fab;
-                    MENU_COLOR = getResources().getColor(R.color.nagarikColorPrimary);
-                    selectedNewsType = getResources().getString(R.string.nagarik);
-                    related = getResources().getString(R.string.sambandhit_news);
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
-                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
-                    alertTitle = getResources().getString(R.string.nagarik_alert_title);
-                    break;
-                case 3:
-                    fabDrawable = R.drawable.menu_sukrabar_corner_fab;
-                    MENU_COLOR = getResources().getColor(R.color.sukrabarColorPrimary);
-                    selectedNewsType = getResources().getString(R.string.sukrabar);
-                    newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
-                    related = getResources().getString(R.string.sambandhit_news);
-                    relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
-                    alertTitle = getResources().getString(R.string.sukrabar_alert_title);
-                    break;
-            }
-
-            relatedNewsTextView.setText(related);
-            setCallbackListenerToFabDial();
+        if (BasicUtilMethods.isNetworkOnline(this)) {
+            getNewsDetailFromServer(selectedNews.getNewsId());
+            loadAdapter();
         } else {
-
+            relatedNewsTextView.setVisibility(View.GONE);
+            MySnackbar.showSnackBar(this, recyclerVIew, BaseThemeActivity.NO_NETWORK).show();
+            isNewsDetailPresent = db.isNewsDetailPresent(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId());
+            if (isNewsDetailPresent) {
+                loadingDetail(db.getNewsObj(selectedNews.getNewsType(), selectedNews.getNewsCategoryId(), selectedNews.getNewsId()));
+            }
         }
+        String related = "";
+        switch (NEWS_TYPE) {
+            case 1:
+                fabDrawable = R.drawable.menu_republica_corner_fab;
+                MENU_COLOR = getResources().getColor(R.color.republicaColorPrimary);    //setting menu color to current themes colorPrimary
+                related = getResources().getString(R.string.related_news);              //getting related value to show for the bottom news list
+                selectedNewsType = getResources().getString(R.string.republica);        //setting the title for the toolbar (not showing but jst geting for future use)
+                newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[0]);        //setting news logo to republica
+                relatedNewsTextView.setBackgroundResource(R.drawable.corner_republica_background);
+                alertTitle = getResources().getString(R.string.myrepublica_alert_title);
+                break;
+            case 2:
+                fabDrawable = R.drawable.menu_nagarik_corner_fab;
+                MENU_COLOR = getResources().getColor(R.color.nagarikColorPrimary);
+                selectedNewsType = getResources().getString(R.string.nagarik);
+                related = getResources().getString(R.string.sambandhit_news);
+                newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[1]);        //setting news logo to nagarik
+                relatedNewsTextView.setBackgroundResource(R.drawable.corner_nagarik_background);
+                alertTitle = getResources().getString(R.string.nagarik_alert_title);
+                break;
+            case 3:
+                fabDrawable = R.drawable.menu_sukrabar_corner_fab;
+                MENU_COLOR = getResources().getColor(R.color.sukrabarColorPrimary);
+                selectedNewsType = getResources().getString(R.string.sukrabar);
+                newsTypeImageLogo.setImageResource(StaticStorage.NEWS_LOGOS[2]);        //setting news logo to sukrabar
+                related = getResources().getString(R.string.sambandhit_news);
+                relatedNewsTextView.setBackgroundResource(R.drawable.corner_sukrabar_background);
+                alertTitle = getResources().getString(R.string.sukrabar_alert_title);
+                break;
+        }
+
+        relatedNewsTextView.setText(related);
+        setCallbackListenerToFabDial();
 
         /**
          * setting {@value selectedNewsType} to the {@value toolbar}
@@ -278,10 +273,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         progressDialog.setCancelable(false);
         progressDialog.show();
         handleServerResponseForNewsDetail();
-        Log.i(TAG, "newsDetailUrl:" + ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId));
+        Log.i(TAG, "newsDetailUrl:" + ServerConfig.getNewsDetailUrl(baseUrl, newsId));
         Log.i(TAG, "token:" + sessionManager.getToken());
         if (BasicUtilMethods.isNetworkOnline(this)) {
-            WebService.getServerDataWithHeader(ServerConfig.getNewsDetailUrl(Dashboard.baseUrl, newsId), sessionManager.getToken(), serverResponseNewsDetail, errorListenernewsDetail);
+            WebService.getServerDataWithHeader(ServerConfig.getNewsDetailUrl(baseUrl, newsId), sessionManager.getToken(), serverResponseNewsDetail, errorListenernewsDetail);
         } else {
             MySnackbar.showSnackBar(this, scrollView, Dashboard.NO_NETWORK).show();
         }
@@ -337,7 +332,7 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
 
                                 Log.i(TAG, "list cleared");
-                                NewsObj newsObj = new NewsObj(newsType, String.valueOf(categoryId), newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
+                                NewsObj newsObj = new NewsObj(newsType, String.valueOf(categoryId), newsId, categoryName, img, newsTile, publishedBy, publishDate, introText, "", "", 0);
                                 newsObjs.add(newsObj);
 
                                 loadAdapter();
@@ -638,14 +633,30 @@ public class NewsDetailActivity extends BaseThemeActivity implements
 
 
     private void gettingBundle() {
-        SELECTED_NEWS_POSITION = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_POSITION, 0);
-        newsObjs = getIntent().getParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST);
-        newsType = newsObjs.get(0).getNewsType();
-        categoryName = newsObjs.get(0).getNewsCategoryName();
-        categoryId = Integer.parseInt(newsObjs.get(0).getNewsCategoryId());
-        for (int i = 0; i < newsObjs.size(); i++) {
-            Log.i("ischecked", newsObjs.get(i).getIsTOShow() + "");
+        newsObjs = new ArrayList<>();
+
+        selectedNews = (NewsObj) getIntent().getExtras().get(StaticStorage.KEY_NEWS_LIST);
+
+        newsType = selectedNews.getNewsType();
+        categoryName = selectedNews.getNewsCategoryName();
+        categoryId = Integer.parseInt(selectedNews.getNewsCategoryId());
+
+        //type is coming from GCM lister
+        //if coming from GCM then assign it to NEWS TYPE
+        int type = getIntent().getExtras().getInt(StaticStorage.KEY_NEWS_TYPE, 0);
+        if (type != 0) {
+            NEWS_TYPE = type;
+            sessionManager.switchNewsTo(NEWS_TYPE);
+
+            if (NEWS_TYPE == 1) {
+                baseUrl = BuildConfig.BASE_URL_REPUBLICA;
+            } else if (NEWS_TYPE == 2) {
+                baseUrl = BuildConfig.BASE_URL_NAGARIK;
+            } else {
+                baseUrl = BuildConfig.BASE_URL_SUKRABAR;
+            }
         }
+
     }
 
     @Override
@@ -666,13 +677,6 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         }
     }
 
-    private void applyPalette(Palette palette) {
-        int primaryDark = getResources().getColor(R.color.colorPrimary);
-        int primary = getResources().getColor(R.color.colorPrimary);
-        collapsingToolbarLayout.setContentScrimColor(palette.getMutedColor(primary));
-        collapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkMutedColor(primaryDark));
-        supportStartPostponedEnterTransition();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -762,10 +766,10 @@ public class NewsDetailActivity extends BaseThemeActivity implements
         SELECTED_NEWS_POSITION = position;
         selectedNews = newsObjs.get(SELECTED_NEWS_POSITION);
         Log.i(TAG, "selected :" + selectedNews.toString());
-        for (int i = 0; i < newsObjs.size(); i++) {
-            newsObjs.get(i).setIsTOShow(1);
-        }
-        newsObjs.get(position).setIsTOShow(0);
+//        for (int i = 0; i < newsObjs.size(); i++) {
+//            newsObjs.get(i).setIsTOShow(1);
+//        }
+//        newsObjs.get(position).setIsTOShow(0);
         if (BasicUtilMethods.isNetworkOnline(this)) {
             getNewsDetailFromServer(selectedNews.getNewsId());
             scrollUp();

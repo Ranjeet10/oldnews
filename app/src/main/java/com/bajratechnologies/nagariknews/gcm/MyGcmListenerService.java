@@ -9,16 +9,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
@@ -31,16 +27,11 @@ import com.google.android.gms.gcm.GcmListenerService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class MyGcmListenerService extends GcmListenerService {
 
-    int isTOShow = 0;
     String newsType = "";
     String newsCategoryId = "";
     String newsId = "";
@@ -53,6 +44,8 @@ public class MyGcmListenerService extends GcmListenerService {
     String img = "";
     String reportedBy = "";
     int isSaved = 0;
+
+    private int SWITCHED_TO = 1;
 
     private String notificationTitle;
 
@@ -106,42 +99,52 @@ public class MyGcmListenerService extends GcmListenerService {
 
                 if (newsType.equals("republica")) {
                     notificationTitle = getResources().getString(R.string.republica);
-                    sessionManager.switchNewsTo(1);
+//                    sessionManager.switchNewsTo(1);
+//                    Log.i(TAG, "CHANGED::newsType to 1(republica)");
+
+                    //Setting 1 for republica
+                    SWITCHED_TO = 1;
 
                 } else if (newsType.equals("nagarik")) {
                     notificationTitle = getResources().getString(R.string.nagarik);
-                    sessionManager.switchNewsTo(2);
+//                    sessionManager.switchNewsTo(2);
+//                    Log.i(TAG, "CHANGED::newsType to 2(nagarik)");
+
+                    //Setting 1 for nagarik
+                    SWITCHED_TO = 2;
 
                 } else {
 
-                    sessionManager.switchNewsTo(3);
+//                    sessionManager.switchNewsTo(3);
                     notificationTitle = getResources().getString(R.string.sukrabar);
+//                    Log.i(TAG, "CHANGED::newsType to 3(shukrabar)");
+
+                    //Setting 1 for shukrabar
+                    SWITCHED_TO = 3;
 
                 }
 
 
-                ArrayList<NewsObj> newsObjs = new ArrayList<>();
-                NewsObj newsObj = new NewsObj(newsType, newsCategoryId, newsId, newsCategoryName, img, title, reportedBy, date, introText, description, newsUrl, isTOShow, isSaved);
+                NewsObj newsObj = new NewsObj(newsType, newsCategoryId, newsId, newsCategoryName, img, title, reportedBy, date, introText, description, newsUrl, isSaved);
 
                 Log.i(TAG, "news:" + newsObj.toString());
 
-                newsObjs.add(newsObj);
-                Bitmap newsImage = null;
+//                Bitmap newsImage = null;
+//
+//                if (!TextUtils.isEmpty(img)) {
+//                    try {
+//
+//                        InputStream inputStream = (InputStream) new URL(img).getContent();
+//                        newsImage = BitmapFactory.decodeStream(inputStream);
+//
+//                    } catch (MalformedURLException e) {
+//                        e.printStackTrace();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
-                if (!TextUtils.isEmpty(img)) {
-                    try {
-
-                        InputStream inputStream = (InputStream) new URL(img).getContent();
-                        newsImage = BitmapFactory.decodeStream(inputStream);
-
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                sendNotification(newsImage, newsObjs);
+                sendNotification(/*newsImage,*/ newsObj);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -151,14 +154,25 @@ public class MyGcmListenerService extends GcmListenerService {
     // [END receive_message]
 
 
-    private void sendNotification(Bitmap newsImage, ArrayList<NewsObj> newsObjs) {
+    private void sendNotification(/*Bitmap newsImage, */NewsObj newsObj) {
+
+        int num;
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        num = sp.getInt("notification_id", 1);
+
+        num = num + 1;
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("notification_id", num).apply();
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
-        intent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsObjs);
-        intent.putExtra(StaticStorage.KEY_NEWS_POSITION, 0);
+        intent.putExtra(StaticStorage.KEY_NEWS_LIST, newsObj);
+        Log.i(TAG, "PARCELABLE::" + newsObj.toString());
+
+        intent.putExtra(StaticStorage.KEY_NEWS_TYPE, SWITCHED_TO);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, num /*0 Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -169,7 +183,7 @@ public class MyGcmListenerService extends GcmListenerService {
                 .setSmallIcon(R.mipmap.ic_launcher)
 //                .setLargeIcon(newsImage != null ? newsImage : large)
                 .setContentTitle(notificationTitle)
-                .setContentText(newsObjs.get(0).getTitle())
+                .setContentText(newsObj.getTitle())
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -177,9 +191,6 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Random rand = new Random();
-        //make only 5 notification live
-        int num = rand.nextInt(5);
         notificationManager.notify(num /* ID of notification */, notificationBuilder.build());
     }
 

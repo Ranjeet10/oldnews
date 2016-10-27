@@ -24,11 +24,11 @@ import com.bajratechnologies.nagariknews.R;
 import com.bajratechnologies.nagariknews.Utils.BasicUtilMethods;
 import com.bajratechnologies.nagariknews.Utils.StaticStorage;
 import com.bajratechnologies.nagariknews.Utils.ToggleRefresh;
-import com.bajratechnologies.nagariknews.controller.sqlite.SqliteDatabase;
-import com.bajratechnologies.nagariknews.views.activities.BaseThemeActivity;
 import com.bajratechnologies.nagariknews.controller.server_request.ServerConfig;
 import com.bajratechnologies.nagariknews.controller.server_request.WebService;
+import com.bajratechnologies.nagariknews.controller.sqlite.SqliteDatabase;
 import com.bajratechnologies.nagariknews.model.NewsObj;
+import com.bajratechnologies.nagariknews.views.activities.BaseThemeActivity;
 import com.bajratechnologies.nagariknews.views.activities.Dashboard;
 import com.bajratechnologies.nagariknews.views.activities.NewsDetailActivity;
 import com.bajratechnologies.nagariknews.views.customviews.MySnackbar;
@@ -207,7 +207,7 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
                 //its the category name
                 arrayName = "Saved News";
 
-                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "", 1, 0);
+                NewsObj newsObj = new NewsObj(String.valueOf(newsType), categoryId, newsId, arrayName, img, newsTile, publishedBy, publishDate, introText, "", "",  0);
                 newsObjs.add(newsObj);
             }
 
@@ -313,14 +313,8 @@ public class FragmentSaved extends Fragment implements NewsTitlesAdapter.Recycle
 
             if (BasicUtilMethods.isNetworkOnline(getActivity()) || db.isNewsDetailPresent(newsObj.getNewsType(), newsObj.getNewsCategoryId(), newsObj.getNewsId())) {
                 Intent newsDetailIntent = new Intent(getActivity(), NewsDetailActivity.class);
-                newsListToShow.get(position).setIsTOShow(0);
-                for (int i = 0; i < newsListToShow.size(); i++) {
-                    newsListToShow.get(i).setIsTOShow(1);
-                }
-                newsListToShow.get(position).setIsTOShow(0);
-                newsDetailIntent.putParcelableArrayListExtra(StaticStorage.KEY_NEWS_LIST, newsListToShow);
+                newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_LIST, newsObj);
 
-                newsDetailIntent.putExtra(StaticStorage.KEY_NEWS_POSITION, position);
                 startActivity(newsDetailIntent);
             } else {
                 MySnackbar.showSnackBar(getActivity(), recyclerView, BaseThemeActivity.NO_NETWORK).show();
