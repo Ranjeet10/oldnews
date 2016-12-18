@@ -4,15 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_red_grey">
-    >
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_margin="@dimen/screen_padding_lr"
         android:elevation="2dp"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:foreground="?selectableItemBackground">
 
         <RelativeLayout
@@ -43,8 +42,8 @@
                 android:id="@+id/gallery_item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:background="@color/transparent1"
                 android:ellipsize="end"
                 android:gravity="center"
